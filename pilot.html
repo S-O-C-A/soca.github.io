@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SOCA PILOTS</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet"/>
+<style>
+  @font-face {
+    font-family: 'SMAILY';
+    src: url('fonts/smaily.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+</style>
+<link rel="stylesheet" href="style_pilot.css">
+</head>
+<body>
+  <div class="gear-logo"></div>
+  <div class="racing-flag-bg"></div>
+  <div class="racing-flag-glitch"></div>
+  <div class="noise"></div>
+  <div class="noise"></div>
+<div class="wrapper">
+ 
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-seg brand">SOCA</div>
+    <div class="tb-seg" style="color:var(--b)">PILOT DOSSIER SYSTEM</div>
+    <div class="tb-seg c3">ACCESS LEVEL: CLASS-A</div>
+    <div class="tb-seg heavy-corrupt">MODULE: PIL██_MGMT v2.█</div>
+    <div class="tb-spacer"></div>
+    <div class="tb-seg" style="color:var(--yellow)">⚠ 1 PILOT FLAGGED</div>
+    <div class="tb-time" id="clock">--:--:--</div>
+    <div class="tb-live glow">■ LIVE</div>
+  </div>
+ 
+  <!-- PILOT SELECTOR TABS -->
+  <div class="pilot-tabs">
+    <div class="pilot-tab" data-pilot="1" onclick="selectPilot(1,this)">PILOT_01</div>
+    <div class="pilot-tab" data-pilot="2" onclick="selectPilot(2,this)">PILOT_02</div>
+    <div class="pilot-tab" data-pilot="3" onclick="selectPilot(3,this)">PILOT_03</div>
+    <div class="pilot-tab locked" data-pilot="4" onclick="selectPilot(4,this)">PILOT_04</div>
+    <div class="pilot-tab locked" data-pilot="5" onclick="selectPilot(5,this)">PILOT_05</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:16px;font-size:10px;padding-right:8px">
+      <span class="dim">ACTIVE PILOTS: <span class="glow">3/5</span></span>
+      <span class="dim">FLEET STATUS: <span class="glow-y c2">DEGRADED</span></span>
+    </div>
+  </div>
+ 
+  <!-- MAIN BODY -->
+  <div class="main-body">
+ 
+    <!-- LEFT: SIDE TABS -->
+    <div class="side-tabs">
+      <div style="padding:6px 8px;border:1px solid var(--border);background:var(--panel);font-size:9px;color:var(--dimmer);letter-spacing:.12em;text-align:center;margin-bottom:2px">// SECTIONS</div>
+      <div class="side-tab active" onclick="showSection('data',this)">DATA</div>
+      <div class="side-tab" onclick="showSection('basic',this)">BASIC</div>
+      <div class="side-tab" onclick="showSection('biometry',this)">BIOMETRY</div>
+      <div class="side-tab" onclick="showSection('psyche',this)">PSYCHE</div>
+      <div class="side-tab" onclick="showSection('medlog',this)">MED LOG</div>
+      <div class="side-tab danger" onclick="showSection('certific',this)">CERTIFIC.</div>
+      <div class="side-tab" onclick="window.location.href='soca.html'" style="margin-top:8px;border-color:rgba(0,255,136,0.3);color:var(--g);" onmouseover="this.style.background='rgba(0,255,136,0.08)'" onmouseout="this.style.background=''">
+        ◀ BACK TO SOCA
+      </div>
+      <div style="flex:1"></div>
+      <div id="sidebar-stress-badge" style="margin-top:8px;padding:6px 8px;border:1px solid rgba(255,34,68,.25);background:rgba(255,34,68,.04);font-size:9px;color:var(--red);letter-spacing:.1em;animation:flicker 4s infinite;cursor:default">
+        ⚠ STRESS<br>ELEVATED
+      </div>
+    </div>
+ 
+    <!-- CENTER COLUMN -->
+    <div class="center-col" id="pilot-panel">
+ 
+      <!-- HEADER CARD -->
+      <div class="panel" style="margin-bottom:5px">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="pb" style="display:flex;align-items:center;gap:16px">
+          <div>
+            <div id="hdr-title" style="font-family:'VT323',monospace;font-size:36px;color:var(--g);letter-spacing:.1em;line-height:1;animation:glitch1 9s infinite">—</div>
+            <div id="hdr-subtitle" style="font-size:9px;color:var(--dimmer);letter-spacing:.16em;margin-top:2px">—</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:9px;color:var(--dimmer);letter-spacing:.12em">RECORD ID</div>
+            <div id="hdr-recordid" style="font-family:'VT323',monospace;font-size:20px;color:var(--b);letter-spacing:.1em">—</div>
+            <div id="hdr-status" style="font-size:10px;letter-spacing:.1em;margin-top:2px">—</div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PAGE: DATA                                            -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="page active" id="page-data">
+ 
+        <!-- PHOTO + BASE DATA -->
+        <div class="panel" style="margin-bottom:5px">
+          <div class="ph"><span class="title">// BASE RECORD</span><span class="dim c3">LAST UPDATED: T+00:14:22</span></div>
+          <div class="pb" style="display:flex;gap:16px">
+ 
+            <!-- Photo + fingerprint -->
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+              <div class="photo-box" onclick="openPhotoModal()" style="cursor:pointer">
+                <img id="pilot-photo" src="" alt="PILOT" style="width:100%;height:100%;object-fit:cover;object-position:top center;">
+              </div>
+              <div class="fingerprint">
+                <svg width="60" height="70" viewBox="0 0 60 70" fill="none">
+                  <ellipse cx="30" cy="35" rx="26" ry="30" stroke="rgba(0,204,255,0.3)" stroke-width="0.5"/>
+                  <ellipse cx="30" cy="35" rx="20" ry="24" stroke="rgba(0,204,255,0.35)" stroke-width="0.5"/>
+                  <ellipse cx="30" cy="35" rx="14" ry="18" stroke="rgba(0,204,255,0.4)" stroke-width="0.5"/>
+                  <ellipse cx="30" cy="35" rx="8"  ry="12" stroke="rgba(0,204,255,0.45)" stroke-width="0.5"/>
+                  <ellipse cx="30" cy="35" rx="3"  ry="6"  stroke="rgba(0,204,255,0.55)" stroke-width="0.5"/>
+                  <line x1="4"  y1="28" x2="56" y2="28" stroke="rgba(0,204,255,0.08)" stroke-width="0.5"/>
+                  <line x1="3"  y1="35" x2="57" y2="35" stroke="rgba(0,204,255,0.08)" stroke-width="0.5"/>
+                  <line x1="4"  y1="42" x2="56" y2="42" stroke="rgba(0,204,255,0.08)" stroke-width="0.5"/>
+                </svg>
+                <div style="position:absolute;bottom:2px;font-size:7px;color:var(--b);letter-spacing:.08em;opacity:.6">ID MATCH</div>
+              </div>
+            </div>
+ 
+            <!-- Main data fields -->
+            <div style="flex:1">
+              <div class="rp" style="margin-bottom:8px">
+                <div class="rr"><span class="rk">CALLSIGN</span>       <span id="d-callsign"    class="rv">—</span></div>
+                <div class="rr"><span class="rk">FULL NAME</span>       <span id="d-fullname"    class="rv">—</span></div>
+                <div class="rr"><span class="rk">DATE OF BIRTH</span>   <span id="d-dob"         class="rv">—</span></div>
+                <div class="rr"><span class="rk">NATIONALITY</span>     <span id="d-nationality" class="rv">—</span></div>
+                <div class="rr"><span class="rk">RANK</span>            <span id="d-rank"         class="rv">—</span></div>
+                <div class="rr"><span class="rk">VESSEL</span>          <span id="d-vessel"       class="rv">—</span></div>
+                <div class="rr"><span class="rk">ENLISTMENT</span>      <span id="d-enlistment"  class="rv">—</span></div>
+                <div class="rr"><span class="rk">FLIGHT HOURS</span>    <span id="d-flighthours" class="rv">—</span></div>
+                <div class="rr"><span class="rk">MISSIONS COMP.</span>  <span id="d-missions"    class="rv">—</span></div>
+                <div class="rr"><span class="rk">INCIDENTS</span>       <span id="d-incidents"   class="rv">—</span></div>
+                <div class="rr"><span class="rk">STATUS</span>          <span id="d-status"       class="rv">—</span></div>
+              </div>
+            </div>
+ 
+            <!-- Right mini-data -->
+            <div style="width:160px;display:flex;flex-direction:column;gap:6px">
+              <div style="border:1px solid rgba(0,255,136,.15);padding:8px;text-align:center">
+                <div style="font-size:9px;color:var(--dimmer);letter-spacing:.1em;margin-bottom:4px">CLEARANCE LEVEL</div>
+                <div id="d-clearance" style="font-family:'VT323',monospace;font-size:40px;color:var(--g);line-height:1;animation:pulse 3s infinite;filter:blur(0.5px)">—</div>
+                <div id="d-clearance-note" style="font-size:9px;color:var(--dim);margin-top:2px;letter-spacing:.08em">—</div>
+              </div>
+              <div style="border:1px solid rgba(0,136,255,.2);padding:8px">
+                <div style="font-size:9px;color:var(--dimmer);letter-spacing:.1em;margin-bottom:6px">MISSION SCORE</div>
+                <div class="rr"><span class="rk">ACCURACY</span> <span id="d-accuracy" class="rv">—</span></div>
+                <div class="rr"><span class="rk">RESPONSE</span> <span id="d-response" class="rv">—</span></div>
+                <div class="rr"><span class="rk">PROTOCOL</span> <span id="d-protocol" class="rv">—</span></div>
+                <div class="rr"><span class="rk">OVERALL</span>  <span id="d-overall"  class="rv">—</span></div>
+              </div>
+              <div style="border:1px solid rgba(255,204,0,.2);padding:8px">
+                <div style="font-size:9px;color:var(--yellow);letter-spacing:.1em;margin-bottom:4px">⚠ ACTIVE FLAGS</div>
+                <div id="d-flags" style="font-size:9px;color:var(--dim);line-height:1.6">—</div>
+              </div>
+            </div>
+          </div>
+ 
+          <!-- SOCA COMMENTS -->
+          <div style="padding:0 12px 10px">
+            <div style="font-size:9px;color:var(--dimmer);letter-spacing:.12em;margin-bottom:4px">// COMMENTS</div>
+           <div id="soca-comment-data" style="border:1px solid rgba(0,255,136,.12);background:rgba(0,0,0,.25);padding:8px 10px;font-size:10px;color:var(--dim);letter-spacing:.06em;line-height:1.7;transition:all 0.2s ease;overflow:hidden">
+              <span id="soca-comment-speaker" style="color:var(--b);font-size:8px;letter-spacing:0.12em;display:block;margin-bottom:4px">⛭ SOCA //</span>
+              <span id="soca-comment-text">Loading...</span><span class="cursor" style="margin-left:4px"></span>
+            </div>
+            
+          </div>
+        </div>
+ 
+      </div><!-- /page-data -->
+ 
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PAGE: BASIC                                           -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="page" id="page-basic">
+        <div class="panel">
+          <div class="ph"><span class="title">// BASIC INFORMATION</span><span id="basic-pilot-label" class="dim">—</span></div>
+          <div class="pb">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <!-- Personal -->
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);letter-spacing:.14em;margin-bottom:8px">PERSONAL DATA</div>
+                <div class="rp">
+                  <div class="rr"><span class="rk">CALLSIGN</span>    <span id="b-callsign"    class="rv">—</span></div>
+                  <div class="rr"><span class="rk">FULL NAME</span>    <span id="b-fullname"    class="rv">—</span></div>
+                  <div class="rr"><span class="rk">DOB</span>          <span id="b-dob"         class="rv">—</span></div>
+                  <div class="rr"><span class="rk">GENDER</span>       <span id="b-gender"      class="rv">—</span></div>
+                  <div class="rr"><span class="rk">HEIGHT</span>       <span id="b-height"      class="rv">—</span></div>
+                  <div class="rr"><span class="rk">WEIGHT</span>       <span id="b-weight"      class="rv">—</span></div>
+                  <div class="rr"><span class="rk">BLOOD TYPE</span>   <span id="b-blood"       class="rv">—</span></div>
+                  <div class="rr"><span class="rk">EYES</span>         <span id="b-eyes"        class="rv">—</span></div>
+                  <div class="rr"><span class="rk">HAIR</span>         <span id="b-hair"        class="rv">—</span></div>
+                  <div class="rr"><span class="rk">NATIONALITY</span>  <span id="b-nationality" class="rv">—</span></div>
+                </div>
+              </div>
+              <!-- Service -->
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);letter-spacing:.14em;margin-bottom:8px">SERVICE DATA</div>
+                <div class="rp" style="margin-bottom:8px">
+                  <div class="rr"><span class="rk">RANK</span>             <span id="b-rank"         class="rv">—</span></div>
+                  <div class="rr"><span class="rk">DIVISION</span>         <span id="b-division"     class="rv">—</span></div>
+                  <div class="rr"><span class="rk">VESSEL ASSIGNED</span>  <span id="b-vessel"       class="rv">—</span></div>
+                  <div class="rr"><span class="rk">ENLISTMENT DATE</span>  <span id="b-enlistment"  class="rv">—</span></div>
+                  <div class="rr"><span class="rk">SERVICE YEARS</span>    <span id="b-serviceyears" class="rv">—</span></div>
+                  <div class="rr"><span class="rk">TOTAL FLIGHT H.</span>  <span id="b-flighthours"  class="rv">—</span></div>
+                  <div class="rr"><span class="rk">DEEP SPACE OPS</span>   <span id="b-deepspace"    class="rv">—</span></div>
+                  <div class="rr"><span class="rk">COMBAT RATING</span>    <span id="b-combat"       class="rv">—</span></div>
+                  <div class="rr"><span class="rk">EMERGENCY CERT.</span>  <span id="b-emergcert"    class="rv">—</span></div>
+                  <div class="rr"><span class="rk">SEC. CLEARANCE</span>   <span id="b-secclearance" class="rv">—</span></div>
+                </div>
+                <div style="font-size:9px;color:var(--dimmer);letter-spacing:.14em;margin-bottom:6px">EMERGENCY CONTACTS</div>
+                <div class="rp">
+                  <div class="rr"><span class="rk">CONTACT A</span>   <span id="b-contact-a"   class="rv">—</span></div>
+                  <div class="rr"><span class="rk">CONTACT B</span>   <span id="b-contact-b"   class="rv">—</span></div>
+                  <div class="rr"><span class="rk">NEXT OF KIN</span> <span id="b-nextofkin"   class="rv">—</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- SKILLS & PROFICIENCY — динамический блок -->
+        <div class="panel" style="margin-top:5px">
+          <div class="ph"><span class="title">// SKILLS & PROFICIENCY</span></div>
+          <div class="pb">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:8px;letter-spacing:.12em">FLIGHT PROFICIENCY</div>
+                <div id="skills-flight"><!-- заполняется JS --></div>
+              </div>
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:8px;letter-spacing:.12em">TECHNICAL SKILLS</div>
+                <div id="skills-tech"><!-- заполняется JS --></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-basic -->
+ 
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PAGE: BIOMETRY                                        -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="page" id="page-biometry">
+        <div class="panel" style="margin-bottom:5px">
+          <div class="ph"><span id="bio-page-title" class="title">// BIOMETRIC SCAN</span><span class="glow c1">● LIVE SYNC</span></div>
+          <div class="pb">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+ 
+              <!-- VITAL SIGNS -->
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:8px;letter-spacing:.12em">VITAL SIGNS</div>
+                <div class="rp">
+                  <div class="rr"><span class="rk">HEART RATE</span>      <span id="bio-hr"         class="rv glow" >—</span></div>
+                  <div class="rr"><span class="rk">O2 SATURATION</span>   <span id="bio-o2"         class="rv glow" >—</span></div>
+                  <div class="rr"><span class="rk">BLOOD PRESSURE</span>  <span id="bio-bp"         class="rv"      >—</span></div>
+                  <div class="rr"><span class="rk">BODY TEMP</span>       <span id="bio-temp"       class="rv"      >—</span></div>
+                  <div class="rr"><span class="rk">RESP. RATE</span>      <span id="bio-resp"       class="rv"      >—</span></div>
+                  <div class="rr"><span class="rk">CORTISOL</span>        <span id="bio-cortisol"   class="rv"      >—</span></div>
+                  <div class="rr"><span class="rk">ADRENALINE</span>      <span id="bio-adrenaline" class="rv"      >—</span></div>
+                  <div class="rr"><span class="rk">GLUCOSE</span>         <span id="bio-glucose"    class="rv"      >—</span></div>
+                </div>
+                <div style="margin-top:8px">
+<div style="font-size:9px;color:var(--dimmer);margin-bottom:4px;letter-spacing:.1em">ECG STRIP</div>
+                  <canvas id="ecg-bio" width="240" height="50" style="width:100%;display:block;border:1px solid rgba(0,255,136,.1);background:rgba(0,0,0,.3)"></canvas>
+                </div>
+              </div>
+ 
+              <!-- PHYSICAL METRICS -->
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:8px;letter-spacing:.12em">PHYSICAL METRICS</div>
+                <div class="rp" style="margin-bottom:8px">
+                  <div class="rr"><span class="rk">HEIGHT</span>        <span id="bio-height"      class="rv"     >—</span></div>
+                  <div class="rr"><span class="rk">WEIGHT</span>        <span id="bio-weight"      class="rv"     >—</span></div>
+                  <div class="rr"><span class="rk">BMI</span>           <span id="bio-bmi"         class="rv glow">—</span></div>
+                  <div class="rr"><span class="rk">MUSCLE MASS</span>   <span id="bio-muscle"      class="rv"     >—</span></div>
+                  <div class="rr"><span class="rk">FAT INDEX</span>     <span id="bio-fat"         class="rv"     >—</span></div>
+                  <div class="rr"><span class="rk">BONE DENSITY</span>  <span id="bio-bonedensity" class="rv glow">—</span></div>
+                  <div class="rr"><span class="rk">REACTION TIME</span> <span id="bio-reaction"    class="rv glow">—</span></div>
+                  <div class="rr"><span class="rk">G-TOLERANCE</span>   <span id="bio-gtolerance"  class="rv glow">—</span></div>
+                </div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:6px;letter-spacing:.12em">PHYSICAL CONDITION</div>
+                <div id="bio-condition-bars"><!-- заполняется JS --></div>
+              </div>
+ 
+              <!-- NEURAL LINK -->
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:8px;letter-spacing:.12em">NEURAL LINK STATUS</div>
+                <div class="rp" style="margin-bottom:8px">
+                  <div class="rr"><span class="rk">LINK STATUS</span>     <span id="bio-neuralstatus"  class="rv glow"  >—</span></div>
+                  <div class="rr"><span class="rk">LATENCY</span>         <span id="bio-latency"        class="rv"       >—</span></div>
+                  <div class="rr"><span class="rk">SIGNAL QUALITY</span>  <span id="bio-signalquality"  class="rv glow"  >—</span></div>
+                  <div class="rr"><span class="rk">COGNITIVE LOAD</span>  <span id="bio-cogload"        class="rv glow-y">—</span></div>
+                  <div class="rr"><span class="rk">FOCUS INDEX</span>     <span id="bio-focusindex"     class="rv glow"  >—</span></div>
+                  <div class="rr heavy-corrupt"><span class="rk">SECTOR ██ READ</span><span class="rv">ERR 0x██</span></div>
+                </div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:6px;letter-spacing:.12em">STRESS BREAKDOWN</div>
+                <div id="bio-stress-bars"><!-- заполняется JS --></div>
+                <div id="bio-stress-alert" style="margin-top:10px"></div>
+              </div>
+ 
+            </div>
+          </div>
+        </div>
+ 
+        <!-- DNA ANALYSIS -->
+        <div class="panel">
+          <div class="ph"><span class="title">// GENETIC SCAN — DNA ANALYSIS</span><span id="bio-dna-pct" class="dim c3">—</span></div>
+          <div class="pb" style="display:flex;gap:16px;align-items:flex-start">
+            <svg width="60" height="160" viewBox="0 0 60 160" fill="none" style="flex-shrink:0">
+              <defs><linearGradient id="dnaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00ffcc" stop-opacity=".8"/><stop offset="100%" stop-color="#0088ff" stop-opacity=".8"/></linearGradient></defs>
+              <path d="M10 10 Q50 30 10 50 Q50 70 10 90 Q50 110 10 130 Q50 150 10 170" stroke="url(#dnaG)" stroke-width="1.5" fill="none"/>
+              <path d="M50 10 Q10 30 50 50 Q10 70 50 90 Q10 110 50 130 Q10 150 50 170" stroke="url(#dnaG)" stroke-width="1.5" fill="none" opacity=".6"/>
+              <line x1="10" y1="10" x2="50" y2="10" stroke="#00ffcc" stroke-width="1" opacity=".4"/>
+              <line x1="10" y1="50" x2="50" y2="50" stroke="#00ffcc" stroke-width="1" opacity=".4"/>
+              <line x1="10" y1="90" x2="50" y2="90" stroke="#0088ff" stroke-width="1" opacity=".4"/>
+              <line x1="10" y1="130" x2="50" y2="130" stroke="#00ffcc" stroke-width="1" opacity=".4"/>
+            </svg>
+            <div style="flex:1">
+              <div class="rp" style="margin-bottom:8px">
+                <div class="rr"><span class="rk">GENOME SCAN</span>        <span id="bio-dna-scan"     class="rv glow-y">—</span></div>
+                <div class="rr"><span class="rk">GENETIC MARKERS</span>    <span id="bio-dna-markers"  class="rv"      >—</span></div>
+                <div class="rr"><span class="rk">G-TOLERANCE GENE</span>   <span id="bio-dna-gtol"    class="rv glow" >—</span></div>
+                <div class="rr"><span class="rk">RADIATION RESIST.</span>  <span id="bio-dna-rad"     class="rv"      >—</span></div>
+                <div class="rr"><span class="rk">NEURAL PLASTICITY</span>  <span id="bio-dna-neural"  class="rv glow" >—</span></div>
+                <div class="rr heavy-corrupt"><span class="rk">MARKER ██-C</span><span id="bio-dna-marker-c" class="rv">—</span></div>
+              </div>
+              <div style="font-size:9px;color:var(--dimmer);margin-bottom:4px;letter-spacing:.1em">DNA STRUCTURE — BASE PAIRS</div>
+              <div id="bio-dna-pairs" style="display:flex;gap:10px;font-size:9px;letter-spacing:.08em">—</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-biometry -->
+ 
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PAGE: PSYCHE                                          -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="page" id="page-psyche">
+        <div class="panel" style="margin-bottom:5px">
+          <div class="ph"><span id="psyche-page-title" class="title">// PSYCHOLOGICAL EVALUATION</span><span class="dim">CYCLE 7 // ONGOING MISSION</span></div>
+          <div class="pb">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <!-- Personality bars -->
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:8px;letter-spacing:.12em">PERSONALITY MATRIX</div>
+                <div id="psyche-bars"><!-- заполняется JS --></div>
+              </div>
+              <!-- SOCA behavioral analysis -->
+              <div>
+                <div style="font-size:9px;color:var(--dimmer);margin-bottom:8px;letter-spacing:.12em">SOCA BEHAVIORAL ANALYSIS</div>
+                <div class="rp" style="margin-bottom:10px">
+                  <div class="rr"><span class="rk">OVERALL PSYCHE</span>   <span id="ps-overall"   class="rv">—</span></div>
+                  <div class="rr"><span class="rk">CURRENT MOOD</span>     <span id="ps-mood"       class="rv">—</span></div>
+                  <div class="rr"><span class="rk">TRAUMA INDEX</span>     <span id="ps-trauma"     class="rv">—</span></div>
+                  <div class="rr"><span class="rk">PTSD MARKERS</span>     <span id="ps-ptsd"       class="rv">—</span></div>
+                  <div class="rr"><span class="rk">COGNITIVE BIAS</span>   <span id="ps-cogbias"    class="rv">—</span></div>
+                  <div class="rr"><span class="rk">LAST EVAL DATE</span>   <span id="ps-lasteval"   class="rv">—</span></div>
+                  <div class="rr"><span class="rk">NEXT EVAL</span>        <span id="ps-nexteval"   class="rv">—</span></div>
+                  <div class="rr heavy-corrupt"><span class="rk">FLAG ██-PSYCH</span><span id="ps-flag" class="rv">UNDER REVIEW</span></div>
+                </div>
+                <div id="ps-soca-note" style="border:1px solid rgba(0,255,136,.12);background:rgba(0,0,0,.25);padding:8px;font-size:10px;color:var(--dim);line-height:1.7;letter-spacing:.06em;animation:glitch3 14s infinite">—</div>
+                <div id="ps-alerts" style="margin-top:8px"><!-- заполняется JS --></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Psych History -->
+        <div class="panel">
+          <div class="ph"><span class="title">// PSYCH EVALUATION HISTORY</span></div>
+          <div class="pb">
+            <div id="psyche-history"><!-- заполняется JS --></div>
+          </div>
+        </div>
+      </div><!-- /page-psyche -->
+ 
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PAGE: MED LOG                                         -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="page" id="page-medlog">
+        <div class="panel" style="margin-bottom:5px">
+          <div class="ph"><span id="medlog-page-title" class="title">// MEDICAL LOG</span><span id="medlog-count" class="dim">—</span></div>
+          <div class="pb">
+            <div id="medlog-timeline"><!-- заполняется JS --></div>
+          </div>
+        </div>
+        <!-- Medications -->
+        <div class="panel">
+          <div class="ph"><span class="title">// CURRENT MEDICATIONS / SUPPLEMENTS</span></div>
+          <div class="pb">
+            <div id="medlog-meds" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px">
+              <!-- заполняется JS -->
+            </div>
+          </div>
+        </div>
+      </div><!-- /page-medlog -->
+ 
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PAGE: CERTIFICATIONS                                  -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="page" id="page-certific">
+        <div class="panel">
+          <div class="ph"><span class="title">// CERTIFICATIONS & CLEARANCES</span><span id="certific-summary" class="dim">—</span></div>
+          <div class="pb">
+            <div id="certific-list"><!-- заполняется JS --></div>
+          </div>
+        </div>
+      </div><!-- /page-certific -->
+ 
+<!-- VITAL SIGNS LIVE (виден на всех вкладках) -->
+      <div class="panel vital-panel-bottom" style="background:rgba(12,6,0,0.95);border-color:rgba(255,140,0,0.2)">
+        <div class="ph" style="background:rgba(20,10,0,0.6);border-bottom:1px solid rgba(255,140,0,0.2)">
+          <span class="title" style="color:#ffcc00;font-family:'SMAILY','Share Tech Mono',monospace">✚ VITAL SIGNS — LIVE</span>
+          <span style="font-size:8px;color:#ff8800;letter-spacing:0.12em;animation:smBlink 2s infinite">● SYNCED</span>
+        </div>
+        <div class="pb">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+
+            <!-- HEART RATE -->
+            <div style="text-align:center;border:1px solid rgba(255,140,0,0.2);padding:8px;background:rgba(8,4,0,0.6)">
+              <canvas id="ecg-mini" width="100" height="35" style="width:100%;display:block;margin-bottom:4px;border:1px solid rgba(255,140,0,0.15);background:rgba(5,2,0,0.8)"></canvas>
+              <div style="font-size:9px;color:#664400;font-family:'SMAILY','Share Tech Mono',monospace">HEART RATE</div>
+              <div style="font-family:'SMAILY','VT323',monospace;font-size:22px;color:#ffaa00" id="hr-mini">— <span style="font-size:14px">bpm</span></div>
+            </div>
+
+            <!-- O2 -->
+            <div style="text-align:center;border:1px solid rgba(255,140,0,0.2);padding:8px;background:rgba(8,4,0,0.6)">
+              <div id="live-o2" style="font-family:'SMAILY','VT323',monospace;font-size:36px;color:#ffcc00;line-height:1;animation:float 3s ease-in-out infinite">—<span style="font-size:16px">%</span></div>
+              <div style="font-size:9px;color:#664400;margin-top:4px;font-family:'SMAILY','Share Tech Mono',monospace">O2 SATURATION</div>
+              <div id="live-o2-label" style="font-size:9px;color:#ff8800;margin-top:2px">—</div>
+            </div>
+
+            <!-- STRESS -->
+            <div style="text-align:center;border:1px solid rgba(255,140,0,0.25);padding:8px;background:rgba(8,4,0,0.6)">
+              <div id="stress-mini" style="font-family:'SMAILY','VT323',monospace;font-size:36px;color:#ffaa00;line-height:1;animation:glitch1 8s infinite">—</div>
+              <div style="font-size:9px;color:#664400;margin-top:4px;font-family:'SMAILY','Share Tech Mono',monospace">STRESS INDEX</div>
+              <div id="live-stress-label" style="font-size:9px;color:#ff8800;margin-top:2px;animation:flicker 3s infinite">—</div>
+            </div>
+
+            <!-- G-FORCE -->
+            <div style="text-align:center;border:1px solid rgba(255,140,0,0.2);padding:8px;background:rgba(8,4,0,0.6)">
+              <div id="live-gforce" style="font-family:'SMAILY','VT323',monospace;font-size:36px;color:#ffcc00;line-height:1">—<span style="font-size:16px">g</span></div>
+              <div style="font-size:9px;color:#664400;margin-top:4px;font-family:'SMAILY','Share Tech Mono',monospace">G-FORCE</div>
+              <div style="font-size:9px;color:#ff8800;margin-top:2px">WITHIN LIMIT</div>
+            </div>
+
+          </div>
+
+          <!-- CARDIOGRAM -->
+          <div style="font-size:9px;color:#664400;letter-spacing:.1em;margin-bottom:3px;font-family:'SMAILY','Share Tech Mono',monospace">✚ CARDIOGRAM — LIVE STRIP</div>
+          <canvas id="ecg-full" width="900" height="50" style="width:100%;display:block;border:1px solid rgba(255,140,0,0.2);background:rgba(5,2,0,0.8)"></canvas>
+          <canvas id="ecg-footer" width="900" height="50" style="display:none"></canvas>
+        </div>
+      </div>
+ 
+    </div><!-- /center-col -->
+ 
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex;flex-direction:column;gap:5px">
+ 
+     <!-- BODY PROJECTION -->
+      <div style="border:1px solid rgba(255,140,0,0.2);background:rgba(12,6,0,0.95);position:relative;overflow:hidden">
+        <div style="padding:5px 10px;border-bottom:1px solid rgba(255,140,0,0.2);display:flex;align-items:center;justify-content:space-between;background:rgba(20,10,0,0.6);font-size:10px;letter-spacing:.12em">
+          <span style="color:#ffcc00;font-family:'SMAILY','Share Tech Mono',monospace;font-size:11px">✚ BODY PROJECTION</span>
+          <span style="font-size:8px;color:#ff8800;animation:smBlink 2s infinite">SCANNING</span>
+        </div>
+        <div class="pb" style="text-align:center">
+          <div style="font-size:9px;color:#664400;letter-spacing:.1em;margin-bottom:6px;font-family:'SMAILY','Share Tech Mono',monospace">проекция тела // SCAN ACTIVE</div>
+          <div style="background:rgba(8,4,0,0.97);border:1px solid rgba(255,140,0,0.2);max-width:220px;margin:0 auto;padding:4px">
+            <canvas id="bodyCanvas" width="240" height="280" style="width:100%;display:block;background:rgba(8,4,0,0.97)"></canvas>
+          </div>
+          <div style="margin-top:6px;font-size:9px;color:#664400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">INTEGRITY: <span style="color:#ffcc00">NOMINAL</span></div>
+          <div style="font-size:9px;color:#664400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">SUIT SEAL: <span style="color:#ffcc00">OK</span></div>
+          <div style="font-size:9px;letter-spacing:.08em;color:#ff8800;font-family:'SMAILY','Share Tech Mono',monospace" id="scan-status">▶ SCANNING...</div>
+        </div>
+      </div>
+
+<!-- QUICK STATS -->
+      <div style="border:1px solid rgba(255,140,0,0.2);background:rgba(12,6,0,0.95);position:relative;overflow:hidden">
+        <div style="padding:5px 10px;border-bottom:1px solid rgba(255,140,0,0.2);display:flex;align-items:center;justify-content:space-between;background:rgba(20,10,0,0.6);font-size:10px;letter-spacing:.12em">
+          <span style="color:#ffcc00;font-family:'SMAILY','Share Tech Mono',monospace;font-size:11px">✚ QUICK STATS</span>
+        </div>
+        <div style="padding:8px 10px">
+          <div style="border:1px solid rgba(255,140,0,0.2);padding:8px 10px;background:rgba(8,4,0,0.6)">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:3px"><span style="color:#554400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">PULSE</span>   <span id="hr-right"  style="color:#ffaa00;font-family:'SMAILY','VT323',monospace;font-size:16px;text-shadow:0 0 6px rgba(255,140,0,0.5)">— bpm</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:3px"><span style="color:#554400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">O2</span>      <span id="qs-o2"     style="color:#ffcc00;font-family:'SMAILY','VT323',monospace;font-size:16px;text-shadow:0 0 6px rgba(255,180,0,0.5)">—</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:3px"><span style="color:#554400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">STRESS</span>  <span id="qs-stress" style="color:#ff8800;font-family:'SMAILY','VT323',monospace;font-size:16px;text-shadow:0 0 6px rgba(255,100,0,0.5);animation:flicker 3s infinite">—</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:3px"><span style="color:#554400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">G-FORCE</span> <span id="gf-right"  style="color:#ffcc00;font-family:'SMAILY','VT323',monospace;font-size:16px;text-shadow:0 0 6px rgba(255,180,0,0.5)">—</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:3px"><span style="color:#554400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">TEMP</span>    <span id="qs-temp"   style="color:#ffaa00;font-family:'SMAILY','VT323',monospace;font-size:16px">—</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:3px"><span style="color:#554400;letter-spacing:.08em;font-family:'SMAILY','Share Tech Mono',monospace">SUIT O2</span> <span id="qs-suito2" style="color:#ffcc00;font-family:'SMAILY','VT323',monospace;font-size:16px;text-shadow:0 0 6px rgba(255,180,0,0.5)">—</span></div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- MISSION CLOCK -->
+      <div class="panel">
+        <div class="ph"><span class="title">// MISSION TIMER</span></div>
+        <div class="pb" style="text-align:center">
+          <div style="font-family:'VT323',monospace;font-size:36px;color:var(--yellow);text-shadow:0 0 10px var(--yellow);letter-spacing:.12em;animation:glitch1 10s infinite" id="mission-timer">01:42:35</div>
+          <div style="font-size:9px;color:var(--dimmer);letter-spacing:.12em;margin-top:2px">MISSION_07 ELAPSED</div>
+          <div style="margin-top:8px">
+            <div class="rr"><span class="rk">WP DELTA</span> <span class="rv glow-b">T-02:14</span></div>
+            <div class="rr"><span class="rk">FUEL EST.</span> <span class="rv glow-y">~55%</span></div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- SOCA NOTES -->
+      <div class="panel" style="flex:1">
+        <div class="ph"><span class="title">// SOCA NOTES</span><span class="glow-b c2">AI</span></div>
+        <div class="pb">
+          <div style="font-size:10px;color:var(--dim);line-height:1.7;letter-spacing:.05em;border:1px solid rgba(0,255,136,.08);background:rgba(0,0,0,.2);padding:8px;margin-bottom:6px;animation:glitch3 16s infinite">
+            <span id="soca-note-text">—</span><span class="cursor" style="margin-left:2px"></span>
+          </div>
+          <div style="font-size:9px;color:var(--dimmer);margin-bottom:4px;letter-spacing:.1em">// ADD NOTE</div>
+          <textarea class="terminal-input" placeholder="> type mission note..." rows="3" style="font-size:10px;width:100%;resize:none"></textarea>
+          <div onclick="addNote()" style="margin-top:4px;padding:5px;border:1px solid var(--border);color:var(--dim);font-size:9px;text-align:center;cursor:pointer;letter-spacing:.1em" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='var(--dim)'">SUBMIT NOTE</div>
+          <div id="note-out" style="font-size:9px;color:var(--dim);margin-top:4px;min-height:14px"></div>
+        </div>
+      </div>
+ 
+    </div><!-- /right col -->
+ 
+  </div><!-- /main-body -->
+ 
+  <!-- BOTTOM BAR -->
+  <div class="bottombar">
+    <div class="bb-seg active">SOCA DOSSIER v2.██</div>
+    <div id="bb-pilot" class="bb-seg">—</div>
+    <div id="bb-alert" class="bb-seg alert c1">—</div>
+    <div id="bb-warn"  class="bb-seg" style="color:var(--yellow)">—</div>
+    <div class="bb-spacer"></div>
+    <div class="bb-seg" id="bb-coords" style="color:var(--dimmer)">X:2471 Y:0883</div>
+    <div class="bb-seg" style="color:var(--dimmer)">SCHR: PIL-DOS-v2.██</div>
+  </div>
+ 
+</div><!-- /wrapper -->
+ 
+<!-- ФОТО МОДАЛЬНОЕ ОКНО -->
+<div id="photoModal" class="photo-modal" style="display:none">
+  <div class="photo-modal-noise"></div>
+  <div class="photo-modal-content">
+    <div class="photo-modal-header">
+      <span id="modal-title" class="photo-modal-title">// PILOT</span>
+      <span class="photo-modal-close" onclick="closePhotoModal()">[X]</span>
+    </div>
+    <div class="photo-modal-body">
+      <img id="modalPhotoImg" src="" alt="PILOT" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23081a10%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%2300ff88%22 font-family=%22monospace%22 font-size=%2212%22%3ENO IMAGE%3C/text%3E%3C/svg%3E'">
+    </div>
+    <div class="photo-modal-footer">
+      <span id="modal-recordid" class="dim">// RECORD ID: —</span>
+      <span class="glow-b c1">CLASSIFIED</span>
+      <div class="photo-glitch-overlay"></div>
+    </div>
+  </div>
+</div>
+ 
+<!-- СЕКРЕТНОЕ ОКНО (S+O+C+A) -->
+<div id="secret-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000;justify-content:center;align-items:center;">
+  <div id="secret-window" style="width:500px;max-width:90vw;padding:0;position:relative;">
+    <div style="padding:6px 12px;border-bottom:1px solid rgba(0,255,136,0.15);background:rgba(0,255,136,0.04);display:flex;justify-content:space-between;align-items:center;">
+      <span style="color:#00ff88;font-size:11px;letter-spacing:0.14em;font-family:'Share Tech Mono',monospace;">// SYSTEM_MSG</span>
+      <div id="secret-close" style="color:rgba(0,200,100,0.5);font-size:10px;cursor:pointer;transition:all 0.2s;padding:3px 8px;border:1px solid rgba(0,255,136,0.15);font-family:'Share Tech Mono',monospace;letter-spacing:0.1em;" onclick="closeSecretWindow()" onmouseover="this.style.color='#ff2244';this.style.borderColor='#ff2244'" onmouseout="this.style.color='rgba(0,200,100,0.5)';this.style.borderColor='rgba(0,255,136,0.15)'">[X]</div>
+    </div>
+    <div id="secret-content" style="min-height:220px;padding:30px 20px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;text-align:center;"></div>
+    <div style="position:absolute;top:6px;left:6px;width:10px;height:10px;border-top:1px solid rgba(0,255,136,0.4);border-left:1px solid rgba(0,255,136,0.4);pointer-events:none;"></div>
+    <div style="position:absolute;top:6px;right:6px;width:10px;height:10px;border-top:1px solid rgba(0,255,136,0.4);border-right:1px solid rgba(0,255,136,0.4);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:6px;left:6px;width:10px;height:10px;border-bottom:1px solid rgba(0,255,136,0.4);border-left:1px solid rgba(0,255,136,0.4);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:6px;right:6px;width:10px;height:10px;border-bottom:1px solid rgba(0,255,136,0.4);border-right:1px solid rgba(0,255,136,0.4);pointer-events:none;"></div>
+  </div>
+</div>
+ 
+<script src="sounds.js"></script>
+<script src="pilot.js"></script>
+<script src="pilots_data.js"></script>
+ 
+</body>
+</html>

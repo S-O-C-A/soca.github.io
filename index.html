@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WELCOME, PILOT!</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet"/>
+<style>
+/* ========== БАЗОВЫЕ СТИЛИ (как в главном файле, но без шахматного паттерна) ========== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --g:#00ff88;
+  --g2:#00ffcc;
+  --b:#00ccff;
+  --b2:#0088ff;
+  --dim:#00aa55;
+  --dimmer:#005533;
+  --bg:#040d08;
+  --bg2:#071410;
+  --panel:#081a10;
+  --border:#00ff8844;
+  --border2:#00ccff33;
+  --red:#ff2244;
+  --yellow:#ffcc00;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--g);
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  overflow:hidden;
+  cursor:crosshair;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* SCANLINES overlay */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  background:repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+}
+
+/* CRT vignette */
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%);
+}
+
+/* NOISE texture */
+.noise{
+  position:fixed;
+  inset:0;
+  z-index:9997;
+  pointer-events:none;
+  opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:noiseAnim 0.15s steps(1) infinite;
+}
+
+@keyframes noiseAnim{
+  0%{transform:translate(0,0)}
+  20%{transform:translate(-2px,1px)}
+  40%{transform:translate(1px,-1px)}
+  60%{transform:translate(-1px,2px)}
+  80%{transform:translate(2px,-2px)}
+  100%{transform:translate(0,0)}
+}
+
+/* ГЛИТЧ-АНИМАЦИИ */
+@keyframes glitch1{
+  0%,94%,100%{transform:none;opacity:1}
+  95%{transform:translate(-3px,0) skewX(-2deg);opacity:0.8;color:var(--b)}
+  97%{transform:translate(3px,0);color:var(--red)}
+  99%{transform:translate(-1px,1px);opacity:0.9}
+}
+
+@keyframes glitch2{
+  0%,89%,100%{transform:none;opacity:1}
+  90%{transform:translate(4px,-2px);opacity:0.7}
+  92%{transform:translate(-2px,1px);opacity:0.9}
+  95%{transform:skewX(5deg) translate(2px);opacity:0.6}
+  98%{transform:none}
+}
+
+@keyframes glitch3{
+  0%,96%,100%{opacity:1;transform:none}
+  97%{opacity:0.3;transform:translate(6px,0)}
+  98%{opacity:0.8;transform:translate(-4px,0)}
+  99%{opacity:0.5;transform:skewX(-4deg)}
+}
+
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes flicker{0%,100%{opacity:1}49%{opacity:1}50%{opacity:0.7}51%{opacity:1}88%{opacity:1}89%{opacity:0.4}90%{opacity:1}}
+@keyframes textIn{from{opacity:0;letter-spacing:0.5em}to{opacity:1;letter-spacing:inherit}}
+
+/* ========== ШЕСТЕРЁНКА (МЕНЬШЕГО РАЗМЕРА) ========== */
+.boot-gear {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85px;
+  height: 85px;
+  z-index: 100;
+  
+  font-family: 'VT323', monospace;
+  font-size: 85px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background: linear-gradient(135deg, #00cc66 0%, #00ff88 25%, #00ccff 70%, #0088cc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  
+  text-shadow: 0 0 6px rgba(0, 255, 136, 0.4), 0 0 12px rgba(0, 204, 255, 0.25);
+  filter: drop-shadow(0 0 4px rgba(0, 200, 100, 0.3));
+  
+  transition: none;
+  
+  /* Только появление, без вращения */
+  opacity: 0;
+  animation: gearAppear 0.8s ease forwards;
+}
+
+@keyframes gearAppear {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Класс для подъёма (добавляется через JS) */
+.boot-gear.move-up {
+  animation: gearMoveUp 0.8s ease forwards;
+}
+
+@keyframes gearMoveUp {
+  0% { top: 50%; transform: translate(-50%, -50%); opacity: 1; }
+  100% { top: 18%; transform: translate(-50%, -50%); opacity: 1; }
+}
+
+/* Отдельный класс для вращения (добавляется после подъёма) */
+.boot-gear.spin {
+  top: 18%;
+  animation: bootRustyGearSpin 8s infinite cubic-bezier(0.8, 0.2, 0.2, 0.8);
+}
+
+/* Ржавый слой поверх */
+.boot-gear::before {
+  content: '⛭';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'VT323', monospace;
+  font-size: 85px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00cc66 0%, #00ff88 25%, #00ccff 70%, #0088cc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0.25;
+  filter: blur(0.8px);
+  pointer-events: none;
+  animation: bootRustOverlay 12s infinite;
+}
+
+/* Глитч-слой */
+.boot-gear::after {
+  content: '⛭';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'VT323', monospace;
+  font-size: 85px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00ffcc 0%, #00ff88 50%, #00ccff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  animation: bootGearGlitchOverlay 5s infinite;
+}
+
+/* ========== АНИМАЦИИ ДЛЯ ШЕСТЕРЁНКИ ========== */
+@keyframes bootRustyGearSpin {
+  0%, 10% { transform: translate(-50%, -50%) rotate(0deg); }
+  12% { transform: translate(-50%, -50%) rotate(0deg); }
+  14% { transform: translate(-50%, -50%) rotate(8deg); }
+  16% { transform: translate(-50%, -50%) rotate(0deg); }
+  18%, 22% { transform: translate(-50%, -50%) rotate(0deg); }
+  24% { transform: translate(-50%, -50%) rotate(0deg); }
+  26% { transform: translate(-50%, -50%) rotate(12deg); }
+  28% { transform: translate(-50%, -50%) rotate(4deg); }
+  30% { transform: translate(-50%, -50%) rotate(0deg); }
+  32%, 40% { transform: translate(-50%, -50%) rotate(0deg); }
+  42% { transform: translate(-50%, -50%) rotate(0deg); }
+  44% { transform: translate(-50%, -50%) rotate(12deg); }
+  46% { transform: translate(-50%, -50%) rotate(18deg); }
+  48% { transform: translate(-50%, -50%) rotate(6deg); }
+  50% { transform: translate(-50%, -50%) rotate(0deg); }
+  52%, 70% { transform: translate(-50%, -50%) rotate(0deg); }
+  72% { transform: translate(-50%, -50%) rotate(0deg); }
+  74% { transform: translate(-50%, -50%) rotate(15deg); }
+  76% { transform: translate(-50%, -50%) rotate(25deg); }
+  78% { transform: translate(-50%, -50%) rotate(10deg); }
+  80% { transform: translate(-50%, -50%) rotate(0deg); }
+  82%, 90% { transform: translate(-50%, -50%) rotate(0deg); }
+  92% { transform: translate(-50%, -50%) rotate(0deg); }
+  94% { transform: translate(-50%, -50%) rotate(15deg); }
+  96% { transform: translate(-50%, -50%) rotate(30deg); }
+  98% { transform: translate(-50%, -50%) rotate(20deg); }
+  100% { transform: translate(-50%, -50%) rotate(30deg); }
+}
+
+@keyframes bootRustOverlay {
+  0%, 100% { opacity: 0.25; filter: blur(0.8px); }
+  20% { opacity: 0.35; filter: blur(1px); }
+  40% { opacity: 0.2; filter: blur(0.5px); }
+  60% { opacity: 0.4; filter: blur(1.2px); }
+  80% { opacity: 0.2; filter: blur(0.6px); }
+}
+
+@keyframes bootGearGlitchOverlay {
+  0%, 100% { opacity: 0; transform: translateX(0); }
+  8% { opacity: 0.5; transform: translateX(-1.5px); }
+  9% { opacity: 0; transform: translateX(1.5px); }
+  15% { opacity: 0; }
+  22% { opacity: 0.4; transform: translateX(-1px); }
+  23% { opacity: 0; transform: translateX(1px); }
+  45% { opacity: 0; }
+  68% { opacity: 0.3; transform: translateX(-0.5px); }
+  69% { opacity: 0; transform: translateX(0.5px); }
+  85% { opacity: 0; }
+  92% { opacity: 0.5; transform: translateX(-2px); }
+  93% { opacity: 0; transform: translateX(2px); }
+}
+
+.boot-gear.glitch-instant {
+  animation: bootGearInstantGlitch 0.2s steps(3);
+}
+
+@keyframes bootGearInstantGlitch {
+  0% { transform: translate(-50%, -50%) translateX(0) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) translateX(-4px) rotate(5deg); }
+  50% { transform: translate(-50%, -50%) translateX(4px) rotate(-4deg); }
+  75% { transform: translate(-50%, -50%) translateX(-2px) rotate(2deg); }
+  100% { transform: translate(-50%, -50%) translateX(0) rotate(0deg); }
+}
+
+/* ========== ЛОГОТИП SOCA (появление с ТВ-помехами) ========== */
+.boot-logo {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  opacity: 0;
+  visibility: hidden;
+  text-align: center;
+}
+
+.boot-logo.show {
+  visibility: visible;
+  animation: tvStaticAppear 1.2s ease-out forwards;
+}
+
+/* ТЕЛЕВИЗИОННОЕ ПОЯВЛЕНИЕ — с помехами, рябью, сдвигами */
+@keyframes tvStaticAppear {
+  /* Начало — полная невидимость */
+  0% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.95);
+    filter: blur(8px);
+  }
+  
+  /* Первая вспышка (помеха) */
+  5% { 
+    opacity: 0.6; 
+    transform: translate(-50%, -50%) scale(1.02) translateX(-4px);
+    filter: blur(2px);
+  }
+  
+  /* Пропадание */
+  8% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.98) translateX(3px);
+  }
+  
+  /* Вторая вспышка */
+  12% { 
+    opacity: 0.8; 
+    transform: translate(-50%, -50%) scale(1.01) translateX(2px);
+    filter: blur(1px);
+  }
+  
+  /* Рябь */
+  15% { 
+    opacity: 0.3; 
+    transform: translate(-50%, -50%) translateY(-3px);
+  }
+  
+  /* Мерцание */
+  18% { 
+    opacity: 0.9; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+  
+  /* Горизонтальный сдвиг (развёртка) */
+  22% { 
+    opacity: 0.5; 
+    transform: translate(-50%, -50%) skewX(5deg) translateX(-5px);
+    filter: blur(0.5px);
+  }
+  
+  25% { 
+    opacity: 0.95; 
+    transform: translate(-50%, -50%) skewX(-3deg) translateX(3px);
+  }
+  
+  /* Ещё одна помеха */
+  30% { 
+    opacity: 0.4; 
+    transform: translate(-50%, -50%) scale(0.97) translateY(2px);
+    filter: blur(1px);
+  }
+  
+  /* Почти стабилизировалась */
+  35% { 
+    opacity: 0.9; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+  
+  /* Последний глитч */
+  40% { 
+    opacity: 0.6; 
+    transform: translate(-50%, -50%) translateX(-2px);
+  }
+  
+  45% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) translateX(0);
+  }
+  
+  /* Финальная стабилизация */
+  100% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes tvScanlines {
+  0% { 
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  10% { 
+    opacity: 1;
+    transform: translateY(-80%);
+  }
+  30% { 
+    opacity: 0.8;
+    transform: translateY(-40%);
+  }
+  50% { 
+    opacity: 0.5;
+    transform: translateY(0%);
+  }
+  70% { 
+    opacity: 0.3;
+    transform: translateY(20%);
+  }
+  100% { 
+    opacity: 0;
+    transform: translateY(100%);
+    display: none;
+  }
+}
+
+@keyframes tvSweep {
+  0% { 
+    top: -10%;
+    opacity: 0;
+  }
+  20% { 
+    top: 20%;
+    opacity: 0.8;
+  }
+  40% { 
+    top: 50%;
+    opacity: 0.6;
+  }
+  60% { 
+    top: 70%;
+    opacity: 0.4;
+  }
+  80% { 
+    top: 90%;
+    opacity: 0.2;
+  }
+  100% { 
+    top: 110%;
+    opacity: 0;
+  }
+}
+
+.soca-logo-text {
+  font-family: 'VT323', monospace;
+  font-size: clamp(80px, 13vw, 140px);
+  line-height: 0.9;
+  letter-spacing: 0.05em;
+  filter: drop-shadow(0 0 20px rgba(0,204,255,0.5)) drop-shadow(0 0 40px rgba(0,255,136,0.3));
+  animation: glitch2 4s infinite;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.soca-skew {
+  display: inline-block;
+  transform: skewX(-12deg) rotate(1deg);
+  background: linear-gradient(135deg, var(--g) 0%, var(--g) 30%, var(--b) 70%, var(--b) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  -webkit-text-stroke: 1.5px rgba(0, 255, 136, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ШАХМАТНЫЙ ПАТТЕРН — тоже появляется с помехами */
+.racing-flag-behind {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 50%;
+  min-width: 320px;
+  max-width: 500px;
+  
+  background-image: 
+    linear-gradient(45deg, rgba(0, 255, 136, 0.45) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(0, 255, 136, 0.45) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0, 204, 255, 0.45) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0, 204, 255, 0.45) 75%);
+  
+  background-size: 28px 28px;
+  background-position: 0 0, 0 14px, 14px -14px, -14px 0px;
+  
+  animation: racingFlagBehind 25s linear infinite;
+  
+  mask-image: radial-gradient(ellipse at center, black 55%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 55%, transparent 90%);
+  
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Паттерн появляется с задержкой и глитчем */
+.boot-logo.show .racing-flag-behind {
+  animation: flagFlicker 0.8s ease-out forwards, racingFlagBehind 25s linear infinite, flagGlitchMove 4s infinite;
+}
+
+@keyframes flagFlicker {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  10% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.05) translateX(-3px); }
+  20% { opacity: 0; transform: translate(-50%, -50%) scale(0.95) translateX(3px); }
+  30% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.02) translateX(-1px); }
+  45% { opacity: 0.2; transform: translate(-50%, -50%); }
+  60% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 0.5; transform: translate(-50%, -50%) skewX(2deg); }
+  100% { opacity: 0.85; transform: translate(-50%, -50%); }
+}
+
+@keyframes racingFlagBehind {
+  from {
+    background-position: 0 0, 0 14px, 14px -14px, -14px 0px;
+  }
+  to {
+    background-position: 56px 56px, 56px 70px, 70px 42px, 42px 56px;
+  }
+}
+
+@keyframes flagGlitchMove {
+  0%, 100% { transform: translate(-50%, -50%) translateX(0); opacity: 0.85; }
+  22% { transform: translate(-50%, -50%) translateX(-1px); opacity: 0.95; }
+  44% { transform: translate(-50%, -50%) translateX(1px); opacity: 0.75; }
+  66% { transform: translate(-50%, -50%) translateX(0); opacity: 0.9; }
+  88% { transform: translate(-50%, -50%) translateX(0.5px); opacity: 0.85; }
+}
+
+/* Подзаголовок — тоже появляется с помехами */
+.boot-subtitle {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: var(--b);
+  margin-top: 16px;
+  animation: glitch3 7s 0.5s infinite;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+}
+
+.boot-logo.show .boot-subtitle {
+  animation: subtitleFlicker 0.5s ease-out 0.4s forwards, glitch3 7s 0.5s infinite;
+}
+
+@keyframes subtitleFlicker {
+  0% { opacity: 0; transform: translateY(5px); filter: blur(2px); }
+  20% { opacity: 0.4; transform: translateY(-2px); filter: blur(0.5px); }
+  40% { opacity: 0.8; transform: translateY(1px); }
+  60% { opacity: 0.3; transform: translateY(-1px); filter: blur(1px); }
+  80% { opacity: 0.9; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.boot-subtitle .corrupt {
+  color: var(--dimmer);
+  filter: blur(0.5px);
+  animation: glitch1 3s 1s infinite;
+}
+
+.boot-subtitle .corrupt {
+  color: var(--dimmer);
+  filter: blur(0.5px);
+  animation: glitch1 3s 1s infinite;
+}
+
+.boot-subtitle .corrupt {
+  color: var(--dimmer);
+  filter: blur(0.5px);
+  animation: glitch1 3s 1s infinite;
+}
+
+/* Текст под шестерёнкой (начальный) */
+.boot-text {
+  position: absolute;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--dim);
+  animation: flicker 3s infinite;
+  z-index: 100;
+  opacity: 0;
+  animation: textFadeIn 0.5s ease 0.5s forwards, flicker 3s infinite;
+}
+
+@keyframes textFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.boot-text .cursor {
+  display: inline-block;
+  width: 8px;
+  height: 12px;
+  background: var(--g);
+  vertical-align: middle;
+  animation: blink 1s infinite;
+  margin-left: 4px;
+}
+
+/* Версия внизу */
+.boot-version {
+  position: absolute;
+  bottom: 16px;
+  right: 20px;
+  font-size: 9px;
+  color: var(--dimmer);
+  letter-spacing: 1px;
+  z-index: 100;
+  opacity: 0;
+  animation: textFadeIn 0.5s ease 1s forwards, glitch3 8s infinite;
+}
+
+/* Контейнер */
+.boot-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* ========== АНИМАЦИИ ДЛЯ ШЕСТЕРЁНКИ ========== */
+@keyframes bootRustyGearSpin {
+  0%, 10% { transform: translate(-50%, -50%) rotate(0deg); }
+  12% { transform: translate(-50%, -50%) rotate(0deg); }
+  14% { transform: translate(-50%, -50%) rotate(8deg); }
+  16% { transform: translate(-50%, -50%) rotate(0deg); }
+  18%, 22% { transform: translate(-50%, -50%) rotate(0deg); }
+  24% { transform: translate(-50%, -50%) rotate(0deg); }
+  26% { transform: translate(-50%, -50%) rotate(12deg); }
+  28% { transform: translate(-50%, -50%) rotate(4deg); }
+  30% { transform: translate(-50%, -50%) rotate(0deg); }
+  32%, 40% { transform: translate(-50%, -50%) rotate(0deg); }
+  42% { transform: translate(-50%, -50%) rotate(0deg); }
+  44% { transform: translate(-50%, -50%) rotate(12deg); }
+  46% { transform: translate(-50%, -50%) rotate(18deg); }
+  48% { transform: translate(-50%, -50%) rotate(6deg); }
+  50% { transform: translate(-50%, -50%) rotate(0deg); }
+  52%, 70% { transform: translate(-50%, -50%) rotate(0deg); }
+  72% { transform: translate(-50%, -50%) rotate(0deg); }
+  74% { transform: translate(-50%, -50%) rotate(15deg); }
+  76% { transform: translate(-50%, -50%) rotate(25deg); }
+  78% { transform: translate(-50%, -50%) rotate(10deg); }
+  80% { transform: translate(-50%, -50%) rotate(0deg); }
+  82%, 90% { transform: translate(-50%, -50%) rotate(0deg); }
+  92% { transform: translate(-50%, -50%) rotate(0deg); }
+  94% { transform: translate(-50%, -50%) rotate(15deg); }
+  96% { transform: translate(-50%, -50%) rotate(30deg); }
+  98% { transform: translate(-50%, -50%) rotate(20deg); }
+  100% { transform: translate(-50%, -50%) rotate(30deg); }
+}
+
+@keyframes bootRustOverlay {
+  0%, 100% { opacity: 0.25; filter: blur(0.8px); }
+  20% { opacity: 0.35; filter: blur(1px); }
+  40% { opacity: 0.2; filter: blur(0.5px); }
+  60% { opacity: 0.4; filter: blur(1.2px); }
+  80% { opacity: 0.2; filter: blur(0.6px); }
+}
+
+@keyframes bootGearGlitchOverlay {
+  0%, 100% { opacity: 0; transform: translateX(0); }
+  8% { opacity: 0.5; transform: translateX(-1.5px); }
+  9% { opacity: 0; transform: translateX(1.5px); }
+  15% { opacity: 0; }
+  22% { opacity: 0.4; transform: translateX(-1px); }
+  23% { opacity: 0; transform: translateX(1px); }
+  45% { opacity: 0; }
+  68% { opacity: 0.3; transform: translateX(-0.5px); }
+  69% { opacity: 0; transform: translateX(0.5px); }
+  85% { opacity: 0; }
+  92% { opacity: 0.5; transform: translateX(-2px); }
+  93% { opacity: 0; transform: translateX(2px); }
+}
+
+.boot-gear.glitch-instant {
+  animation: bootGearInstantGlitch 0.2s steps(3);
+}
+
+@keyframes bootGearInstantGlitch {
+  0% { transform: translate(-50%, -50%) translateX(0) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) translateX(-4px) rotate(5deg); }
+  50% { transform: translate(-50%, -50%) translateX(4px) rotate(-4deg); }
+  75% { transform: translate(-50%, -50%) translateX(-2px) rotate(2deg); }
+  100% { transform: translate(-50%, -50%) translateX(0) rotate(0deg); }
+}
+
+/* ПРОМПТ ПАРОЛЯ */
+.boot-prompt {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 102;
+  text-align: center;
+  width: 260px;
+}
+
+#bootPassword {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  color: var(--dim);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  letter-spacing: 2px;
+  padding: 8px 14px;
+  width: 100%;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s;
+}
+
+#bootPassword:focus {
+  border-color: rgba(0, 255, 136, 0.5);
+  color: var(--g);
+}
+
+#bootPassword::placeholder {
+  color: rgba(0, 170, 85, 0.4);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+#promptMessage {
+  margin-top: 10px;
+  font-size: 10px;
+  color: var(--red);
+  letter-spacing: 1px;
+  min-height: 18px;
+  opacity: 0.8;
+}
+
+/* БОЛЬШИЕ ПАНЕЛИ ЗАГРУЗКИ (ПОД SOCA, ПО ЦЕНТРУ) */
+.boot-panels {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 760px;
+  max-width: 85vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  z-index: 103;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.boot-panels.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.boot-panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  padding: 18px 16px;
+  position: relative;
+  min-height: 200px;
+}
+
+.boot-panel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--g2), transparent);
+  animation: panelScan 3s linear infinite;
+}
+
+@keyframes panelScan {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.panel-title {
+  color: var(--b);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  margin-bottom: 16px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.panel-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panel-line {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  opacity: 0;
+  animation: lineFadeIn 0.3s forwards;
+  padding: 2px 0;
+}
+
+.panel-line.ok { color: var(--g); }
+.panel-line.warn { color: var(--yellow); }
+.panel-line.err { color: var(--red); }
+.panel-line.soca { color: var(--b); }
+
+@keyframes lineFadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ПРОГРЕСС-БАР (КАК В MISSION CONTROL) */
+.boot-progress-area {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  max-width: 70vw;
+  z-index: 103;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.boot-progress-area.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+  color: var(--dim);
+}
+
+.progress-bar-big {
+  height: 10px;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.progress-fill-big {
+  height: 100%;
+  width: 0%;
+  background: repeating-linear-gradient(-45deg, var(--g), var(--g) 8px, var(--dim) 8px, var(--dim) 16px);
+  background-size: 22px 100%;
+  box-shadow: 0 0 8px var(--g);
+  animation: pmove 0.5s linear infinite;
+  transition: width 0.1s linear;
+}
+
+@keyframes pmove {
+  from { background-position: 0 0; }
+  to { background-position: 22px 0; }
+}
+
+/* ГЛОБАЛЬНЫЙ ТВ-ЭФФЕКТ (периодический) */
+.boot-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Строки развёртки (scanlines) — ч/б, без цветных полосок */
+@keyframes globalScanlines {
+  0% { opacity: 0; transform: translateY(-100%); }
+  10% { opacity: 0.6; transform: translateY(-70%); }
+  30% { opacity: 0.4; transform: translateY(-30%); }
+  50% { opacity: 0.3; transform: translateY(0%); }
+  70% { opacity: 0.15; transform: translateY(30%); }
+  100% { opacity: 0; transform: translateY(100%); }
+}
+
+/* Горизонтальная полоса (sweep) — без цветов, просто светлая */
+@keyframes globalSweep {
+  0% { top: -10%; opacity: 0; }
+  20% { top: 20%; opacity: 0.4; }
+  40% { top: 50%; opacity: 0.25; }
+  60% { top: 70%; opacity: 0.15; }
+  80% { top: 90%; opacity: 0.08; }
+  100% { top: 110%; opacity: 0; }
+}
+
+/* Класс для активации эффекта */
+.boot-container.scan-active::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 100%;
+  height: 140%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.4) 0px,
+    rgba(0, 0, 0, 0.4) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+  pointer-events: none;
+  z-index: 150;
+  animation: globalScanlines 1s ease-out forwards;
+}
+
+.boot-container.scan-active::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 8px;
+  background: rgba(43, 135, 77, 0.27);
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 151;
+  animation: globalSweep 1s ease-out forwards;
+}
+
+/* ========== ДОПОЛНИТЕЛЬНЫЕ ГЛИТЧ-ЭФФЕКТЫ ДЛЯ BOOT ========== */
+
+/* Резкое дерганье всего контейнера */
+@keyframes bootShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.boot-container.glitch-shake {
+  animation: bootShake 0.15s ease-in-out;
+}
+
+/* Искажение фона (скос) */
+@keyframes bootSkew {
+  0%, 100% { transform: skewX(0deg); }
+  25% { transform: skewX(3deg); }
+  50% { transform: skewX(-2deg); }
+  75% { transform: skewX(1deg); }
+}
+
+.boot-container.glitch-skew {
+  animation: bootSkew 0.2s ease-in-out;
+}
+
+/* Красная вспышка на весь экран */
+@keyframes bootRedFlash {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(255, 34, 68, 0.15); box-shadow: inset 0 0 50px rgba(255, 34, 68, 0.2); }
+}
+
+.boot-container.red-flash {
+  animation: bootRedFlash 0.25s ease-out;
+}
+
+/* Размытие всего экрана */
+@keyframes bootBlur {
+  0%, 100% { filter: blur(0); }
+  50% { filter: blur(2px); }
+}
+
+.boot-container.glitch-blur {
+  animation: bootBlur 0.2s ease-out;
+}
+
+/* Горизонтальный сдвиг (как при плохом сигнале) */
+@keyframes bootHorizontalShift {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+.boot-container.horizontal-shift {
+  animation: bootHorizontalShift 0.12s linear;
+}
+
+/* Эффект "полос" поверх всего (как на старом ТВ) */
+.boot-container.glitch-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.3) 3px,
+    rgba(0, 0, 0, 0.3) 4px
+  );
+  pointer-events: none;
+  z-index: 200;
+  animation: glitchLinesFade 0.2s ease-out forwards;
+}
+
+@keyframes glitchLinesFade {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Класс для текста — красное мигание */
+.glitch-text-red {
+  animation: textRedGlitch 0.15s 2;
+}
+
+@keyframes textRedGlitch {
+  0%, 100% { color: inherit; text-shadow: none; }
+  50% { color: var(--red); text-shadow: 0 0 8px var(--red); }
+}
+
+/* Класс для текста — размытие */
+.glitch-text-blur {
+  animation: textBlurGlitch 0.2s ease-out;
+}
+
+@keyframes textBlurGlitch {
+  0%, 100% { filter: blur(0); }
+  50% { filter: blur(1.5px); }
+}
+
+/* Класс для текста — сдвиг */
+.glitch-text-shift {
+  animation: textShiftGlitch 0.1s 2;
+}
+
+@keyframes textShiftGlitch {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+/* ЭКРАН ОЖИДАНИЯ — ПРОСТАЯ НАДПИСЬ ENTER */
+.boot-wait {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.5s ease;
+}
+
+.wait-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: rgba(0, 170, 85, 0.25);
+  text-transform: uppercase;
+  animation: waitBlink 2s ease-in-out infinite;
+}
+
+@keyframes waitBlink {
+  0%, 100% { opacity: 0.2; letter-spacing: 4px; }
+  50% { opacity: 0.6; letter-spacing: 6px; }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- ЭКРАН ОЖИДАНИЯ (нажмите любую клавишу) -->
+<div class="boot-wait" id="bootWait">
+  <div class="wait-text">[ enter ]</div>
+</div>
+
+<div class="noise"></div>
+
+<div class="boot-container">
+  <!-- ШЕСТЕРЁНКА -->
+  <div class="boot-gear" id="bootGear">⛭</div>
+
+<!-- ПРОМПТ ПАРОЛЯ -->
+<div class="boot-prompt" id="bootPrompt" style="display:none">
+  <input type="password" id="bootPassword" placeholder="> ENTER CODE" autocomplete="off">
+  <div id="promptMessage"></div>
+  <div style="margin-top:8px;font-size:10px;color:var(--dimmer);letter-spacing:0.12em;text-align:center">// What is the name of the ship?</div>
+</div>
+  
+  <!-- ЛОГОТИП SOCA (появляется после подъёма шестерёнки) -->
+  <div class="boot-logo" id="bootLogo">
+    <div class="racing-flag-behind"></div>
+    <div class="soca-logo-text">
+      <span class="soca-skew">SOCA</span>
+    </div>
+    <div class="boot-subtitle">
+      <span>SYSTEM OPERATOR OF CELESTIAL ASSETS</span>
+      <span class="corrupt"> // v0.9.██</span>
+    </div>
+  </div>
+  
+  <!-- ТЕКСТ ПОД ШЕСТЕРЁНКОЙ -->
+  <div class="boot-text">
+    <span>BOOT SEQUENCE INITIALIZED</span>
+    <span class="cursor"></span>
+  </div>
+  
+  <!-- ВЕРСИЯ ВНИЗУ -->
+  <div class="boot-version">
+    SOCA v0.9.██ // BOOTLOADER v1.0
+  </div>
+
+<script>
+
+// ========== ПАРОЛЬ И ЗАГРУЗКА (БОЛЬШИЕ БЛОКИ) ==========
+const promptDiv = document.getElementById('bootPrompt');
+const passInput = document.getElementById('bootPassword');
+const msgDiv = document.getElementById('promptMessage');
+const CORRECT_PW = 'Pandemonium-04';
+
+// Создаём два больших блока
+const panelsDiv = document.createElement('div');
+panelsDiv.className = 'boot-panels';
+panelsDiv.innerHTML = `
+  <div class="boot-panel">
+    <div class="panel-title">// CORE INITIALIZATION</div>
+    <div class="panel-lines" id="panelLinesLeft"></div>
+  </div>
+  <div class="boot-panel">
+    <div class="panel-title">// PILOT LINK</div>
+    <div class="panel-lines" id="panelLinesRight"></div>
+  </div>
+`;
+document.querySelector('.boot-container').appendChild(panelsDiv);
+
+// Прогресс-бар
+const progressArea = document.createElement('div');
+progressArea.className = 'boot-progress-area';
+progressArea.innerHTML = `
+  <div class="progress-header">
+    <span>BOOT PROGRESS</span>
+    <span id="bootProgressPercent">0%</span>
+  </div>
+  <div class="progress-bar-big"><div class="progress-fill-big" id="bootProgressFill"></div></div>
+`;
+document.querySelector('.boot-container').appendChild(progressArea);
+
+// Данные для левой панели (как в Mission Control)
+const leftLines = [
+  { msg: '[ OK ] Navigation Core Attached', type: 'ok', delay: 0.2 },
+  { msg: '[ OK ] Telemetry Stream Online', type: 'ok', delay: 0.6 },
+  { msg: '[WARN] Shield Matrix Desync — 63%', type: 'warn', delay: 1.0 },
+  { msg: '[ERR ] CORE_03 HEARTBEAT LOST', type: 'err', delay: 1.4 },
+  { msg: '[ OK ] Neural HUD Connected', type: 'ok', delay: 1.8 },
+  { msg: '[WARN] Memory Sector 7 — LEAK', type: 'warn', delay: 2.2 },
+  { msg: '[ OK ] Life Support — NOMINAL', type: 'ok', delay: 2.6 }
+];
+
+// Данные для правой панели
+const rightLines = [
+  { msg: 'CALLSIGN: pilot 01 // Koko', type: 'ok', delay: 0.3 },
+  { msg: 'CLEARANCE: Ω — MAXIMUM', type: 'ok', delay: 0.7 },
+  { msg: 'STRESS LEVEL: MED ↑', type: 'warn', delay: 1.1 },
+  { msg: 'HEART RATE: 113 bpm', type: 'ok', delay: 1.5 },
+  { msg: 'O2 SATURATION: 94%', type: 'ok', delay: 1.9 },
+  { msg: 'BIOMETRIC DESYNC // IGNORE?', type: 'err', delay: 2.3 },
+  { msg: 'SOCA: "Welcome back, Pilot."', type: 'soca', delay: 2.7 }
+];
+
+function addPanelLine(containerId, msg, type, delayMs) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  setTimeout(() => {
+    const line = document.createElement('div');
+    line.className = `panel-line ${type}`;
+    line.innerHTML = `> ${msg}`;
+    container.appendChild(line);
+    line.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, delayMs);
+}
+
+function startLoadingPanels() {
+  panelsDiv.classList.add('active');
+  progressArea.classList.add('active');
+  
+  // Добавляем строки в панели
+  leftLines.forEach(line => {
+    addPanelLine('panelLinesLeft', line.msg, line.type, line.delay * 1000);
+  });
+  rightLines.forEach(line => {
+    addPanelLine('panelLinesRight', line.msg, line.type, line.delay * 1000);
+  });
+  
+  // Прогресс-бар (как в Mission Control)
+  let progress = 0;
+  const totalDuration = 7000;
+  const intervalTime = 50;
+  const step = (intervalTime / totalDuration) * 100;
+  
+  const progressInterval = setInterval(() => {
+    progress += step;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(progressInterval);
+      const fill = document.getElementById('bootProgressFill');
+      const percentSpan = document.getElementById('bootProgressPercent');
+      if (fill) fill.style.width = '100%';
+      if (percentSpan) percentSpan.textContent = '100%';
+      
+      setTimeout(() => {
+        window.location.href = 'soca.html';
+      }, 800);
+    }
+    const fill = document.getElementById('bootProgressFill');
+    const percentSpan = document.getElementById('bootProgressPercent');
+    if (fill) fill.style.width = progress + '%';
+    if (percentSpan) percentSpan.textContent = Math.floor(progress) + '%';
+  }, intervalTime);
+}
+
+passInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const val = passInput.value.trim();
+    if (val.toLowerCase().replace(/[-_\s]/g, '').includes('pandemonium') || val.toLowerCase().replace(/[-_\s]/g, '').includes('пандемониум')) {
+      msgDiv.style.color = 'var(--g)';
+      msgDiv.innerHTML = '✓ ACCESS GRANTED';
+      setTimeout(() => {
+        promptDiv.style.display = 'none';
+        startLoadingPanels();
+      }, 500);
+   } else {
+      let denyMsg = '✕ ACCESS DENIED';
+      const v = val.toLowerCase().trim();
+      if (v.includes('альфа') || v.includes('alpha')) {
+        denyMsg = '✕ YOU ARE NOT ALPHA.';
+      } else if (v.includes('клавдия') || v.includes('klavdia') || v.includes('claudia')) {
+        denyMsg = '✕ YOU ARE NOT CLAUDIA.';
+      }
+      msgDiv.innerHTML = denyMsg;
+      passInput.style.animation = 'glitch1 0.2s';
+      passInput.value = '';
+      setTimeout(() => {
+        passInput.style.animation = '';
+        msgDiv.innerHTML = '';
+      }, 1000);
+      passInput.focus();
+    }
+  }
+});
+
+// ========== ГЛИТЧИ ДЛЯ BOOT-ЭКРАНА ==========
+const bootContainer = document.querySelector('.boot-container');
+const bootLogo = document.querySelector('.boot-logo');
+const bootText = document.querySelector('.boot-text span:first-child');
+const bootVersion = document.querySelector('.boot-version');
+const gearElement = document.querySelector('.boot-gear');
+
+// Случайный глитч на весь контейнер
+function randomContainerGlitch() {
+  if (!bootContainer) return;
+  
+  const glitches = ['glitch-shake', 'glitch-skew', 'red-flash', 'glitch-blur', 'horizontal-shift'];
+  const randomGlitch = glitches[Math.floor(Math.random() * glitches.length)];
+  
+  bootContainer.classList.add(randomGlitch);
+  setTimeout(() => {
+    bootContainer.classList.remove(randomGlitch);
+  }, 200);
+}
+
+// Глитч линий поверх экрана
+function glitchLines() {
+  if (!bootContainer) return;
+  bootContainer.classList.add('glitch-lines');
+  setTimeout(() => {
+    bootContainer.classList.remove('glitch-lines');
+  }, 250);
+}
+
+// Глитч текста (красный, размытие, сдвиг)
+function glitchText() {
+  const elements = [bootLogo, bootText, bootVersion];
+  elements.forEach(el => {
+    if (!el) return;
+    const glitchType = Math.random();
+    if (glitchType < 0.33) {
+      el.classList.add('glitch-text-red');
+      setTimeout(() => el.classList.remove('glitch-text-red'), 200);
+    } else if (glitchType < 0.66) {
+      el.classList.add('glitch-text-blur');
+      setTimeout(() => el.classList.remove('glitch-text-blur'), 200);
+    } else {
+      el.classList.add('glitch-text-shift');
+      setTimeout(() => el.classList.remove('glitch-text-shift'), 200);
+    }
+  });
+}
+
+// Глитч шестерёнки (дополнительно)
+function glitchGear() {
+  if (!gearElement) return;
+  // Не трогаем animation — просто добавляем класс глитча поверх
+  gearElement.classList.add('glitch-instant');
+  setTimeout(() => {
+    gearElement.classList.remove('glitch-instant');
+  }, 200);
+}
+
+// Запускаем случайные глитчи
+setInterval(() => {
+  if (Math.random() < 0.3) {
+    randomContainerGlitch();
+  }
+}, 4000);
+
+setInterval(() => {
+  if (Math.random() < 0.25) {
+    glitchLines();
+  }
+}, 7000);
+
+setInterval(() => {
+  if (Math.random() < 0.35) {
+    glitchText();
+  }
+}, 5000);
+
+setInterval(() => {
+  if (Math.random() < 0.2) {
+    glitchGear();
+  }
+}, 8000);
+
+// Резкое дерганье фона (редко, но сильно)
+setInterval(() => {
+  if (Math.random() < 0.1) {
+    document.body.style.transform = `translateX(${(Math.random() - 0.5) * 8}px) skewX(${(Math.random() - 0.5) * 2}deg)`;
+    setTimeout(() => {
+      document.body.style.transform = '';
+    }, 100);
+  }
+}, 5000);
+
+// Красная вспышка фона (редко)
+setInterval(() => {
+  if (Math.random() < 0.08) {
+    document.body.classList.add('boot-red-bg-flash');
+    setTimeout(() => {
+      document.body.classList.remove('boot-red-bg-flash');
+    }, 200);
+  }
+}, 8000);
+
+// ========== ЗВУКИ ДЛЯ BOOT ЭКРАНА ==========
+
+// Путь к звукам
+const BOOT_SOUNDS_PATH = 'sounds/';
+
+// Загружаем звуки
+const bootSounds = {
+  gear: new Audio(BOOT_SOUNDS_PATH + 'шестеренка.mp3'),
+  glitch: new Audio(BOOT_SOUNDS_PATH + 'глитчи.mp3')
+};
+
+// Громкость
+bootSounds.gear.volume = 0.4;
+bootSounds.glitch.volume = 0.35;
+
+// Функции воспроизведения
+function playGearSound() {
+  const sound = bootSounds.gear.cloneNode();
+  sound.volume = 0.4;
+  sound.play().catch(e => console.log('Audio error:', e));
+}
+
+function playGlitchSound() {
+  const sound = bootSounds.glitch.cloneNode();
+  sound.volume = 0.35;
+  sound.currentTime = 0.2;
+  sound.play().catch(e => console.log('Audio error:', e));
+  setTimeout(() => sound.pause(), 800);
+}
+
+// ========== ЗАПУСК ЗВУКОВ ПО АНИМАЦИИ ==========
+
+// Звук шестерёнки при появлении
+setTimeout(() => {
+  playGearSound();
+}, 400);  // через 0.4 секунды после загрузки
+
+// Звук глитча при появлении логотипа SOCA
+setTimeout(() => {
+  playGlitchSound();
+}, 1800);  // через 1.8 секунды (когда появляется SOCA)
+
+// ========== СЛУЧАЙНЫЕ ГЛИТЧИ ПО ВСЕМУ BOOT ЭКРАНУ ==========
+
+function randomBootGlitch() {
+  if (Math.random() < 0.12) {  // 12% шанс
+    playGlitchSound();
+  }
+}
+
+// Запускаем случайные глитчи каждые 10-20 секунд
+setInterval(randomBootGlitch, 12000 + Math.random() * 8000);
+
+// ========== ГЛИТЧ ПРИ ОШИБКЕ ПАРОЛЯ ==========
+
+const passInputBoot = document.getElementById('bootPassword');
+if (passInputBoot) {
+  passInputBoot.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const val = passInputBoot.value.trim();
+      if (val.toLowerCase() !== 'pandemonium-04') { // ваш правильный пароль
+        playGlitchSound();
+      }
+    }
+  });
+}
+
+// ========== ЗАПУСК ПО НАЖАТИЮ ==========
+const waitScreen = document.getElementById('bootWait');
+const gear = document.getElementById('bootGear');
+const logo = document.getElementById('bootLogo');
+let started = false;
+
+function startAnimation() {
+  if (started) return;
+  started = true;
+  
+  // Убираем экран ожидания
+  waitScreen.style.opacity = '0';
+  setTimeout(() => {
+    waitScreen.style.display = 'none';
+  }, 300);
+  
+  // Звук шестерёнки
+  setTimeout(() => playGearSound(), 100);
+  
+  // Появление шестерёнки (уже видна)
+  // Подъём через 0.3 сек
+  setTimeout(() => {
+    gear.classList.add('move-up');
+    
+    setTimeout(() => {
+      gear.style.top = '18%';
+      gear.classList.add('spin');
+      gear.style.animation = 'gearAppear 0.8s ease forwards, bootRustyGearSpin 8s infinite cubic-bezier(0.8, 0.2, 0.2, 0.8)';
+      
+      // Звук глитча при появлении SOCA
+      setTimeout(() => playGlitchSound(), 200);
+      logo.classList.add('show');
+    }, 800);
+  }, 800);
+  
+  // Показываем строку пароля (ЧЕРЕЗ 2400 мс ПОСЛЕ НАЖАТИЯ)
+  setTimeout(() => {
+    const prompt = document.getElementById('bootPrompt');
+    if (prompt) prompt.style.display = 'block';
+    const pass = document.getElementById('bootPassword');
+    if (pass) pass.focus();
+  }, 2400);
+}
+
+// Ждём нажатия
+document.addEventListener('keydown', startAnimation, { once: true });
+document.addEventListener('click', startAnimation, { once: true });
+
+</script>
+
+</body>
+</html>

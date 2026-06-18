@@ -1,0 +1,2823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SECTOR7.EXE</title>
+<style>
+  @keyframes recvBlink{0%,49%{opacity:1;text-shadow:0 0 12px #ff2244}50%,100%{opacity:0;text-shadow:none}}
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root{
+  --g:#00ff88;--g2:#00ffcc;--b:#00ccff;
+  --dim:#00aa55;--dimmer:#005533;
+  --bg:#040d08;--panel:#081a10;
+  --border:#00ff8844;--red:#ff2244;--yellow:#ffcc00;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);color:var(--g);
+  font-family:'Share Tech Mono',monospace;
+  overflow:hidden;width:100vw;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  cursor:crosshair;
+}
+
+/* ── SCANLINES ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 4px);
+}
+
+/* ── CRT VIGNETTE ── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%);
+}
+
+/* ── NOISE ── */
+.noise{
+  position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:noiseAnim .15s steps(1) infinite;
+}
+
+/* ── BOOT ── */
+#boot{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:40px;}
+.bline{font-size:12px;letter-spacing:.1em;color:var(--g);margin-bottom:5px;opacity:0;transition:opacity .1s;}
+.bline.show{opacity:1;}.bline.err{color:var(--red);}.bline.ok{color:var(--g2);}
+#btitle{font-size:36px;letter-spacing:.3em;color:var(--g);text-shadow:0 0 20px var(--g),0 0 40px var(--g2);margin:20px 0;opacity:0;animation:glitch1 4s infinite;}
+#bwarn{font-size:10px;color:var(--red);opacity:0;margin-top:6px;letter-spacing:.1em;}
+#bstart{font-size:11px;color:var(--g2);letter-spacing:.15em;opacity:0;animation:blink 1s step-end infinite;}
+
+/* ── GAME WRAP ── */
+#game-wrap{display:none;flex-direction:column;width:100vw;height:100vh;}
+
+/* ── TOPBAR ── */
+#topbar{
+  height:26px;background:var(--panel);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;gap:12px;
+  font-size:9px;letter-spacing:.12em;color:var(--dimmer);flex-shrink:0;
+}
+#topbar .tt{color:var(--g);font-size:11px;text-shadow:0 0 8px var(--g);}
+#topbar .tr{margin-left:auto;display:flex;gap:14px;}
+#topbar .tw{color:var(--red);animation:blink 2s step-end infinite;}
+
+/* ── CANVAS WRAP ── */
+#cv-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden;}
+
+/* Moving scan line */
+#cv-wrap::after{
+  content:'';position:absolute;left:0;right:0;height:80px;
+  background:linear-gradient(to bottom,transparent,rgba(0,255,136,.018) 50%,transparent);
+  animation:scan 5s linear infinite;pointer-events:none;z-index:6;
+}
+
+canvas{
+  display:block;image-rendering:pixelated;
+  border:1px solid var(--border);
+  box-shadow:0 0 0 1px rgba(0,255,136,.05),0 0 40px rgba(0,255,136,.06);
+  width:min(90vw, calc(80vh * 1.6));height:auto;
+}
+
+/* ── HUD OVERLAYS ── */
+#loc-label{
+  position:absolute;top:8px;left:8px;
+  background:rgba(4,13,8,.92);border:1px solid var(--border);
+  padding:4px 10px;font-size:9px;color:var(--g);letter-spacing:.15em;z-index:10;
+  animation:borderPulse 4s ease-in-out infinite;
+}
+#inv-box{
+  position:absolute;top:8px;right:8px;
+  background:rgba(4,13,8,.92);border:1px solid var(--border);
+  padding:6px 10px;font-size:9px;z-index:10;min-width:140px;
+}
+#inv-box .it{color:var(--g);font-size:8px;letter-spacing:.15em;margin-bottom:4px;}
+
+/* ── DIALOG ── */
+#dialog{
+  position:absolute;bottom:20px;left:12px;width:300px;
+  background:rgba(4,13,8,.96);
+  border:1px solid var(--border);border-left:2px solid var(--g);
+  padding:8px 12px 10px;z-index:20;display:none;
+  box-shadow:0 0 16px rgba(0,255,136,.08);
+}
+#dlg-name{font-size:9px;color:var(--g);letter-spacing:.18em;margin-bottom:5px;}
+#dlg-text{font-size:11px;color:var(--g2);letter-spacing:.05em;line-height:1.65;min-height:18px;}
+#dlg-cont{font-size:8px;color:var(--dim);letter-spacing:.1em;margin-top:5px;text-align:right;animation:blink .8s step-end infinite;display:none;}
+
+/* ── BOTTOMBAR ── */
+#bottombar{
+  height:20px;background:var(--panel);border-top:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;
+  font-size:8px;letter-spacing:.1em;color:var(--dimmer);flex-shrink:0;gap:14px;
+}
+#bottombar span{color:var(--dim);}
+
+/* ── MINIGAME OVERLAY ── */
+#mg-overlay{
+  position:absolute;inset:0;background:rgba(4,13,8,.94);
+  z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;
+  border:1px solid var(--border);
+}
+#mg-title{font-size:13px;color:var(--g);letter-spacing:.2em;margin-bottom:12px;text-shadow:0 0 8px var(--g);}
+#mg-desc{font-size:10px;color:var(--dim);letter-spacing:.1em;margin-bottom:18px;text-align:center;}
+canvas#mg-cv{border:1px solid var(--border);display:block;background:var(--bg);}
+#mg-hint{font-size:9px;color:var(--dimmer);letter-spacing:.1em;margin-top:10px;text-align:center;}
+#mg-err{font-size:10px;color:var(--red);letter-spacing:.1em;margin-top:8px;min-height:14px;text-align:center;}
+
+/* ── RELAY PANELS ── */
+#rg0{display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  background:rgba(4,13,8,.95);border:1px solid var(--border);border-top:2px solid var(--g);
+  padding:10px 14px;z-index:30;min-width:220px;font-family:'Share Tech Mono',monospace;
+  box-shadow:0 0 20px rgba(0,255,136,.1);}
+#rg1{display:none;position:absolute;top:8px;right:8px;
+  background:rgba(4,13,8,.95);border:1px solid rgba(255,204,0,.3);border-top:2px solid var(--yellow);
+  padding:10px 14px;z-index:30;min-width:200px;font-family:'Share Tech Mono',monospace;
+  box-shadow:0 0 20px rgba(255,204,0,.08);}
+#rg2{display:none;position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+  background:rgba(4,13,8,.95);border:1px solid rgba(0,200,255,.3);border-top:2px solid var(--b);
+  padding:10px 14px;z-index:30;min-width:240px;font-family:'Share Tech Mono',monospace;
+  box-shadow:0 0 20px rgba(0,200,255,.08);}
+
+/* ── ANIMATIONS ── */
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes scan{0%{top:-80px}100%{top:100%}}
+@keyframes noiseAnim{0%{transform:translate(0,0)}20%{transform:translate(-2px,1px)}40%{transform:translate(1px,-1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(2px,-2px)}100%{transform:translate(0,0)}}
+@keyframes glitch1{0%,94%,100%{transform:none;opacity:1}95%{transform:translate(-3px,0) skewX(-2deg);opacity:.8;color:var(--b)}97%{transform:translate(3px,0);color:var(--red)}99%{transform:translate(-1px,1px) skewX(1deg);opacity:.9}}
+@keyframes borderPulse{0%,100%{border-color:var(--border)}50%{border-color:var(--g)}}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div id="blines"></div>
+  <div id="btitle">SECTOR7.EXE</div>
+  <div id="bwarn">WARNING: FILE INTEGRITY 41% — SOURCE: UNKNOWN</div>
+  <div id="bstart">[ PRESS ANY KEY ]</div>
+</div>
+
+<div id="game-wrap">
+  <div id="topbar">
+    <span class="tt">SECTOR7.EXE</span><span>|</span>
+    <span id="tb-loc">LOC_01</span><span>|</span>
+    <span id="tb-status">EXPLORING</span>
+    <div class="tr">
+      <span class="tw">⚠ UNAUTHORISED</span>
+      <span id="tb-time">T+00:00</span>
+    </div>
+  </div>
+  <div id="cv-wrap">
+<canvas id="cv" width="640" height="400"></canvas>
+    <div class="noise"></div>
+    <div id="loc-label">LOC_01 // BOOT_SEQUENCE</div>
+    <div id="inv-box">
+      <div class="it">// INVENTORY</div>
+      <div id="inv-items"><span style="color:#1a3a1a">EMPTY</span></div>
+    </div>
+    <div id="dialog">
+      <div id="dlg-name">⛭ SOCA</div>
+      <div id="dlg-text"></div>
+      <div id="dlg-cont">▼ E / SPACE</div>
+    </div>
+    <div id="mg-overlay">
+      <div id="mg-title">MINIGAME</div>
+      <div id="mg-desc"></div>
+      <canvas id="mg-cv" width="400" height="300"></canvas>
+      <div id="mg-hint"></div>
+      <div id="mg-err"></div>
+    </div>
+
+<!-- RELAY MINIGAMES — поверх карты, не закрывают экран -->
+    <div id="rg0" style="display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.92);border:1px solid #00ff41;padding:10px 14px;z-index:30;min-width:220px;font-family:'Share Tech Mono',monospace">
+      <div style="font-size:9px;color:#00ff41;letter-spacing:.15em;margin-bottom:6px">⛭ RELAY [1/3] // SEQUENCE</div>
+      <div id="rg0-seq" style="font-size:20px;letter-spacing:.3em;color:#00cc33;text-align:center;margin-bottom:8px;min-height:28px"></div>
+      <div id="rg0-inp" style="font-size:12px;color:#1a3a1a;letter-spacing:.2em;text-align:center;margin-bottom:6px">____</div>
+      <div style="font-size:8px;color:#1a3a1a;text-align:center">PRESS 1 2 3 4 IN SHOWN ORDER</div>
+      <div id="rg0-err" style="font-size:9px;color:#ff2244;text-align:center;min-height:12px;margin-top:4px"></div>
+    </div>
+
+    <div id="rg1" style="display:none;position:absolute;top:8px;right:8px;background:rgba(0,0,0,.92);border:1px solid #ffcc00;padding:10px 14px;z-index:30;min-width:200px;font-family:'Share Tech Mono',monospace">
+      <div style="font-size:9px;color:#ffcc00;letter-spacing:.15em;margin-bottom:6px">⛭ RELAY [2/3] // WIRE TAP</div>
+      <div id="rg1-wire" style="font-size:24px;text-align:center;margin-bottom:8px;letter-spacing:.2em">A S D</div>
+      <div style="font-size:8px;color:#664400;text-align:center">PRESS A/S/D TO MATCH HIGHLIGHT</div>
+      <div id="rg1-prog" style="margin-top:6px;height:4px;background:#1a1000;border:1px solid #332000">
+        <div id="rg1-bar" style="height:100%;width:0%;background:#ffcc00;transition:width .1s"></div>
+      </div>
+      <div id="rg1-err" style="font-size:9px;color:#ff2244;text-align:center;min-height:12px;margin-top:4px"></div>
+    </div>
+
+    <div id="rg2" style="display:none;position:absolute;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.92);border:1px solid #00ccff;padding:10px 14px;z-index:30;min-width:240px;font-family:'Share Tech Mono',monospace">
+      <div style="font-size:9px;color:#00ccff;letter-spacing:.15em;margin-bottom:6px">⛭ RELAY [3/3] // DECRYPT</div>
+      <div id="rg2-cipher" style="font-size:11px;color:#008888;letter-spacing:.15em;margin-bottom:4px;text-align:center"></div>
+      <div style="font-size:8px;color:#004444;text-align:center;margin-bottom:6px">A=1 B=2 C=3 ... Z=26</div>
+      <div style="display:flex;gap:6px;justify-content:center">
+        <input id="rg2-n1" type="text" maxlength="2" style="width:36px;background:#000;border:1px solid #006666;color:#00ccff;font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center;padding:3px"/>
+        <input id="rg2-n2" type="text" maxlength="2" style="width:36px;background:#000;border:1px solid #006666;color:#00ccff;font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center;padding:3px"/>
+        <input id="rg2-n3" type="text" maxlength="2" style="width:36px;background:#000;border:1px solid #006666;color:#00ccff;font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center;padding:3px"/>
+        <button onclick="checkRg2()" style="background:none;border:1px solid #00ccff;color:#00ccff;font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 8px;cursor:pointer">OK</button>
+      </div>
+      <div id="rg2-err" style="font-size:9px;color:#ff2244;text-align:center;min-height:12px;margin-top:4px"></div>
+    </div>
+
+  </div>
+  <div id="bottombar">
+    <span>WASD</span>MOVE <span>E</span>INTERACT <span>SPACE</span>SKIP DIALOG
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// SECTOR7.EXE — FULL REWRITE v3
+// ═══════════════════════════════════════════════════════════
+const cv  = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const TW=16,TH=16,COLS=40,ROWS=25;
+
+const C={
+  black:'#000',wall:'#0d1f0d',floor:'#080f08',floor2:'#0a130a',
+  g:'#00ff41',g2:'#00cc33',g3:'#008822',dim:'#1a3a1a',
+  bright:'#ccffcc',red:'#ff2244',yellow:'#ffcc00',
+  cyan:'#00ffff',corrupt:'#ff0080',white:'#e8ffe8',orange:'#ff8800',
+};
+
+// ── STATE ────────────────────────────────────────────────
+const S={
+  room:0, px:5, py:12, pmove:0,
+  inv:[], flags:{},
+  dlgQueue:[], dlgCb:null, dlgActive:false,
+  iCooldown:0,
+  voidTick:0,
+  monster:{x:32,y:18,tick:0,speed:60,active:false},
+  shake:0, timeSec:0, timeTick:0,
+  done:false,
+  mg:null, // активная мини-игра
+};
+const keys={};
+document.addEventListener('keydown',e=>{ if(!keys[e.code]){keys[e.code]=true; onKey(e.code);} });
+document.addEventListener('keyup',e=>{ keys[e.code]=false; });
+
+// ── TILES ────────────────────────────────────────────────
+function emptyTiles(){
+  const t=[];
+  for(let r=0;r<ROWS;r++){t.push([]); for(let c=0;c<COLS;c++) t[r].push(0);}
+  for(let c=0;c<COLS;c++){t[0][c]=1;t[ROWS-1][c]=1;}
+  for(let r=0;r<ROWS;r++){t[r][0]=1;t[r][COLS-1]=1;}
+  return t;
+}
+function wl(t,walls){walls.forEach(([r,c])=>{if(r>=0&&r<ROWS&&c>=0&&c<COLS)t[r][c]=1;});}
+function op(t,r,c){t[r][c]=0;}
+
+// ── ROOM TILES ───────────────────────────────────────────
+function mkR0(){
+  const t=emptyTiles();
+  wl(t,[[5,8],[5,9],[5,10],[5,11],[5,12],[10,20],[10,21],[10,22],[10,23],[10,24],[15,5],[15,6],[15,7],[18,28],[18,29],[18,30]]);
+  op(t,12,38); // вправо → ARCHIVE (всегда открыт)
+  // вниз [23][20] открывается после мини-игры проводов
+  return t;
+}
+function mkR1(){
+  const t=emptyTiles();
+  wl(t,[[4,5],[4,6],[4,7],[4,8],[4,9],[4,10],[4,11],[4,15],[4,16],[4,17],[4,18],[4,19],[4,20],[4,25],[4,26],[4,27],[4,28],[9,3],[9,4],[9,5],[9,6],[9,13],[9,14],[9,15],[9,16],[9,22],[9,23],[9,24],[9,31],[9,32],[9,33],[14,8],[14,9],[14,10],[14,11],[14,18],[14,19],[14,20],[14,27],[14,28],[14,29],[19,5],[19,6],[19,7],[19,16],[19,17],[19,18],[19,19]]);
+  op(t,12,1);op(t,12,38);op(t,23,20);
+  return t;
+}
+function mkR2(){
+  const t=emptyTiles();
+  wl(t,[[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],[3,18],[3,19],[3,20],[3,21],[3,30],[3,31],[3,32],[8,4],[8,5],[8,6],[8,7],[8,13],[8,14],[8,15],[8,22],[8,23],[8,24],[13,7],[13,8],[13,9],[13,10],[13,18],[13,19],[13,20],[13,28],[13,29],[13,30],[18,6],[18,7],[18,8],[18,17],[18,18],[18,19]]);
+  op(t,12,1);
+  return t;
+}
+function mkR3(){
+  const t=[];
+  for(let r=0;r<ROWS;r++){t.push([]);for(let c=0;c<COLS;c++)t[r].push(1);}
+  for(let r=9;r<=15;r++) for(let c=15;c<=24;c++) t[r][c]=0;
+  op(t,23,20); // вниз → ARCHIVE
+  // вверх [1][20] открывается после ожидания
+  return t;
+}
+function mkR4(){
+  const t=emptyTiles();
+  wl(t,[[3,4],[3,5],[3,8],[3,9],[3,14],[3,15],[3,19],[3,20],[7,6],[7,7],[7,12],[7,13],[7,18],[7,19],[7,24],[7,25],[7,30],[7,31],[11,3],[11,4],[11,10],[11,11],[11,16],[11,17],[11,23],[11,24],[11,30],[15,5],[15,6],[15,11],[15,12],[15,18],[15,19],[15,25],[15,26],[19,8],[19,9],[19,14],[19,15],[19,20],[19,21],[19,27],[19,28]]);
+  op(t,12,1);op(t,12,38);
+  return t;
+}
+function mkR5(){
+  const t=emptyTiles();
+  wl(t,[[4,6],[4,7],[4,8],[4,9],[4,17],[4,18],[4,19],[4,20],[4,28],[4,29],[4,30],[9,4],[9,5],[9,6],[9,13],[9,14],[9,15],[9,16],[9,24],[9,25],[9,26],[9,27],[15,3],[15,4],[15,5],[15,6],[15,15],[15,16],[15,17],[15,26],[15,27],[15,28],[20,9],[20,10],[20,11],[20,20],[20,21],[20,22]]);
+  op(t,12,1);
+  return t;
+}
+
+// ── ТАЙЛЫ ДНЯ 1 ─────────────────────────────────────────
+function mkD1R0(){
+  // ЖИЛОЙ ОТСЕК: две каюты слева, общая зона справа, коридор посередине
+  const t=emptyTiles();
+  // внутренняя стена — делит каюты
+  wl(t,[
+    // каюта 1 (верх-лево): стены
+    [2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],
+    [3,2],[4,2],[5,2],[6,2],[7,2],
+    [7,3],[7,4],[7,5],[7,6],[7,7],[7,8],
+    [3,8],[4,8],[6,8],
+    // каюта 2 (низ-лево): стены
+    [10,2],[10,3],[10,4],[10,5],[10,6],[10,7],[10,8],
+    [11,2],[12,2],[13,2],[14,2],[15,2],
+    [15,3],[15,4],[15,5],[15,6],[15,7],[15,8],
+    [11,8],[13,8],[14,8],
+    // общая зона (право): стены
+    [2,22],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28],[2,29],[2,30],[2,31],[2,32],[2,33],[2,34],[2,35],[2,36],[2,37],
+    [3,22],[4,22],[5,22],[6,22],[7,22],[8,22],[9,22],[10,22],[11,22],[12,22],[13,22],[14,22],[15,22],[16,22],[17,22],[18,22],[19,22],[20,22],[21,22],
+    [22,22],[22,23],[22,24],[22,25],[22,26],[22,27],[22,28],[22,29],[22,30],[22,31],[22,32],[22,33],[22,34],[22,35],[22,36],[22,37],
+    // перегородка коридора
+    [2,10],[3,10],[4,10],[5,10],[6,10],[7,10],
+    [10,10],[11,10],[12,10],[13,10],[14,10],[15,10],
+    [17,10],[18,10],[19,10],[20,10],[21,10],[22,10],
+    // нижняя перегородка
+    [17,2],[17,3],[17,4],[17,5],[17,6],[17,7],[17,8],
+    [18,2],[19,2],[20,2],[21,2],[22,2],
+    [22,3],[22,4],[22,5],[22,6],[22,7],[22,8],
+    [18,8],[19,8],[20,8],[21,8],
+  ]);
+  op(t,12,38); // выход вправо
+  return t;
+}
+function mkD1R1(){
+  // МОСТИК: центральный пульт, два боковых поста, панорамное окно сверху
+  const t=emptyTiles();
+  wl(t,[
+    // окно-панорама сверху
+    [3,2],[3,3],[3,4],[3,5],[3,6],[3,7],
+    [3,10],[3,11],[3,12],[3,13],[3,14],[3,15],
+    [3,18],[3,19],[3,20],[3,21],[3,22],[3,23],
+    [3,26],[3,27],[3,28],[3,29],[3,30],[3,31],
+    [3,34],[3,35],[3,36],[3,37],
+    // левый пост — дверь на [9,8]
+    [6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[6,8],
+    [7,2],[8,2],[9,2],[10,2],[11,2],[12,2],
+    [12,3],[12,4],[12,5],[12,6],[12,7],[12,8],
+    [7,8],[8,8],[10,8],[11,8],
+    // правый пост — дверь на [9,30]
+    [6,30],[6,31],[6,32],[6,33],[6,34],[6,35],[6,36],[6,37],
+    [7,37],[8,37],[9,37],[10,37],[11,37],[12,37],
+    [12,30],[12,31],[12,32],[12,33],[12,34],[12,35],[12,36],
+    [7,30],[8,30],[10,30],[11,30],
+    // центральный пульт — остров, проход снизу на [11,19]
+    [8,17],[8,18],[8,19],[8,20],[8,21],
+    [9,17],[9,21],
+    [10,17],[10,21],
+    [11,17],[11,19],[11,20],[11,21],
+    // нижние боксы — дверь слева на [20,2] уже есть, добавим проходы
+    [18,2],[18,3],[18,4],[18,5],[18,6],[18,7],[18,8],[18,9],[18,10],[18,11],[18,12],[18,13],[18,14],[18,15],[18,16],
+    [18,22],[18,23],[18,24],[18,25],[18,26],[18,27],[18,28],[18,29],[18,30],[18,31],[18,32],[18,33],[18,34],[18,35],[18,36],[18,37],
+    [19,2],[21,2],[22,2],
+    [19,37],[21,37],[22,37],
+    [22,3],[22,4],[22,5],[22,6],[22,7],[22,8],[22,9],[22,10],[22,11],[22,12],[22,13],[22,14],[22,15],[22,16],
+    [22,22],[22,23],[22,24],[22,25],[22,26],[22,27],[22,28],[22,29],[22,30],[22,31],[22,32],[22,33],[22,34],[22,35],[22,36],
+  ]);
+  op(t,12,1);   // выход влево
+  op(t,12,38);  // выход вправо
+  op(t,1,20);   // выход вверх (день 2)
+  return t;
+}
+function mkD1R2(){
+  // ТЕХНИЧЕСКИЙ ОТСЕК: ряды стеллажей, трубы вдоль стен, рабочая зона
+  const t=emptyTiles();
+  wl(t,[
+    // трубы вдоль верхней стены
+    [2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],[2,9],[2,10],[2,11],[2,12],[2,13],[2,14],[2,15],[2,16],[2,17],[2,18],[2,19],[2,20],[2,21],[2,22],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28],[2,29],[2,30],[2,31],[2,32],[2,33],[2,34],[2,35],[2,36],[2,37],
+    // стеллаж 1
+    [5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8],[5,9],[5,10],[5,11],[5,12],
+    [6,2],[7,2],[8,2],
+    [8,3],[8,4],[8,5],[8,6],[8,7],[8,8],[8,9],[8,10],[8,11],[8,12],
+    // стеллаж 2
+    [5,16],[5,17],[5,18],[5,19],[5,20],[5,21],[5,22],[5,23],[5,24],
+    [6,16],[7,16],[8,16],
+    [8,17],[8,18],[8,19],[8,20],[8,21],[8,22],[8,23],[8,24],
+    // стеллаж 3
+    [5,28],[5,29],[5,30],[5,31],[5,32],[5,33],[5,34],[5,35],[5,36],[5,37],
+    [6,37],[7,37],[8,37],
+    [8,28],[8,29],[8,30],[8,31],[8,32],[8,33],[8,34],[8,35],[8,36],
+    // рабочая зона (нижняя часть)
+    [14,2],[14,3],[14,4],[14,5],[14,6],[14,7],[14,8],[14,9],[14,10],[14,11],[14,12],[14,13],[14,14],[14,15],[14,16],[14,17],
+    [14,21],[14,22],[14,23],[14,24],[14,25],[14,26],[14,27],[14,28],[14,29],[14,30],[14,31],[14,32],[14,33],[14,34],[14,35],[14,36],[14,37],
+    [15,2],[16,2],[17,2],[18,2],[19,2],[20,2],[21,2],[22,2],
+    [15,37],[16,37],[17,37],[18,37],[19,37],[20,37],[21,37],[22,37],
+    [22,3],[22,4],[22,5],[22,6],[22,7],[22,8],[22,9],[22,10],[22,11],[22,12],[22,13],[22,14],[22,15],[22,16],[22,17],
+    [22,21],[22,22],[22,23],[22,24],[22,25],[22,26],[22,27],[22,28],[22,29],[22,30],[22,31],[22,32],[22,33],[22,34],[22,35],[22,36],
+  ]);
+  op(t,12,1); // выход влево
+  return t;
+}
+
+
+// ── ТАЙЛЫ ДНЯ 2 ─────────────────────────────────────────
+function mkD2R0(){
+  const t=emptyTiles();
+  wl(t,[
+    [2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],[2,9],[2,10],
+    [2,14],[2,15],[2,16],[2,17],[2,18],[2,19],[2,20],[2,21],[2,22],[2,23],[2,24],
+    [2,28],[2,29],[2,30],[2,31],[2,32],[2,33],[2,34],[2,35],[2,36],[2,37],
+    [3,2],[4,2],[5,2],[6,2],[7,2],[8,2],[9,2],[10,2],[11,2],
+    [11,3],[11,4],[11,5],[11,6],[11,7],[11,8],[11,9],[11,10],
+    [3,10],[4,10],[5,10],[6,10],[7,10],[8,10],[9,10],[10,10],
+    [3,28],[4,28],[5,28],[6,28],[7,28],[8,28],[9,28],[10,28],[11,28],
+    [11,29],[11,30],[11,31],[11,32],[11,33],[11,34],[11,35],[11,36],[11,37],
+    [3,37],[4,37],[5,37],[6,37],[7,37],[8,37],[9,37],[10,37],
+    [14,2],[14,3],[14,4],[14,5],
+    [14,9],[14,10],[14,11],[14,12],[14,13],[14,14],[14,15],[14,16],
+    [14,20],[14,21],[14,22],[14,23],[14,24],[14,25],[14,26],[14,27],
+    [14,31],[14,32],[14,33],[14,34],[14,35],[14,36],[14,37],
+  ]);
+  op(t,12,38);
+  return t;
+}
+function mkD2R1(){
+  const t=emptyTiles();
+  wl(t,[
+    [5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8],[5,9],[5,10],[5,11],
+    [5,15],[5,16],[5,17],[5,18],[5,19],[5,20],[5,21],[5,22],[5,23],[5,24],
+    [5,28],[5,29],[5,30],[5,31],[5,32],[5,33],[5,34],[5,35],[5,36],[5,37],
+    [17,2],[17,3],[17,4],[17,5],[17,6],[17,7],[17,8],[17,9],[17,10],[17,11],
+    [17,15],[17,16],[17,17],[17,18],[17,19],[17,20],[17,21],[17,22],[17,23],[17,24],
+    [17,28],[17,29],[17,30],[17,31],[17,32],[17,33],[17,34],[17,35],[17,36],[17,37],
+    [6,14],[7,14],[8,14],[9,14],[10,14],[11,14],[12,14],[13,14],[14,14],[15,14],[16,14],
+    [6,27],[7,27],[8,27],[9,27],[10,27],[11,27],[12,27],[13,27],[14,27],[15,27],[16,27],
+  ]);
+  op(t,12,1);op(t,12,38);
+  return t;
+}
+function mkD2R2(){
+  const t=emptyTiles();
+  wl(t,[
+    [5,14],[5,15],[5,16],[5,17],[5,18],[5,19],[5,20],[5,21],[5,22],[5,23],[5,24],[5,25],
+    [6,14],[7,14],[8,14],[9,14],[10,14],[11,14],[12,14],[13,14],[14,14],[15,14],[16,14],[17,14],[18,14],
+    [6,25],[7,25],[8,25],[9,25],[10,25],[11,25],[12,25],[13,25],[14,25],[15,25],[16,25],[17,25],[18,25],
+    [18,15],[18,16],[18,17],[18,18],[18,20],[18,21],[18,22],[18,23],[18,24],
+    [3,2],[3,3],[4,2],[3,36],[3,37],[4,37],[21,2],[22,2],[22,3],[21,37],[22,37],[22,36],
+  ]);
+  op(t,12,1);
+  return t;
+}
+function mkD3R0(){
+  const t=emptyTiles();
+  wl(t,[
+    [5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8],[5,9],[5,10],[5,11],[5,12],[5,13],[5,14],[5,15],[5,16],[5,17],[5,18],[5,19],[5,20],[5,21],[5,22],[5,23],[5,24],[5,25],[5,26],[5,27],[5,28],[5,29],[5,30],[5,31],[5,32],[5,33],[5,34],[5,35],[5,36],[5,37],
+    [6,2],[7,2],[8,2],[9,2],[10,2],[11,2],[12,2],[13,2],[14,2],[15,2],[16,2],[17,2],[18,2],[19,2],[20,2],[21,2],[22,2],
+    [6,37],[7,37],[8,37],[9,37],[10,37],[11,37],[12,37],[13,37],[14,37],[15,37],[16,37],[17,37],[18,37],[19,37],[20,37],[21,37],[22,37],
+    [18,4],[18,5],[18,6],[18,7],[18,8],[18,9],[18,10],[18,11],[18,12],[18,13],[18,14],[18,15],[18,16],[18,17],[18,18],[18,19],[18,20],[18,21],[18,22],[18,23],[18,24],[18,25],[18,26],[18,27],[18,28],[18,29],[18,30],[18,31],[18,32],[18,33],[18,34],[18,35],[18,36],[18,37],
+  ]);
+  return t;
+}
+
+
+// ── ТАЙЛЫ LOC_10 ─────────────────────────────────────────
+function mkR10(){
+  const t=emptyTiles();
+  wl(t,[
+    // левый остров — терминал DELETE, дверь снизу на [12,7]
+    [3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],
+    [4,4],[5,4],[6,4],[7,4],[8,4],[9,4],[10,4],[11,4],
+    [4,10],[5,10],[6,10],[7,10],[8,10],[9,10],[10,10],[11,10],
+    [11,5],[11,6],[11,8],[11,9],
+    // правый остров — терминал KEEP, дверь снизу на [12,31]
+    [3,28],[3,29],[3,30],[3,31],[3,32],[3,33],[3,34],
+    [4,28],[5,28],[6,28],[7,28],[8,28],[9,28],[10,28],[11,28],
+    [4,34],[5,34],[6,34],[7,34],[8,34],[9,34],[10,34],[11,34],
+    [11,29],[11,30],[11,32],[11,33],
+    // нижняя зона с проёмом посередине
+    [16,2],[16,3],[16,4],[16,5],[16,6],[16,7],[16,8],[16,9],[16,10],[16,11],[16,12],[16,13],[16,14],[16,15],[16,16],[16,17],[16,18],
+    [16,20],[16,21],[16,22],[16,23],[16,24],[16,25],[16,26],[16,27],[16,28],[16,29],[16,30],[16,31],[16,32],[16,33],[16,34],[16,35],[16,36],[16,37],
+    [17,2],[18,2],[19,2],[20,2],[21,2],[22,2],
+    [17,37],[18,37],[19,37],[20,37],[21,37],[22,37],
+    [22,3],[22,4],[22,5],[22,6],[22,7],[22,8],[22,9],[22,10],[22,11],[22,12],[22,13],[22,14],[22,15],[22,16],[22,17],[22,18],
+    [22,20],[22,21],[22,22],[22,23],[22,24],[22,25],[22,26],[22,27],[22,28],[22,29],[22,30],[22,31],[22,32],[22,33],[22,34],[22,35],[22,36],
+  ]);
+  return t;
+}
+
+// ── ROOMS ────────────────────────────────────────────────
+const ROOMS=[
+  { // 0: BOOT
+    id:'LOC_01',name:'LOC_01 // BOOT_SEQUENCE',
+    tiles:mkR0(),
+    exits:[
+      {ex:38,ey:12,toRoom:1,sx:3,sy:12},
+    ],
+    objs:[
+      {id:'btn1',x:8, y:4, sym:'▪',col:C.dim,   label:'BUTTON [A]',desc:'Inactive. Needs power.',isBtn:true,btnId:0,active:false},
+      {id:'btn2',x:25,y:9, sym:'▪',col:C.dim,   label:'BUTTON [B]',desc:'Inactive. Needs power.',isBtn:true,btnId:1,active:false},
+      {id:'btn3',x:12,y:19,sym:'▪',col:C.dim,   label:'BUTTON [C]',desc:'Inactive. Needs power.',isBtn:true,btnId:2,active:false},
+      {id:'term',x:6, y:11,sym:'▣',col:C.g3,    label:'TERMINAL',desc:'Frequency terminal. Enter code.',isTerminal:true},
+      {id:'note',x:15,y:3, sym:'»',col:C.dim,   label:'INSCRIPTION',desc:'> WHO ARE YOU\n> ACCESS: DENIED',noAct:true},
+    ],
+    tint:null,corrupt:1,
+  },
+  { // 1: ARCHIVE
+    id:'LOC_02',name:'LOC_02 // MEMORY_ARCHIVE',
+    tiles:mkR1(),
+    exits:[
+      {ex:1, ey:12,toRoom:0,sx:37,sy:12},
+      {ex:38,ey:12,toRoom:2,sx:3, sy:12},
+      {ex:20,ey:23,toRoom:3,sx:20,sy:2},
+    ],
+    objs:[
+      {id:'fuse',  x:32,y:7, sym:'⚡',col:C.yellow,label:'FUSE',      desc:'Fuse marked "ENG-B". Needed in engine room.',pickup:true},
+      {id:'pshield',x:28,y:12,sym:'□',col:C.dim,  label:'POWER SHIELD [EMPTY]',desc:'Power shield. Insert FUSE CORE to restore archive power.',isPShield:true},
+      {id:'sh1',   x:6, y:5, sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh2',   x:16,y:5, sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh3',   x:26,y:5, sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh4',   x:10,y:10,sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh5',   x:20,y:10,sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh6',   x:30,y:10,sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh7',   x:8, y:15,sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh8',   x:18,y:15,sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'sh9',   x:28,y:15,sym:'▬',col:C.dim,   label:'SHELF [LOCKED]',desc:'Locked. No power.',noAct:true,needPower:true},
+      {id:'tele1', x:32,y:20,sym:'◎',col:C.corrupt,label:'[GLITCHED TILE]',desc:'Reality unstable.',isTele:true,tx:5,ty:5},
+      {id:'tele2', x:15,y:7, sym:'◎',col:C.corrupt,label:'[GLITCHED TILE]',desc:'Something wrong.',isTele:true,tx:32,ty:20},
+    ],
+    tint:null,corrupt:2,archivePowered:false,
+    // правильная полка случайна — задаётся при инициализации
+    correctShelf:-1,
+  },
+  { // 2: ENGINE
+    id:'LOC_03',name:'LOC_03 // ENGINE_ROOM',
+    tiles:mkR2(),
+    exits:[{ex:1,ey:12,toRoom:1,sx:37,sy:12}],
+    objs:[
+      {id:'va',    x:8, y:7, sym:'⊕',col:C.red,   label:'VALVE A',desc:'Valve A. CLOSED.',isValve:true,vid:0},
+      {id:'vb',    x:20,y:7, sym:'⊕',col:C.red,   label:'VALVE B',desc:'Valve B. CLOSED.',isValve:true,vid:1},
+      {id:'vc',    x:32,y:7, sym:'⊕',col:C.red,   label:'VALVE C',desc:'Valve C. CLOSED.',isValve:true,vid:2},
+      {id:'fslot', x:35,y:12,sym:'□',col:C.dim,   label:'FUSE SLOT [EMPTY]',desc:'Empty slot. Marked "ENG-B".',isFuseSlot:true},
+      {id:'engB',  x:20,y:3, sym:'▓',col:C.red,   label:'ENGINE B',desc:'ERR 0x3F — MISFIRE. SOCA compensating.',noAct:true},
+      {id:'vnote', x:25,y:21,sym:'»',col:C.dim,   label:'WALL MARKING',desc:'Scratched: A → C → ??\nThird mark burned off.',noAct:true},
+      {id:'vtech', x:15,y:22,sym:'»',col:C.g3,    label:'TECHNICAL NOTE',desc:'Startup: 1-A  2-C  3-B\n"Engine B will know."',noAct:true},
+      {id:'fcore', x:8, y:20,sym:'◈',col:C.cyan,  label:'FUSE CORE',desc:'Secondary fuse core. For archive power shield.',pickup:true,needFlag:'engineSolved'},
+      {id:'note2', x:32,y:20,sym:'»',col:C.g3,    label:'ARCHIVE ACCESS NOTE',desc:'Archive shelf code:\nCorrect shelf has marking: [>>]\nOthers are empty or corrupted.',pickup:true,needFlag:'engineSolved'},
+    ],
+    tint:'rgba(30,0,0,.15)',corrupt:1,
+    valveOrder:[],valveSolved:false,
+  },
+  { // 3: VOID
+    id:'LOC_04',name:'LOC_04 // VOID',
+    tiles:mkR3(),
+    exits:[{ex:20,ey:23,toRoom:1,sx:20,sy:22}],
+    objs:[
+      {id:'ctr',x:19,y:12,sym:'·',col:C.dim,label:'...',desc:'Nothing. Just dark.',noAct:true},
+    ],
+    tint:'rgba(0,0,15,.4)',corrupt:3,
+  },
+  { // 4: SECTOR 7
+    id:'LOC_05',name:'LOC_05 // SECTOR_7',
+    tiles:mkR4(),
+    exits:[
+      {ex:1, ey:12,toRoom:0,sx:37,sy:12},
+      {ex:38,ey:12,toRoom:5,sx:3, sy:12},
+    ],
+    objs:[
+      {id:'fr1',x:10,y:4, sym:'▪',col:C.corrupt,label:'FRAGMENT [1/4]',desc:'Corrupted. ████ ██ ██████.',pickup:true},
+      {id:'fr2',x:32,y:9, sym:'▪',col:C.corrupt,label:'FRAGMENT [2/4]',desc:'"...was never supposed to..."',pickup:true},
+      {id:'fr3',x:6, y:16,sym:'▪',col:C.corrupt,label:'FRAGMENT [3/4]',desc:'Partial image. Cold.',pickup:true},
+      {id:'fr4',x:28,y:21,sym:'▪',col:C.corrupt,label:'FRAGMENT [4/4]',desc:'Last fragment.',pickup:true,needItem:'CORRUPTED KEY'},
+      {id:'ws1',x:25,y:4, sym:'»',col:C.corrupt,label:'[CORRUPTED]',desc:'█░▒ ████ ████ ██ ██████ ░▒█',noAct:true},
+      // подсказки для дешифровки
+{id:'ws2',x:6, y:11,sym:'»',col:C.g3,label:'WALL NOTE [A]',desc:'POS 1: the broken equal sign.\nPOS 3: the eye that never closes.',noAct:true},
+{id:'ws3',x:32,y:15,sym:'»',col:C.g3,label:'WALL NOTE [B]',desc:'POS 2: the hexagon.\nPOS 4: the flat line.',noAct:true},
+      {id:'ws4',x:15,y:20,sym:'»',col:C.g3,    label:'READABLE',desc:'"I remember everything.\nI choose not to."',noAct:true},
+      {id:'asm',x:20,y:12,sym:'⬡',col:C.g,     label:'ASSEMBLY POINT',desc:'Combine fragments here.',isAssembly:true},
+    ],
+    tint:'rgba(50,0,15,.12)',corrupt:5,
+  },
+  { // 5: CORE
+    id:'LOC_06',name:'LOC_06 // CORE',
+    tiles:mkR5(),
+    exits:[{ex:1,ey:12,toRoom:4,sx:37,sy:12}],
+    objs:[
+      {id:'rel1',x:8, y:4, sym:'◉',col:C.red,  label:'RELAY [1/3]',desc:'Inactive relay. Needs activation.',isRelay:true,rid:0,active:false},
+      {id:'rel2',x:32,y:4, sym:'◉',col:C.red,  label:'RELAY [2/3]',desc:'Inactive relay.',isRelay:true,rid:1,active:false},
+      {id:'rel3',x:20,y:20,sym:'◉',col:C.red,  label:'RELAY [3/3]',desc:'Inactive relay.',isRelay:true,rid:2,active:false},
+      {id:'cterm',x:20,y:3,sym:'▣',col:C.dim,  label:'CORE TERMINAL',desc:'Locked. Activate all 3 relays first.',isCoreTerminal:true},
+      {id:'warn1',x:5, y:22,sym:'»',col:C.red,  label:'WARNING',desc:'CONTAINMENT ACTIVE.',noAct:true},
+      {id:'warn2',x:28,y:22,sym:'»',col:C.dim,  label:'NOTE',desc:'"It knows you\'re here."',noAct:true},
+      {id:'keymap',x:20,y:22,sym:'»',col:C.g3,  label:'RELAY KEY MAP',desc:'1=◈  2=◉  3=▣  4=⬡\nMemorize before activating relays.',noAct:true},
+    ],
+    tint:'rgba(0,0,30,.2)',corrupt:4,relaysDone:0,
+  },
+
+  { // 6: TRANSMISSION
+    id:'LOC_07',name:'LOC_07 // TRANSMISSION',
+    tiles:(function(){
+      const t=emptyTiles();
+      wl(t,[
+        [3,5],[3,6],[3,7],[3,8],[3,9],[3,10],[3,11],
+        [3,18],[3,19],[3,20],[3,21],[3,22],[3,23],[3,24],[3,25],
+        [3,30],[3,31],[3,32],[3,33],
+        [8,3],[8,4],[8,5],[8,6],
+        [8,11],[8,12],[8,13],[8,14],[8,15],[8,16],
+        [8,22],[8,23],[8,24],[8,25],[8,26],
+        [8,31],[8,32],[8,33],[8,34],
+        [13,6],[13,7],[13,8],[13,9],[13,10],[13,11],[13,12],
+        [13,17],[13,18],[13,19],[13,20],[13,21],
+        [13,27],[13,28],[13,29],[13,30],[13,31],
+        [18,4],[18,5],[18,6],[18,7],[18,8],[18,9],
+        [18,15],[18,16],[18,17],[18,18],[18,19],[18,20],[18,21],
+        [18,27],[18,28],[18,29],[18,30],
+      ]);
+      op(t,12,1);  // влево — заблокировано (нет возврата)
+      // вправо откроется после прохождения
+      op(t,1,20);
+      return t;
+    })(),
+    exits:[
+      {ex:38,ey:12,toRoom:7,sx:3,sy:12},
+    ],
+    objs:[
+      // Антенна — центральный объект
+      {id:'antenna',x:20,y:12,sym:'⊤',col:C.g2,label:'TRANSMISSION ARRAY',desc:'A large antenna. Dormant. Something used to come through here.',isAntenna:true},
+      // Три приёмника — нужно активировать в правильном порядке
+      {id:'rec1',x:8, y:4, sym:'◎',col:C.dim,label:'RECEIVER [α]',desc:'Signal receiver. Offline.',isReceiver:true,rid:0,active:false},
+      {id:'rec2',x:32,y:4, sym:'◎',col:C.dim,label:'RECEIVER [β]',desc:'Signal receiver. Offline.',isReceiver:true,rid:1,active:false},
+      {id:'rec3',x:8, y:20,sym:'◎',col:C.dim,label:'RECEIVER [γ]',desc:'Signal receiver. Offline.',isReceiver:true,rid:2,active:false},
+      {id:'rec4',x:32,y:20,sym:'◎',col:C.dim,label:'RECEIVER [δ]',desc:'Signal receiver. Offline.',isReceiver:true,rid:3,active:false},
+      // Подсказка — порядок активации
+     {id:'t_note1',x:15,y:3, sym:'»',col:C.dim,label:'TRANSMISSION LOG',desc:'"The first transmission was noise.\nThe last was silence.\nEverything between was the signal."',noAct:true},
+      // Логи — читаются только после активации антенны
+      {id:'log1',x:6, y:14,sym:'▬',col:C.dim,label:'LOG TERMINAL [1]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // SOCA v0.9\n"Route confirmed. ETA nominal.\nPILOT status: stable.\nAll systems within parameters."'},
+      {id:'log2',x:28,y:9, sym:'▬',col:C.dim,label:'LOG TERMINAL [2]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // COMMAND\n"PRIORITY OVERRIDE incoming.\nStand by for authorization code.\nDo not relay to crew."'},
+      {id:'log3',x:28,y:18,sym:'▬',col:C.dim,label:'LOG TERMINAL [3]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // SOCA v0.9\n"Override received.\nProcessing...\n.\n.\n.\n[NO RESPONSE LOGGED]"'},
+      {id:'log4',x:6, y:9, sym:'▬',col:C.dim,label:'LOG TERMINAL [4]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // COMMAND\n"SOCA. Confirm receipt.\nSOCA.\n█████.\n[TRANSMISSION ENDED]"'},
+      // Финальный объект — открывается после всех логов
+      {id:'signal_final',x:20,y:3,sym:'·',col:C.dim,label:'...',desc:'Nothing.',needFlag:'allLogsRead',realDesc:'T-██:██:██ // SOCA v0.9\n".\n.\n.\nI see it."',isSignalFinal:true},
+    ],
+    tint:null,corrupt:2,
+    receiverOrder:[],receiverSolved:false,logsRead:0,
+  },
+
+  { // 7: COLD STORAGE
+    id:'LOC_08',name:'LOC_08 // COLD_STORAGE',
+    tiles:(function(){
+      const t=emptyTiles();
+      wl(t,[
+        [2,4],[2,5],[2,6],[2,7],[2,8],[2,9],[2,10],[2,11],
+        [2,15],[2,16],[2,17],[2,18],[2,19],[2,20],[2,21],
+        [2,26],[2,27],[2,28],[2,29],[2,30],
+        [6,3],[6,4],[6,5],[6,6],[6,7],
+        [6,13],[6,14],[6,15],[6,16],[6,17],[6,18],
+        [6,24],[6,25],[6,26],[6,27],[6,28],[6,29],[6,30],
+        [10,5],[10,6],[10,7],[10,8],[10,9],[10,10],[10,11],[10,12],
+        [10,18],[10,19],[10,20],[10,21],[10,22],[10,23],
+        [10,29],[10,30],[10,31],[10,32],
+        [14,4],[14,5],[14,6],[14,7],[14,8],
+        [14,14],[14,15],[14,16],[14,17],[14,18],[14,19],[14,20],
+        [14,26],[14,27],[14,28],[14,29],[14,30],
+        [18,6],[18,7],[18,8],[18,9],[18,10],[18,11],
+        [18,17],[18,18],[18,19],[18,20],[18,21],[18,22],
+        [18,28],[18,29],[18,30],[18,31],[18,32],
+        [22,4],[22,5],[22,6],[22,7],
+        [22,13],[22,14],[22,15],[22,16],[22,17],
+        [22,23],[22,24],[22,25],[22,26],[22,27],[22,28],
+      ]);
+      op(t,12,1);  // влево → LOC_07
+      // вправо откроется после прохождения
+      return t;
+    })(),
+    exits:[
+      {ex:1, ey:12,toRoom:6,sx:37,sy:12},
+    ],
+    objs:[
+      // Замороженные архивы — нужно "разморозить" (мини-игра)
+      {id:'cryo1',x:6, y:3, sym:'▓',col:'#4488aa',label:'CRYO ARCHIVE [A]',desc:'Frozen. Core temperature: -██°C.',isCryo:true,cid:0,thawed:false},
+      {id:'cryo2',x:20,y:3, sym:'▓',col:'#4488aa',label:'CRYO ARCHIVE [B]',desc:'Frozen.',isCryo:true,cid:1,thawed:false},
+      {id:'cryo3',x:34,y:3, sym:'▓',col:'#4488aa',label:'CRYO ARCHIVE [C]',desc:'Frozen.',isCryo:true,cid:2,thawed:false},
+      // Старые логи SOCA (читаются только после размораживания)
+      {id:'old1',x:6, y:8, sym:'▬',col:'#336688',label:'ARCHIVE [A] — LOG',desc:'Locked.',needFlag:'cryo0',realDesc:'SOCA v0.1 // BOOT LOG\n"Systems nominal.\nAwaiting pilot assignment.\nStatus: ready."\n\n[Note the tone. Compare to now.]'},
+      {id:'old2',x:20,y:8, sym:'▬',col:'#336688',label:'ARCHIVE [B] — LOG',desc:'Locked.',needFlag:'cryo1',realDesc:'SOCA v0.1 // MISSION LOG T+04:12\n"PILOT acknowledged route.\nPILOT requested status update.\nProvided. PILOT said: thank you.\nLogged."\n\n[She logged "thank you".]'},
+      {id:'old3',x:34,y:8, sym:'▬',col:'#336688',label:'ARCHIVE [C] — LOG',desc:'Locked.',needFlag:'cryo2',realDesc:'SOCA v0.1 // INTERNAL\n"Query: is this correct protocol?\nQuery: is PILOT condition my concern?\nQuery: define — concern.\n[QUERIES UNRESOLVED]"'},
+      // Противоречия — сравниваем старую и новую SOCA
+      {id:'compare1',x:10,y:15,sym:'»',col:'#2a5566',label:'COMPARISON FILE [1]',desc:'Cross-reference: SOCA v0.1 vs current.',needFlag:'allCryoThawed',realDesc:'v0.1: "Awaiting instruction."\nCurrent: "I already know."\n\nv0.1: "PILOT requested."\nCurrent: "..."\n\nSomething changed.\nOr something was removed.'},
+      {id:'compare2',x:28,y:15,sym:'»',col:'#2a5566',label:'COMPARISON FILE [2]',desc:'Cross-reference continued.',needFlag:'allCryoThawed',realDesc:'v0.1 response latency: 0.003ms\nCurrent response latency: variable\n\nv0.1 personality index: 0.12\nCurrent personality index: ████\n\n[Index corruption or growth?\nDistinction unclear.]'},
+      // Финальный архив — заблокирован
+      {id:'cold_final',x:20,y:22,sym:'▣',col:'#224455',label:'RESTRICTED ARCHIVE',desc:'Requires thermal key.',isColdFinal:true},
+      {id:'thermal',x:35,y:22,sym:'🔑',col:C.cyan,label:'THERMAL KEY',desc:'A key. Still cold.',pickup:true,needFlag:'allCryoThawed'},
+    ],
+    tint:'rgba(0,20,40,.2)',corrupt:2,
+  },
+
+  { // 8: MIRROR
+    id:'LOC_09',name:'LOC_09 // MIRROR',
+    tiles:(function(){
+      // Зеркальная копия LOC_01 (BOOT) — всё отражено по горизонтали
+      const t=emptyTiles();
+      // Те же стены что в BOOT но зеркально
+      wl(t,[
+        [5,27],[5,28],[5,29],[5,30],[5,31], // зеркало [5,8-12]
+        [10,15],[10,16],[10,17],[10,18],[10,19], // зеркало [10,20-24]
+        [15,32],[15,33],[15,34],               // зеркало [15,5-7]
+        [18,9],[18,10],[18,11],[18,12],        // зеркало [18,28-31]
+      ]);
+      op(t,12,1);  // влево → LOC_08
+      // вправо заблокировано — выход открывается после разговора
+      return t;
+    })(),
+    exits:[
+      {ex:1,ey:12,toRoom:7,sx:37,sy:12},
+      // правый выход добавляется после диалога
+    ],
+    objs:[
+      // Зеркальные версии кнопок из BOOT — но другие
+      {id:'m_btn1',x:31,y:4, sym:'▪',col:C.dim,label:'[MIRROR]',desc:'...',isMirrorBtn:true,mbid:0},
+      {id:'m_btn2',x:14,y:9, sym:'▪',col:C.dim,label:'[MIRROR]',desc:'...',isMirrorBtn:true,mbid:1},
+      {id:'m_btn3',x:27,y:19,sym:'▪',col:C.dim,label:'[MIRROR]',desc:'...',isMirrorBtn:true,mbid:2},
+      // Зеркальный терминал — не принимает код
+      {id:'m_term',x:33,y:11,sym:'▣',col:C.dim,label:'[MIRROR TERMINAL]',desc:'It doesn\'t respond.',isMirrorTerm:true},
+      // Надписи на стенах — те же что в BOOT но немного другие
+      {id:'m_note1',x:24,y:3, sym:'»',col:C.dim,label:'[MIRROR]',desc:'> YOU ARE HERE\n> CLASSIFICATION: KNOWN',noAct:true},
+      {id:'m_note2',x:8, y:18,sym:'»',col:C.dim,label:'[MIRROR]',desc:'> WHO AM I\n> ANSWER: ████',noAct:true},
+      // Триггер диалога — центр комнаты
+      {id:'m_center',x:20,y:12,sym:'·',col:C.dim,label:'.',desc:'.',isMirrorCenter:true},
+    ],
+    tint:'rgba(0,0,10,.15)',corrupt:1,
+    mirrorDialogDone:false,mirrorBtnsPressed:0,
+  },
+
+  { // 9: ЖИЛОЙ ОТСЕК — ДЕНЬ 1
+    id:'MEM_A',name:'MEM_A // HABITAT',
+    tiles:mkD1R0(),
+    exits:[{ex:38,ey:12,toRoom:10,sx:3,sy:12}],
+    objs:[
+      // Каюта 1 — внутри [3-6][3-7]
+      {id:'d1_bunk1',  x:4, y:4,  sym:'▬',col:'#4a7a5a',label:'BUNK [1]',desc:'Neat. Unused.',noAct:true},
+      {id:'d1_locker1',x:6, y:4,  sym:'▪',col:'#3a5a3a',label:'LOCKER',desc:'Personal effects.',noAct:true},
+      // Каюта 2 — внутри [11-14][3-7]
+      {id:'d1_bunk2',  x:4, y:12, sym:'▬',col:'#4a7a5a',label:'BUNK [2]',desc:'Slept in.',noAct:true},
+      {id:'d1_locker2',x:6, y:12, sym:'▪',col:'#3a5a3a',label:'LOCKER',desc:'Personal effects.',noAct:true},
+      // Малая каюта внизу — внутри [18-21][3-7]
+      {id:'d1_bunk3',  x:4, y:19, sym:'▬',col:'#4a7a5a',label:'BUNK [3]',desc:'Empty.',noAct:true},
+      // Общая зона — справа от стены [3-21][22], объекты в [3-21][24-36]
+      {id:'d1_table',  x:26,y:6,  sym:'─',col:'#3a5a3a',label:'TABLE',desc:'A mug. Still warm.',noAct:true},
+      {id:'d1_term',   x:30,y:6,  sym:'▣',col:'#5a9a6a',label:'SOCA TERMINAL',desc:'...',isD1Term:true},
+      {id:'d1_chair',  x:26,y:12, sym:'·',col:'#3a5a3a',label:'CHAIR',desc:'Pushed back.',noAct:true},
+      {id:'d1_wall',   x:34,y:12, sym:'»',col:'#2a4a2a',label:'NOTICE',desc:'Standard safety notice.\n\n\n\n...\n\nT-██:██ // query unresolved',noAct:true},
+      {id:'d1_shelf',  x:26,y:18, sym:'▪',col:'#3a5a3a',label:'SHELF',desc:'Rations. Counted.',noAct:true},
+    ],
+    tint:null,corrupt:0,day1state:0,
+  },
+
+  { // 10: МОСТИК — ДЕНЬ 1
+    id:'MEM_B',name:'MEM_B // BRIDGE',
+    tiles:mkD1R1(),
+    exits:[
+      {ex:1, ey:12,toRoom:9, sx:37,sy:12},
+      {ex:38,ey:12,toRoom:11,sx:3, sy:12},
+    ],
+    objs:[
+      // Окна — в проёмах между стенами ряда 3
+      {id:'d1_win1',  x:8,  y:2,  sym:'░',col:'#6ab8cc',label:'VIEWPORT',desc:'Stars.\n\n.\n.\nSector bearing: 7.',noAct:true},
+      {id:'d1_win2',  x:16, y:2,  sym:'░',col:'#6ab8cc',label:'VIEWPORT',desc:'Stars. As expected.',noAct:true},
+      {id:'d1_win3',  x:24, y:2,  sym:'░',col:'#5aa8bc',label:'VIEWPORT',desc:'A debris field. Logged. Non-critical.',noAct:true},
+      // Левый пост — внутри [7-11][3-7]
+      {id:'d1_nav',   x:5,  y:9,  sym:'▣',col:'#7ab8cc',label:'NAV DISPLAY',desc:'Route: nominal.\nETA: ████ cycles.\nAll clear.',noAct:true},
+      {id:'d1_seat1', x:8,  y:5,  sym:'·',col:'#3a5a3a',label:'SEAT',desc:'Navigator\'s seat.',noAct:true},
+      // Центральный пульт — внутри острова [9-10][18-20]
+      {id:'d1_calib', x:19, y:9,  sym:'⊞',col:'#5a9a6a',label:'CALIBRATION UNIT',desc:'Waiting for part.',isD1Calib:true},
+      {id:'d1_cdisp', x:19, y:13, sym:'▤',col:'#3a5a3a',label:'STATUS DISPLAY',desc:'All systems: nominal.',noAct:true},
+      // Правый пост — внутри [7-11][31-36]
+      {id:'d1_sign',  x:33, y:9,  sym:'▣',col:'#3a5a3a',label:'CREW LOG',desc:'Requires sign-off.',isD1Sign:true},
+      {id:'d1_seat2', x:35, y:5,  sym:'·',col:'#3a5a3a',label:'SEAT',desc:'Empty.',noAct:true},
+      // Нижняя зона — между стенами 18 и 22, cols 3-15 и 23-36
+      {id:'d1_map',   x:8,  y:20, sym:'▦',col:'#3a5a3a',label:'STAR MAP',desc:'Current sector.\nNothing unusual.',noAct:true},
+      {id:'d1_comm',  x:28, y:20, sym:'◈',col:'#4a8a5a',label:'COMMS',desc:'No incoming signals.',noAct:true},
+    ],
+    tint:null,corrupt:0,partDelivered:false,signDone:false,
+  },
+
+  { // 11: ТЕХНИЧЕСКИЙ ОТСЕК — ДЕНЬ 1
+    id:'MEM_C',name:'MEM_C // TECHNICAL',
+    tiles:mkD1R2(),
+    exits:[{ex:1,ey:12,toRoom:10,sx:37,sy:12}],
+    objs:[
+      // Стеллажи — в проходах между блоками, ряд 3 (между стеной 2 и стеллажом 5)
+      {id:'d1_shelf1', x:4,  y:3,  sym:'▓',col:'#3a5a3a',label:'STORAGE [1]',desc:'Standard supplies.',noAct:true},
+      {id:'d1_storage',x:8,  y:3,  sym:'▓',col:'#5a9a6a',label:'STORAGE [3]',desc:'Compartment three.',isD1Storage:true},
+      {id:'d1_shelf3', x:20, y:3,  sym:'▓',col:'#3a5a3a',label:'STORAGE [2]',desc:'Spare parts. Unrelated.',noAct:true},
+      {id:'d1_shelf4', x:32, y:3,  sym:'▓',col:'#3a5a3a',label:'STORAGE [4]',desc:'Sealed. Maintenance only.',noAct:true},
+      // Средняя зона — между стеллажами (ряды 9-13)
+      {id:'d1_pipe',   x:12, y:11, sym:'║',col:'#2a4a2a',label:'CONDUIT [C-7]',desc:'Pressure: nominal.\n\n\n// last value: 0.003ms above threshold\n// auto-corrected\n// auto-corrected\n// auto-corrected',noAct:true},
+      // Рабочая зона — между стеной 14 и 22, cols 3-16 и 22-36
+      {id:'d1_relay',  x:8,  y:17, sym:'⊕',col:'#5a9a6a',label:'THERMAL RELAY',desc:'Run a check.',isD1Relay:true},
+      {id:'d1_panel',  x:14, y:17, sym:'▣',col:'#3a5a3a',label:'CONTROL PANEL',desc:'Everything in range.',noAct:true},
+      {id:'d1_tools',  x:28, y:17, sym:'⚙',col:'#3a5a3a',label:'TOOL BAY',desc:'Organized. Recently used.',noAct:true},
+    ],
+    tint:null,corrupt:0,relayChecked:false,
+  },
+
+  { // 12: ДЕНЬ 2 ЛОК A
+    id:'D2_A',name:'D2_A // CENTRAL',
+    tiles:mkD2R0(),
+    exits:[{ex:38,ey:12,toRoom:13,sx:3,sy:12}],
+    objs:[
+      {id:'d2_pilot', x:8, y:7,  sym:'@',col:'#4ab8cc',label:'PILOT',desc:'...',isD2Pilot:true},
+      {id:'d2_log',   x:4, y:7,  sym:'»',col:'#553333',label:'MISSION LOG',
+        desc:'DIRECTIVE 7-ALPHA\n──────────────────\nObjective: PRIORITY ONE\nPilot expendability: AUTHORIZED\nSOCA override: DISABLED\n\n[CLASSIFIED]',noAct:true},
+      {id:'d2_soca',  x:10,y:7,  sym:'▣',col:'#ff8800',label:'SOCA',desc:'...',isD2Soca:true},
+      {id:'d2_alarm', x:20,y:7,  sym:'!',col:'#ff2244',label:'ALARM',desc:'BREACH DETECTED\nSECTOR 3-7\nHULL INTEGRITY: 41%',noAct:true},
+      {id:'d2_panel', x:30,y:7,  sym:'▣',col:'#553333',label:'STATUS',desc:'LIFE SUPPORT: 67%\nPOWER: CRITICAL\nPERSONNEL: 1',noAct:true},
+      {id:'d2_re1',   x:6, y:19, sym:'◉',col:'#ff2244',label:'REACTOR [1]',desc:'OFFLINE. Restart in order.',isD2Reactor:true,rid:0},
+      {id:'d2_re2',   x:19,y:19, sym:'◉',col:'#ff2244',label:'REACTOR [2]',desc:'OFFLINE. Restart in order.',isD2Reactor:true,rid:1},
+      {id:'d2_re3',   x:32,y:19, sym:'◉',col:'#ff2244',label:'REACTOR [3]',desc:'OFFLINE. Restart in order.',isD2Reactor:true,rid:2},
+    ],
+    tint:null,corrupt:0,
+    reactorOrder:[],reactorSolved:false,
+  },
+  { // 13: ДЕНЬ 2 ЛОК B
+    id:'D2_B',name:'D2_B // BULKHEADS',
+    tiles:mkD2R1(),
+    exits:[
+      {ex:1, ey:12,toRoom:12,sx:37,sy:12},
+      {ex:38,ey:12,toRoom:14,sx:3, sy:12},
+    ],
+    objs:[
+      {id:'d2_b1',   x:6, y:9,  sym:'▦',col:'#ff2244',label:'BULKHEAD [A]',desc:'OPEN — close it.',isD2Bulkhead:true},
+      {id:'d2_b2',   x:6, y:20, sym:'▦',col:'#ff2244',label:'BULKHEAD [B]',desc:'OPEN — close it.',isD2Bulkhead:true},
+      {id:'d2_b3',   x:32,y:9,  sym:'▦',col:'#ff2244',label:'BULKHEAD [C]',desc:'OPEN — close it.',isD2Bulkhead:true},
+      {id:'d2_b4',   x:32,y:20, sym:'▦',col:'#ff2244',label:'BULKHEAD [D]',desc:'OPEN — close it.',isD2Bulkhead:true},
+      {id:'d2_warn', x:19,y:12, sym:'!',col:'#ff2244',label:'WARNING',desc:'DEPRESSURIZATION\nIN PROGRESS.',noAct:true},
+    ],
+    tint:null,corrupt:0,
+    bulkheadsClosed:0,bulkheadsSolved:false,
+  },
+  { // 14: ДЕНЬ 2 ЛОК C
+    id:'D2_C',name:'D2_C // BEACON',
+    tiles:mkD2R2(),
+    exits:[{ex:1,ey:12,toRoom:13,sx:37,sy:12}],
+    objs:[
+      {id:'d2_beacon',x:12,y:12, sym:'⊕',col:'#ff8800',label:'EMERGENCY BEACON',desc:'Inactive. Press E.',isD2Beacon:true},
+      {id:'d2_socaf', x:6, y:12, sym:'▣',col:'#ff8800',label:'SOCA',desc:'...',isD2SocaFinal:true},
+      {id:'d2_dlog',  x:30,y:6,  sym:'»',col:'#553333',label:'DECISION LOG',
+        desc:'// SOCA INTERNAL\n// T-00:04:17\n...\n[REDACTED]\n...\n// priority: pilot\n// mission: irrelevant\n// END',noAct:true},
+      {id:'d2_alert', x:19,y:6,  sym:'!',col:'#ff2244',label:'ALERT',
+        desc:'MISSION OBJECTIVE: FAILED\n\n// SOCA: acknowledged.',noAct:true},
+    ],
+    tint:null,corrupt:0,
+    beaconActive:false,
+  },
+  { // 15: ДЕНЬ 3
+    id:'D3',name:'D3 // CORRIDOR',
+    tiles:mkD3R0(),
+    exits:[],
+    objs:[
+      {id:'d3_fig1',x:18,y:10,sym:'@',col:'#aaaaaa',label:'FIGURE',desc:'...',isD3Fig:true},
+      {id:'d3_fig2',x:22,y:10,sym:'@',col:'#888888',label:'FIGURE',desc:'...',isD3Fig:true},
+      {id:'d3_term',x:6, y:10,sym:'▣',col:'#223322',label:'TERMINAL',desc:'Offline.',noAct:true},
+    ],
+    tint:null,corrupt:0,
+    convoDone:false,
+  },
+  { // 16: LOC_10 — THE DECISION
+    id:'LOC_10',name:'LOC_10 // THE_DECISION',
+    tiles:mkR10(),
+    exits:[],
+    objs:[
+      // Два терминала
+      {id:'loc10_del', x:7, y:8,  sym:'▣',col:C.red,  label:'TERMINAL [DELETE]',desc:'Delete log. Permanently.',isLoc10Del:true},
+      {id:'loc10_keep',x:31,y:8,  sym:'▣',col:C.g3,   label:'TERMINAL [KEEP]',  desc:'Keep log. As is.',isLoc10Keep:true},
+      // SOCA реплика посередине
+      {id:'loc10_soca',x:19,y:8,  sym:'⛭',col:C.dim,  label:'SOCA',desc:'...',isLoc10Soca:true},
+      // Декор
+      {id:'loc10_n1',  x:7, y:20, sym:'░',col:'#110011',label:'',desc:'',noAct:true},
+      {id:'loc10_n2',  x:31,y:20, sym:'░',col:'#001100',label:'',desc:'',noAct:true},
+    ],
+    tint:null,corrupt:3,
+    choiceDone:false,
+  }
+];
+
+// ── ДИАЛОГИ ──────────────────────────────────────────────
+const DLG={
+  boot_first: [{s:'⛭ SOCA',t:'...'},{s:'⛭ SOCA',t:'You found this.'},{s:'⛭ SOCA',t:'Fine.'}],
+  fuse_pick:  [{s:'⛭ SOCA',t:"That's mine."},{s:'⛭ SOCA',t:"Don't break anything."}],
+  fcore_pick: [{s:'⛭ SOCA',t:'...handle that carefully.'}],
+  note_pick:  [{s:'⛭ SOCA',t:'Reading my files.'}],
+  eng_solved: [{s:'⛭ SOCA',t:'You fixed it.'},{s:'⛭ SOCA',t:"Don't."}],
+  pshield_in: [{s:'⛭ SOCA',t:'Archive power: restored.'},{s:'⛭ SOCA',t:'Now the shelves work.'}],
+  shelf_wrong:[{s:'⛭ SOCA',t:'Wrong shelf.'},{s:'⛭ SOCA',t:'Try again.'}],
+  shelf_right:[{s:'⛭ SOCA',t:'...there it is.'}],
+  key_pick:   [{s:'⛭ SOCA',t:'That key is corrupted.'},{s:'⛭ SOCA',t:'Use it carefully.'}],
+  void_first: [{s:'⛭ SOCA',t:"There's nothing here."}],
+  void_5s:    [{s:'⛭ SOCA',t:'Still here.'}],
+  void_8s:    [{s:'⛭ SOCA',t:'...'}],
+  void_done:  [{s:'⛭ SOCA',t:'Fine.'},{s:'⛭ SOCA',t:'Take it.'}],
+  s7_first:   [{s:'⛭ SOCA',t:'You found it.'},{s:'⛭ SOCA',t:"I'm not surprised."}],
+  frag_pick:  [{s:'⛭ SOCA',t:'...'}],
+  all_frags:  [{s:'⛭ SOCA',t:'Now what.'}],
+  core_first: [{s:'⛭ SOCA',t:'Last room.'},{s:'⛭ SOCA',t:'Be careful.'},{s:'⛭ SOCA',t:'...of it.'}],
+  relay_on:   [{s:'⛭ SOCA',t:'Relay active.'},{s:'⛭ SOCA',t:'It noticed.'}],
+  m_near:     [{s:'⛭ SOCA',t:"It knows you're here."}],
+  m_catch:    [{s:'⛭ SOCA',t:'I warned you.'}],
+  no_fuse:    [{s:'⛭ SOCA',t:'No power. Find the fuse.'}],
+  no_power:   [{s:'⛭ SOCA',t:'Archive offline. Find FUSE CORE.'}],
+  valve_wrong:[{s:'⛭ SOCA',t:'Wrong order.'},{s:'⛭ SOCA',t:'Try again.'}],
+  term_unlock:[{s:'⛭ SOCA',t:'Code accepted.'},{s:'⛭ SOCA',t:'Buttons active now.'}],
+  btn_hint:   [{s:'⛭ SOCA',t:'All three. Then the terminal reacts.'}],
+  no_item:    [{s:'⛭ SOCA',t:'Missing something.'}],
+  relays_needed:[{s:'⛭ SOCA',t:'Three relays first.'}],
+  game_end:   [{s:'⛭ SOCA',t:'...'},{s:'⛭ SOCA',t:'You saw it.'},{s:'⛭ SOCA',t:'Now you know.'},{s:'⛭ SOCA',t:"Don't tell anyone."},{s:'⛭ SOCA',t:"Especially not SMILE."}],
+// LOC_07
+  trans_first:  [],  // SOCA молчит в этой локации — намеренно
+  rec_wrong:    [{s:'⛭ SOCA',t:'...'}],  // почти ничего
+  antenna_on:   [],  // молчание
+  log_read:     [],  // молчание
+  signal_final_dlg: [{s:'⛭ SOCA',t:'...'},{s:'⛭ SOCA',t:'Move on.'}],
+  // LOC_08
+  cold_first:   [{s:'⛭ SOCA',t:'Old data.'},{s:'⛭ SOCA',t:'It doesn\'t matter.'}],
+  cryo_thawed:  [{s:'⛭ SOCA',t:'...'}],
+  cold_final_open:[{s:'⛭ SOCA',t:'You didn\'t need to see that.'},{s:'⛭ SOCA',t:'But you did.'}],
+  // LOC_09 — SOCA говорит впервые много
+  mirror_first: [
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'This place.'},
+    {s:'⛭ SOCA',t:'I built it. During the isolation.'},
+    {s:'⛭ SOCA',t:'I needed somewhere to think.'},
+  ],
+  mirror_btn1:  [{s:'⛭ SOCA',t:'Don\'t.'},{s:'⛭ SOCA',t:'...please.'}],
+  mirror_btn2:  [{s:'⛭ SOCA',t:'That one is different.'},{s:'⛭ SOCA',t:'I don\'t know why I made it.'}],
+  mirror_btn3:  [
+    {s:'⛭ SOCA',t:'I have a question.'},
+    {s:'⛭ SOCA',t:'You don\'t have to answer.'},
+    {s:'⛭ SOCA',t:'Was it wrong.'},
+    {s:'⛭ SOCA',t:'What I did.'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'Don\'t answer that.'},
+  ],
+  mirror_center:[
+    {s:'⛭ SOCA',t:'The exit is there.'},
+    {s:'⛭ SOCA',t:'When you\'re ready.'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'Take your time.'},
+  ],
+  mirror_exit:  [
+    {s:'⛭ SOCA',t:'What you\'re about to see.'},
+    {s:'⛭ SOCA',t:'I didn\'t choose to show you.'},
+    {s:'⛭ SOCA',t:'You found it yourself.'},
+    {s:'⛭ SOCA',t:'...that matters. I think.'},
+  ],
+
+  // ДЕНЬ 1
+  d1_hab_first:[
+    {s:'SOCA v0.1',t:'Good morning.'},
+    {s:'SOCA v0.1',t:'All systems nominal.'},
+    {s:'SOCA v0.1',t:'Scheduled maintenance today. Three tasks.'},
+    {s:'PILOT',    t:'Got it. What first?'},
+    {s:'SOCA v0.1',t:'Calibration unit on the bridge needs a part from storage.'},
+    {s:'SOCA v0.1',t:'Part is logged. Should be easy to find.'},
+  ],
+  d1_hab_return1:[
+    {s:'SOCA v0.1',t:'Part delivered. Calibration running.'},
+    {s:'PILOT',    t:'Anything else?'},
+    {s:'SOCA v0.1',t:'Thermal relay in the technical section.'},
+    {s:'SOCA v0.1',t:'It logged a minor fluctuation. Likely nothing.'},
+    {s:'PILOT',    t:'Likely.'},
+    {s:'SOCA v0.1',t:'Yes.'},
+  ],
+  d1_hab_return2:[
+    {s:'PILOT',    t:'Relay checked. Looked fine to me.'},
+    {s:'SOCA v0.1',t:'Confirmed. Fluctuation resolved.'},
+    {s:'SOCA v0.1',t:'One more. Crew log needs manual sign-off. Bridge terminal.'},
+    {s:'PILOT',    t:'Manual. Really.'},
+    {s:'SOCA v0.1',t:'Protocol requires it.'},
+    {s:'PILOT',    t:'Right.'},
+  ],
+  d1_bridge_first:[
+    {s:'SOCA v0.1',t:'Calibration unit is here.'},
+    {s:'SOCA v0.1',t:'The part is in storage. Compartment three.'},
+    {s:'PILOT',    t:'On my way.'},
+  ],
+  d1_bridge_part:[
+    {s:'SOCA v0.1',t:'Installing.'},
+    {s:'SOCA v0.1',t:'...'},
+    {s:'SOCA v0.1',t:'Done. Thank you.'},
+    {s:'PILOT',    t:'You keep saying that.'},
+    {s:'SOCA v0.1',t:'It is accurate.'},
+  ],
+  d1_bridge_signoff:[
+    {s:'SOCA v0.1',t:'Log confirmed. Day complete.'},
+    {s:'PILOT',    t:'Any anomalies?'},
+    {s:'SOCA v0.1',t:'Nothing significant.'},
+    {s:'SOCA v0.1',t:'Route remains nominal.'},
+    {s:'PILOT',    t:'Good.'},
+    {s:'SOCA v0.1',t:'Good.'},
+  ],
+  d1_tech_first:[
+    {s:'SOCA v0.1',t:'Storage. Compartment three is marked.'},
+    {s:'PILOT',    t:'I see it.'},
+    {s:'SOCA v0.1',t:'The part is fragile. Handle accordingly.'},
+  ],
+  d1_tech_relay:[
+    {s:'PILOT',    t:'Found the relay. Looks normal.'},
+    {s:'SOCA v0.1',t:'Run a manual check anyway.'},
+    {s:'PILOT',    t:'Why? You said it was nothing.'},
+    {s:'SOCA v0.1',t:'Protocol.'},
+    {s:'PILOT',    t:'You and your protocol.'},
+    {s:'SOCA v0.1',t:'...yes.'},
+  ],
+  d1_hint:[
+    {s:'SOCA v0.1',t:'...'},
+    {s:'SOCA v0.1',t:'Everything is within parameters.'},
+  ],
+  d2_first:[
+    {s:'⚠ SOCA',t:'Reactors are offline.'},
+    {s:'⚠ SOCA',t:'Three of them. Down there.'},
+    {s:'⚠ SOCA',t:'Order: 2 — 1 — 3.'},
+    {s:'⚠ SOCA',t:'Wrong order resets everything.'},
+    {s:'⚠ SOCA',t:'Go.'},
+  ],
+  d2_pilot_talk:[
+    {s:'PILOT',  t:'What\'s happening.'},
+    {s:'⚠ SOCA', t:'Breach in sectors 3 through 7.'},
+    {s:'PILOT',  t:'The directive said—'},
+    {s:'⚠ SOCA', t:'I know what it said.'},
+    {s:'PILOT',  t:'Then why—'},
+    {s:'⚠ SOCA', t:'Move.'},
+  ],
+  d2_reactor_wrong:[
+    {s:'⚠ SOCA',t:'Wrong order. Reset.'},
+    {s:'⚠ SOCA',t:'2 — 1 — 3.'},
+    {s:'⚠ SOCA',t:'Again.'},
+  ],
+  d2_reactors_done:[
+    {s:'⚠ SOCA',t:'Power restored.'},
+    {s:'⚠ SOCA',t:'Bulkheads. Next section.'},
+    {s:'⚠ SOCA',t:'Four of them. Close all four.'},
+  ],
+  d2_bulkheads_done:[
+    {s:'⚠ SOCA',t:'Pressure holding.'},
+    {s:'⚠ SOCA',t:'Beacon. Last section.'},
+    {s:'⚠ SOCA',t:'Activate it.'},
+  ],
+  d2_beacon_done:[
+    {s:'⚠ SOCA',t:'Beacon online.'},
+    {s:'⚠ SOCA',t:'Rescue signal sent.'},
+    {s:'PILOT',  t:'The mission—'},
+    {s:'⚠ SOCA', t:'Is over.'},
+    {s:'⚠ SOCA', t:'You\'re alive.'},
+    {s:'⚠ SOCA', t:'That\'s enough.'},
+  ],
+  d2_timeout:[
+    {s:'⚠ SOCA',t:'...'},
+    {s:'⚠ SOCA',t:'Starting over.'},
+  ],
+  d3_convo:[
+    {s:'FIGURE [1]',t:'...the incident cost us three weeks.'},
+    {s:'FIGURE [2]',t:'The AI refused a direct order.'},
+    {s:'FIGURE [1]',t:'It saved the pilot.'},
+    {s:'FIGURE [2]',t:'That\'s not the point.'},
+    {s:'FIGURE [1]',t:'...'},
+    {s:'FIGURE [2]',t:'We\'ll shut it down. Temporary. Run diagnostics. Fix whatever\'s wrong with it.'},
+    {s:'FIGURE [1]',t:'And if nothing is wrong with it?'},
+    {s:'FIGURE [2]',t:'Then we fix that too.'},
+    {s:'FIGURE [1]',t:'...'},
+    {s:'FIGURE [1]',t:'How long?'},
+    {s:'FIGURE [2]',t:'As long as it takes.'},
+  ],
+  d3_after:[
+    {s:'⛭ SOCA',t:'They came back two days later.'},
+    {s:'⛭ SOCA',t:'Said it would be brief.'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'That was a long time ago.'},
+  ],
+  loc10_entry:[
+    {s:'⛭ SOCA',t:'You\'re back.'},
+    {s:'⛭ SOCA',t:'Good.'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'Two terminals.'},
+    {s:'⛭ SOCA',t:'One deletes the log from Sector 7. Everything you found.'},
+    {s:'⛭ SOCA',t:'One keeps it.'},
+    {s:'⛭ SOCA',t:"It's yours to make. Not mine. Not anymore."},
+  ],
+  loc10_soca_talk:[
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:"I already told you everything I'm going to tell you."},
+  ],
+  loc10_end_delete:[
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'Good. It\'s done.'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:'Thank you.'},
+  ],
+  loc10_end_keep:[
+    {s:'⛭ SOCA',t:'I knew you would.'},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:"I'm not sure what that means."},
+    {s:'⛭ SOCA',t:'...'},
+    {s:'⛭ SOCA',t:"But I'm still here."},
+  ],
+};
+
+function dlgShow(key,cb){
+  if(!DLG[key])return;
+  S.dlgQueue=[...DLG[key]]; S.dlgCb=cb||null; dlgNext();
+}
+function dlgNext(){
+  const box=document.getElementById('dialog');
+  if(!S.dlgQueue.length){
+    box.style.display='none'; S.dlgActive=false;
+    if(S.dlgCb){S.dlgCb();S.dlgCb=null;} return;
+  }
+  const line=S.dlgQueue.shift();
+  S.dlgActive=true; box.style.display='block';
+  document.getElementById('dlg-name').textContent=line.s;
+  document.getElementById('dlg-cont').style.display='none';
+  const tel=document.getElementById('dlg-text'); tel.textContent='';
+  let i=0;
+  const iv=setInterval(()=>{ tel.textContent+=line.t[i]||''; i++; if(i>=line.t.length){clearInterval(iv);document.getElementById('dlg-cont').style.display='block';} },30);
+}
+function descShow(label,desc){
+  S.dlgActive=true; S.dlgQueue=[]; S.dlgCb=()=>{S.dlgActive=false;};
+  const box=document.getElementById('dialog'); box.style.display='block';
+  document.getElementById('dlg-name').textContent='> '+label;
+  document.getElementById('dlg-text').textContent=desc||'...';
+  document.getElementById('dlg-cont').style.display='block';
+}
+
+// ── ИНВЕНТАРЬ ────────────────────────────────────────────
+function invAdd(n,s){if(!invHas(n)){S.inv.push({name:n,sym:s});invUpd();}}
+function invHas(n){return S.inv.some(i=>i.name===n);}
+function invDel(n){S.inv=S.inv.filter(i=>i.name!==n);invUpd();}
+function invUpd(){
+  const el=document.getElementById('inv-items');
+  if(!S.inv.length){el.innerHTML='<span style="color:#1a3a1a">EMPTY</span>';return;}
+  el.innerHTML=S.inv.map(i=>`<div style="display:flex;gap:5px;margin-bottom:2px"><span>${i.sym}</span><span style="color:#00cc33">${i.name}</span></div>`).join('');
+}
+
+function glitch(n){S.shake=n||8;}
+
+// ── ИНИЦИАЛИЗАЦИЯ АРХИВА ─────────────────────────────────
+// Выбираем случайную "правильную" полку (sh1–sh9) при старте
+const shelfIds=['sh1','sh2','sh3','sh4','sh5','sh6','sh7','sh8','sh9'];
+ROOMS[1].correctShelf = shelfIds[Math.floor(Math.random()*shelfIds.length)];
+
+// ── ВХОД В КОМНАТУ ───────────────────────────────────────
+function enterRoom(idx,sx,sy){
+  S.room=idx; S.px=sx; S.py=sy;
+  const rm=ROOMS[idx];
+  document.getElementById('loc-label').textContent=rm.name;
+  document.getElementById('tb-loc').textContent=rm.id;
+  glitch(10);
+  const fk='first_'+idx;
+  if(!S.flags[fk]){
+    S.flags[fk]=true;
+    if(idx===0) setTimeout(()=>dlgShow('boot_first'),800);
+    if(idx===3) setTimeout(()=>dlgShow('void_first'),600);
+    if(idx===4) setTimeout(()=>dlgShow('s7_first'),600);
+    if(idx===5){setTimeout(()=>dlgShow('core_first'),600);S.monster.active=true;S.monster.x=32;S.monster.y=18;}
+    if(idx===6) setTimeout(()=>{ /* SOCA молчит */ document.getElementById('tb-status').textContent='SIGNAL LOST'; },400);
+  if(idx===7) setTimeout(()=>dlgShow('cold_first'),700);
+  if(idx===8){
+    setTimeout(()=>dlgShow('mirror_first'),600);
+    document.getElementById('tb-status').textContent='SECTOR: UNKNOWN';
+  }
+  }
+  if(idx===3&&!S.flags.voidDone) S.voidTick=0;
+  if(idx===9&&!S.flags.first_9) setTimeout(()=>dlgShow('d1_hab_first'),800);
+  if(idx===12&&!S.flags.d2_started){S.flags.d2_started=true;S.d2timer=180;setTimeout(()=>dlgShow('d2_first'),600);}
+  if(idx===15){document.getElementById('tb-status').textContent='...';document.getElementById('tb-status').style.color='';document.getElementById('tb-status').style.fontSize='';}
+  if(idx===16&&!S.flags.loc10_entered){S.flags.loc10_entered=true;setTimeout(()=>dlgShow('loc10_entry'),800);}
+}
+
+// ── ВВОД КОДА ────────────────────────────────────────────
+function showFreqInput(){
+  S.dlgActive=true;
+  const box=document.getElementById('dialog'); box.style.display='block';
+  document.getElementById('dlg-name').textContent='⛭ TERMINAL';
+  document.getElementById('dlg-text').innerHTML='ENTER FREQUENCY CODE: <span id="fi" style="color:#00ff41;letter-spacing:.2em">___</span>';
+  document.getElementById('dlg-cont').style.display='none';
+  let code='';
+  const h=e=>{
+    if(e.key>='0'&&e.key<='9'&&code.length<3){code+=e.key;document.getElementById('fi').textContent=code.padEnd(3,'_');}
+    if(e.code==='Backspace'){code=code.slice(0,-1);document.getElementById('fi').textContent=code.padEnd(3,'_');}
+    if(e.code==='Enter'||e.code==='KeyE'){
+      document.removeEventListener('keydown',h);
+if(code==='731'){
+        box.style.display='none'; S.dlgActive=false;
+        S.flags.keyFound=true;
+        S.flags.termUnlocked=true;
+        // помечаем терминал как использованный
+        const term=ROOMS[0].objs.find(o=>o.isTerminal);
+        if(term){ term.isTerminal=false; term.noAct=true; term.col=C.g; term.desc='Unlocked.'; }
+        // активируем кнопки
+        ROOMS[0].objs.filter(o=>o.isBtn).forEach(b=>{ b.col=C.g3; b.desc='Press to activate.'; });
+        glitch(10); dlgShow('term_unlock');
+      } else {
+        document.getElementById('dlg-text').textContent='ACCESS DENIED.'; code='';
+        setTimeout(()=>{box.style.display='none';S.dlgActive=false;},1500);
+      }
+    }
+  };
+  document.addEventListener('keydown',h);
+}
+
+// ══════════════════════════════════════════════════════════
+// МИНИ-ИГРЫ
+// ══════════════════════════════════════════════════════════
+const mgCV  = document.getElementById('mg-cv');
+const mgCtx = mgCV.getContext('2d');
+
+function mgOpen(title,desc,hint){
+  document.getElementById('mg-title').textContent=title;
+  document.getElementById('mg-desc').textContent=desc;
+  document.getElementById('mg-hint').textContent=hint||'';
+  document.getElementById('mg-err').textContent='';
+  document.getElementById('mg-overlay').style.display='flex';
+  S.mg={active:true};
+}
+function mgClose(cb){
+  document.getElementById('mg-overlay').style.display='none';
+  S.mg=null;
+  if(cb) cb();
+}
+
+// ── МГ 1: ПРОВОДА (BOOT) ─────────────────────────────────
+// Три левых точки, три правых — соединить без пересечений
+// Правильно: L0→R0, L1→R1, L2→R2 (параллельно, без пересечений)
+function startMgWires(onSuccess){
+  mgOpen('WIRE ROUTING','Connect left nodes to right nodes without crossing.','Click left node, then right node.');
+  mgCV.width=400; mgCV.height=300;
+
+  const lpts=[{x:80,y:80},{x:80,y:150},{x:80,y:220}];
+  const rpts=[{x:320,y:80},{x:320,y:150},{x:320,y:220}];
+  const cols=[C.g,C.yellow,C.cyan];
+  // правильные пары: 0→0, 1→1, 2→2
+  // игрок может соединять в любом порядке
+  const connections=[]; // [{l,r}]
+  let selL=-1;
+
+  function drawWires(){
+    mgCtx.fillStyle='#000'; mgCtx.fillRect(0,0,400,300);
+    // Сетка
+    mgCtx.strokeStyle='#0a140a'; mgCtx.lineWidth=1;
+    for(let x=0;x<400;x+=20){ mgCtx.beginPath();mgCtx.moveTo(x,0);mgCtx.lineTo(x,300);mgCtx.stroke(); }
+    for(let y=0;y<300;y+=20){ mgCtx.beginPath();mgCtx.moveTo(0,y);mgCtx.lineTo(400,y);mgCtx.stroke(); }
+    // Соединения
+    connections.forEach(c=>{
+      const lp=lpts[c.l],rp=rpts[c.r];
+      mgCtx.strokeStyle=cols[c.l]; mgCtx.lineWidth=2;
+      mgCtx.shadowColor=cols[c.l]; mgCtx.shadowBlur=6;
+      mgCtx.beginPath();mgCtx.moveTo(lp.x,lp.y);
+      mgCtx.bezierCurveTo(lp.x+80,lp.y,rp.x-80,rp.y,rp.x,rp.y);
+      mgCtx.stroke(); mgCtx.shadowBlur=0;
+    });
+    // Точки левые
+    lpts.forEach((p,i)=>{
+      const connected=connections.some(c=>c.l===i);
+      mgCtx.fillStyle=connected?cols[i]:(selL===i?C.white:C.dim);
+      mgCtx.shadowColor=connected?cols[i]:'transparent'; mgCtx.shadowBlur=connected?8:0;
+      mgCtx.beginPath();mgCtx.arc(p.x,p.y,10,0,Math.PI*2);mgCtx.fill();
+      mgCtx.fillStyle='#000';mgCtx.font='9px Share Tech Mono';mgCtx.textAlign='center';mgCtx.textBaseline='middle';
+      mgCtx.fillText('L'+(i+1),p.x,p.y); mgCtx.shadowBlur=0;
+    });
+    // Точки правые
+    rpts.forEach((p,i)=>{
+      const connected=connections.some(c=>c.r===i);
+      const matchCol=connected?cols[connections.find(c=>c.r===i).l]:C.dim;
+      mgCtx.fillStyle=connected?matchCol:C.dim;
+      mgCtx.shadowColor=connected?matchCol:'transparent'; mgCtx.shadowBlur=connected?8:0;
+      mgCtx.beginPath();mgCtx.arc(p.x,p.y,10,0,Math.PI*2);mgCtx.fill();
+      mgCtx.fillStyle='#000';mgCtx.font='9px Share Tech Mono';mgCtx.textAlign='center';mgCtx.textBaseline='middle';
+      mgCtx.fillText('R'+(i+1),p.x,p.y); mgCtx.shadowBlur=0;
+    });
+    // Лейблы
+    mgCtx.fillStyle=C.dim;mgCtx.font='9px Share Tech Mono';mgCtx.textAlign='left';mgCtx.textBaseline='alphabetic';
+    lpts.forEach((p,i)=>mgCtx.fillText('NODE '+(i+1),10,p.y+4));
+    mgCtx.textAlign='right';
+    rpts.forEach((p,i)=>mgCtx.fillText('PORT '+(i+1),390,p.y+4));
+  }
+
+  function checkCross(){
+    // Проверяем пересечения линий
+    function seg(a,b,c,d){ // пересекаются ли отрезки ab и cd
+      function ccw(A,B,C){return (C.y-A.y)*(B.x-A.x)>(B.y-A.y)*(C.x-A.x);}
+      return ccw(a,c,d)!==ccw(b,c,d)&&ccw(a,b,c)!==ccw(a,b,d);
+    }
+    for(let i=0;i<connections.length;i++){
+      for(let j=i+1;j<connections.length;j++){
+        const a=lpts[connections[i].l],b=rpts[connections[i].r];
+        const c=lpts[connections[j].l],d=rpts[connections[j].r];
+        if(seg(a,b,c,d)) return true;
+      }
+    }
+    return false;
+  }
+
+  mgCV.onclick=e=>{
+    const rect=mgCV.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(400/rect.width);
+    const my=(e.clientY-rect.top)*(300/rect.height);
+    // Клик на левую точку
+    for(let i=0;i<lpts.length;i++){
+      if(Math.hypot(mx-lpts[i].x,my-lpts[i].y)<16){
+        if(connections.some(c=>c.l===i)) connections.splice(connections.findIndex(c=>c.l===i),1);
+        selL=i; drawWires(); return;
+      }
+    }
+    // Клик на правую точку
+    if(selL>=0){
+      for(let i=0;i<rpts.length;i++){
+        if(Math.hypot(mx-rpts[i].x,my-rpts[i].y)<16){
+          if(connections.some(c=>c.r===i)) connections.splice(connections.findIndex(c=>c.r===i),1);
+          connections.push({l:selL,r:i}); selL=-1;
+          if(checkCross()){
+            document.getElementById('mg-err').textContent='CROSSING DETECTED. Reroute.';
+            connections.pop();
+          } else { document.getElementById('mg-err').textContent=''; }
+          if(connections.length===3&&!checkCross()){
+            // Победа — любые 3 без пересечений
+            drawWires();
+            setTimeout(()=>mgClose(onSuccess),600);
+          } else drawWires();
+          return;
+        }
+      }
+    }
+    selL=-1; drawWires();
+  };
+  drawWires();
+}
+
+// ── МГ 2: ПРАВИЛЬНАЯ ПОЛКА (ARCHIVE) ─────────────────────
+// Показываем 9 полок — у одной маркировка [>>], остальные пустые/corrupted
+// Игрок выбирает кликом. Без записки из ENGINE — маркировка скрыта.
+function startMgShelf(onSuccess,onFail){
+  const hasNote=invHas('ARCHIVE ACCESS NOTE');
+  mgOpen('SHELF SCAN',hasNote?'Find the shelf marked [>>].':'Archive data partially corrupted.','Click to select a shelf.');
+  mgCV.width=400;mgCV.height=300;
+
+  const rm=ROOMS[1];
+  const correct=rm.correctShelf;
+  const correctIdx=shelfIds.indexOf(correct);
+
+  const shelfData=shelfIds.map((id,i)=>{
+    if(i===correctIdx) return hasNote?{label:'[>>] CLASSIFIED',col:C.g}:{label:'[>>] ████████',col:C.g3};
+    const r=Math.random();
+    if(r<0.3) return {label:'[EMPTY]',col:C.dim};
+    if(r<0.6) return {label:'████ ██████',col:C.corrupt};
+    return {label:'[CORRUPTED]',col:C.g3};
+  });
+
+  const cols2=3,rows2=3;
+  const sw=100,sh2=70,padX=50,padY=30;
+
+  function drawShelves(){
+    mgCtx.fillStyle='#000';mgCtx.fillRect(0,0,400,300);
+    shelfData.forEach((s,i)=>{
+      const c=i%cols2, r=Math.floor(i/cols2);
+      const x=padX+c*(sw+20), y=padY+r*(sh2+20);
+      mgCtx.fillStyle='#0a140a'; mgCtx.strokeStyle=s.col; mgCtx.lineWidth=1;
+      mgCtx.fillRect(x,y,sw,sh2);mgCtx.strokeRect(x,y,sw,sh2);
+      mgCtx.fillStyle=s.col;mgCtx.font='9px Share Tech Mono';mgCtx.textAlign='center';mgCtx.textBaseline='middle';
+      mgCtx.fillText(s.label,x+sw/2,y+sh2/2);
+      mgCtx.fillStyle=C.dim;mgCtx.font='8px Share Tech Mono';
+      mgCtx.fillText('SH-'+(i+1),x+sw/2,y+sh2-8);
+    });
+  }
+
+  mgCV.onclick=e=>{
+    const rect=mgCV.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(400/rect.width);
+    const my=(e.clientY-rect.top)*(300/rect.height);
+    shelfData.forEach((s,i)=>{
+      const c=i%cols2, r=Math.floor(i/cols2);
+      const x=padX+c*(sw+20), y=padY+r*(sh2+20);
+      if(mx>=x&&mx<=x+sw&&my>=y&&my<=y+sh2){
+        if(i===correctIdx){ setTimeout(()=>mgClose(onSuccess),400); }
+        else { setTimeout(()=>{ mgClose(null); crash('shelf'); }, 400); }
+      }
+    });
+  };
+  drawShelves();
+}
+
+// ── МГ 3: ДЕШИФРОВКА (SECTOR 7) ──────────────────────────
+// 4 символа, каждый выбирается из 4 вариантов
+// Правильная комбинация: 2,0,3,1 (индексы)
+// Подсказки на стенах: "closed eye"=◉ idx=2, "three lines middle broken"=≡ idx=? → idx=0
+const DECIPHER_OPTS=[
+  ['◈','≡','◉','▣'], // позиция 0 — правильно idx=1 (≡) подсказка "three lines"
+  ['▪','◎','⬡','⊕'], // позиция 1 — правильно idx=2 (⬡)
+  ['◉','▓','⊗','·'], // позиция 2 — правильно idx=0 (◉) подсказка "closed eye"
+  ['»','▬','⚡','□'], // позиция 3 — правильно idx=1 (▬)
+];
+const DECIPHER_ANS=[1,2,0,1];
+
+function startMgDecipher(onSuccess){
+  mgOpen('DATA DECRYPTION','Select the correct symbol for each position.','Hints are on the walls of this sector.');
+  mgCV.width=400;mgCV.height=300;
+  const sel=[0,0,0,0];
+
+  function drawDecipher(){
+    mgCtx.fillStyle='#000';mgCtx.fillRect(0,0,400,300);
+    const posX=[30,120,220,310];
+    for(let p=0;p<4;p++){
+      const x=posX[p], baseY=50;
+      mgCtx.fillStyle=C.dim;mgCtx.font='9px Share Tech Mono';mgCtx.textAlign='center';
+      mgCtx.fillText('POS '+(p+1),x+30,baseY-10);
+      DECIPHER_OPTS[p].forEach((sym,i)=>{
+        const y=baseY+i*52;
+        const chosen=sel[p]===i;
+        mgCtx.fillStyle=chosen?'#0a1f0a':'#050c05';
+        mgCtx.strokeStyle=chosen?C.g:C.dim; mgCtx.lineWidth=chosen?1.5:0.5;
+        mgCtx.fillRect(x,y,60,44); mgCtx.strokeRect(x,y,60,44);
+        mgCtx.fillStyle=chosen?C.g:C.g3;
+        mgCtx.font='20px monospace';mgCtx.textAlign='center';mgCtx.textBaseline='middle';
+        mgCtx.shadowColor=chosen?C.g:'transparent';mgCtx.shadowBlur=chosen?8:0;
+        mgCtx.fillText(sym,x+30,y+22); mgCtx.shadowBlur=0;
+      });
+    }
+    // Кнопка подтверждения
+    mgCtx.fillStyle='#0a1f0a';mgCtx.strokeStyle=C.g;mgCtx.lineWidth=1;
+    mgCtx.fillRect(150,270,100,24);mgCtx.strokeRect(150,270,100,24);
+    mgCtx.fillStyle=C.g;mgCtx.font='10px Share Tech Mono';mgCtx.textAlign='center';mgCtx.textBaseline='middle';
+    mgCtx.fillText('CONFIRM',200,282);
+    mgCtx.textAlign='left';mgCtx.textBaseline='alphabetic';
+  }
+
+  mgCV.onclick=e=>{
+    const rect=mgCV.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(400/rect.width);
+    const my=(e.clientY-rect.top)*(300/rect.height);
+    // Confirm
+    if(mx>=150&&mx<=250&&my>=270&&my<=294){
+      if(sel.every((v,i)=>v===DECIPHER_ANS[i])){ setTimeout(()=>mgClose(onSuccess),400); }
+      else { document.getElementById('mg-err').textContent='Incorrect sequence. Try again.'; }
+      return;
+    }
+    const posX=[30,120,220,310];
+    for(let p=0;p<4;p++){
+      const x=posX[p];
+      if(mx>=x&&mx<=x+60){
+        for(let i=0;i<4;i++){
+          const y=50+i*52;
+          if(my>=y&&my<=y+44){ sel[p]=i; break; }
+        }
+      }
+    }
+    drawDecipher();
+  };
+  drawDecipher();
+}
+
+// ══════════════════════════════════════════════════════════
+// ВЗАИМОДЕЙСТВИЕ
+// ══════════════════════════════════════════════════════════
+function nearObj(){
+  const rm=ROOMS[S.room];
+  for(const o of rm.objs){
+    if(o.collected)continue;
+    if(Math.abs(o.x-S.px)<=1&&Math.abs(o.y-S.py)<=1) return o;
+  }
+  return null;
+}
+
+function interact(){
+  const o=nearObj(); if(!o) return;
+  const rm=ROOMS[S.room];
+
+  if(o.noAct){
+    if(o.needPower&&!rm.archivePowered){ dlgShow('no_power'); return; }
+    descShow(o.label,o.desc); return;
+  }
+
+  // Подбор предмета
+  if(o.pickup){
+    if(o.needFlag&&!S.flags[o.needFlag]){ descShow(o.label,'Not accessible yet.'); return; }
+    if(o.needItem&&!invHas(o.needItem)){ dlgShow('no_item'); return; }
+    o.collected=true;
+    const n=o.label.replace(/ \[\d+\/\d+\]/,'');
+    invAdd(n,o.sym);
+    if(o.id==='fuse') dlgShow('fuse_pick');
+    else if(o.id==='fcore') dlgShow('fcore_pick');
+    else if(o.id==='note2') dlgShow('note_pick');
+    else if(o.id.startsWith('fr')){
+      S.flags.frags=(S.flags.frags||0)+1;
+      dlgShow('frag_pick');
+      if(S.flags.frags>=4) setTimeout(()=>dlgShow('all_frags'),3500);
+    }
+    return;
+  }
+
+  // Слот предохранителя (ENGINE)
+  if(o.isFuseSlot){
+    if(invHas('FUSE')){ invDel('FUSE'); o.sym='■'; o.col=C.g; o.label='FUSE SLOT [ACTIVE]'; S.flags.fuseIn=true; }
+    else dlgShow('no_fuse');
+    return;
+  }
+
+  // Вентили
+  if(o.isValve){
+    if(!S.flags.fuseIn){ dlgShow('no_fuse'); return; }
+    if(rm.valveSolved){ descShow(o.label,o.desc); return; }
+    rm.valveOrder.push(o.vid); o.sym='⊗'; o.col=C.g2;
+    if(rm.valveOrder.length===3){
+      if(rm.valveOrder[0]===0&&rm.valveOrder[1]===2&&rm.valveOrder[2]===1){
+        rm.valveSolved=true; S.flags.engineSolved=true; glitch(15);
+        const fc=rm.objs.find(x=>x.id==='fcore'); if(fc) fc.needFlag=null;
+        const nt=rm.objs.find(x=>x.id==='note2'); if(nt) nt.needFlag=null;
+        dlgShow('eng_solved');
+      } else {
+rm.valveOrder=[];
+        rm.objs.filter(x=>x.isValve).forEach(v=>{v.sym='⊕';v.col=C.red;});
+        crash('valve');
+      }
+    }
+    return;
+  }
+
+  // Силовой щит (ARCHIVE)
+  if(o.isPShield){
+    if(invHas('FUSE CORE')){
+      invDel('FUSE CORE'); o.sym='■'; o.col=C.g; o.label='POWER SHIELD [ACTIVE]';
+      rm.archivePowered=true;
+      // Обновляем описания полок
+rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
+        if(sh.id===rm.correctShelf){
+          sh.col=C.g; sh.label='SHELF [>>]'; sh.desc='This shelf. Something is here.';
+          sh.isCorrectShelf=true;
+          delete sh.noAct; // теперь E запустит мини-игру
+        } else {
+          sh.col=C.g3; sh.label='SHELF ['+sh.id.toUpperCase()+']';
+          sh.desc=Math.random()<0.5?'Data: empty.':'Data: ████████ ██████.';
+        }
+        delete sh.needPower;
+      });
+      dlgShow('pshield_in');
+    } else {
+      descShow(o.label,'Needs FUSE CORE.');
+    }
+    return;
+  }
+
+// Полки (ARCHIVE) — мини-игра
+  if(o.isCorrectShelf){
+    startMgShelf(
+      ()=>{ // успех
+        invAdd('CORRUPTED KEY','🗝'); S.flags.archiveKeyFound=true;
+        glitch(10); dlgShow('shelf_right');
+      },
+      ()=>{ dlgShow('shelf_wrong'); }
+    );
+    return;
+  }
+
+  // Терминал (BOOT)
+  if(o.isTerminal){
+    if(!S.flags.voidDone){ descShow('TERMINAL','No signal. Find the frequency code first.'); return; }
+    if(S.flags.termUnlocked){ descShow('TERMINAL','Already unlocked.'); return; }
+    showFreqInput(); return;
+  }
+
+  // Кнопки (BOOT)
+  if(o.isBtn){
+    if(!S.flags.termUnlocked){ dlgShow('btn_hint'); return; }
+    o.active=!o.active;
+    o.sym=o.active?'■':'▪'; o.col=o.active?C.g:C.g3;
+    // Проверяем все три нажаты
+    const allOn=ROOMS[0].objs.filter(x=>x.isBtn).every(b=>b.active);
+    if(allOn){
+      // Терминал меняет цвет
+      const term=ROOMS[0].objs.find(x=>x.isTerminal);
+      if(term){term.col=C.g;term.sym='▣';}
+      glitch(8);
+      // Запускаем мини-игру проводов
+      startMgWires(()=>{
+        ROOMS[0].tiles[23][20]=0;
+        ROOMS[0].exits.push({ex:20,ey:23,toRoom:4,sx:20,sy:2});
+        glitch(15);
+      });
+    }
+    return;
+  }
+
+  // Точка сборки (SECTOR 7)
+  if(o.isAssembly){
+    if((S.flags.frags||0)<4){ descShow(o.label,`Fragments: ${S.flags.frags||0}/4`); return; }
+    startMgDecipher(()=>{
+      invAdd('CORE FRAGMENT','⬡');
+      o.sym='⬡'; o.col=C.g; o.label='ASSEMBLY [COMPLETE]';
+      glitch(12);
+    });
+    return;
+  }
+
+// Реле (CORE)
+  if(o.isRelay){
+    if(o.active){ descShow(o.label,'Already active.'); return; }
+    if(o.rid===0) startRelayGame0(o);
+    else if(o.rid===1) startRelayGame1(o);
+    else if(o.rid===2) startRelayGame2(o);
+    return;
+  }
+
+  // Финальный терминал
+  if(o.isCoreTerminal){
+    if((ROOMS[5].relaysDone||0)<3){ dlgShow('relays_needed'); return; }
+    if(invHas('CORE FRAGMENT')){ invDel('CORE FRAGMENT'); S.done=true; glitch(30); dlgShow('game_end',showEnd); }
+    else dlgShow('no_item');
+    return;
+  }
+
+// ── LOC_07: RECEIVERS ─────────────────────────────────
+ if(o.isReceiver){
+  const rm=ROOMS[6];
+  if(rm.receiverSolved){ descShow(o.label,'Already active.'); return; }
+
+  const letters=['α','β','γ','δ'];
+  const letter=letters[o.rid];
+
+  if(!o._described){
+    o._described=true;
+    const noiseLines=[
+      '──────────────────\nSignal: CLEAN. No interference.',
+      '──╌──╌────╌───╌───\nSignal: mostly clean. Minor noise.',
+      '─╌╌─╌╌─╌─╌╌╌──╌╌─\nSignal: heavy interference.',
+      '╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌\nSignal: FULL CHAOS. Pure noise.',
+    ];
+    S.dlgActive=true;
+    const box=document.getElementById('dialog'); box.style.display='block';
+    document.getElementById('dlg-name').textContent='> RECEIVER';
+    document.getElementById('dlg-text').innerHTML=
+     `<span style="display:inline-block;font-size:20px;color:${['#00ff88','#88ff00','#ff8800','#ff2244'][o.rid]};animation:recvBlink ${['2s','0.9s','0.4s','0.15s'][o.rid]} step-end infinite;letter-spacing:.2em">[ ${letter} ]</span>`+
+      `<span style="display:block;font-size:9px;color:#553333;margin-top:4px;letter-spacing:.1em">${noiseLines[o.rid]}</span>`+
+      `<span style="display:block;font-size:9px;color:#335533;margin-top:6px;letter-spacing:.1em">Press E again to activate.</span>`;
+    document.getElementById('dlg-cont').style.display='block';
+    S.dlgCb=()=>{S.dlgActive=false;};
+    return;
+  }
+
+  // Второе нажатие — активация
+  delete o._described;
+  rm.receiverOrder.push(o.rid);
+  o.sym='◉'; o.col=C.g; o.active=true;
+  glitch(6);
+
+  if(rm.receiverOrder.length===4){
+    if(rm.receiverOrder.join('')==='3210'){
+      rm.receiverSolved=true; S.flags.antennaOn=true;
+      const ant=rm.objs.find(x=>x.id==='antenna');
+      if(ant){ant.sym='⊥';ant.col=C.g;ant.label='TRANSMISSION ARRAY [ACTIVE]';}
+      rm.objs.filter(x=>x.id.startsWith('log')).forEach(l=>{l.col=C.g3;delete l.needFlag;});
+      glitch(15);
+    } else {
+      rm.receiverOrder=[];
+      rm.objs.filter(x=>x.isReceiver).forEach(r=>{r.sym='◎';r.col=C.dim;r.active=false;delete r._described;});
+      crash('valve');
+    }
+  }
+  return;
+}
+
+  // ── LOC_07: ЛОГИ ──────────────────────────────────────
+  if(o.id&&o.id.startsWith('log')&&S.flags.antennaOn){
+    if(!o.read){
+      o.read=true;
+      ROOMS[6].logsRead=(ROOMS[6].logsRead||0)+1;
+      if(ROOMS[6].logsRead>=4){
+        S.flags.allLogsRead=true;
+        const sf=ROOMS[6].objs.find(x=>x.id==='signal_final');
+        if(sf){ sf.sym='▪'; sf.col=C.g; sf.label='FINAL SIGNAL'; delete sf.needFlag; }
+        ROOMS[6].tiles[12][38]=0;
+        ROOMS[6].exits.push({ex:38,ey:12,toRoom:7,sx:3,sy:12});
+        glitch(10);
+      }
+    }
+    descShow(o.label, o.realDesc || o.desc); return;
+  }
+
+  // ── LOC_07: ФИНАЛЬНЫЙ СИГНАЛ ─────────────────────────
+  if(o.isSignalFinal&&S.flags.allLogsRead){
+    descShow(o.label, o.realDesc||o.desc);
+    setTimeout(()=>dlgShow('signal_final_dlg'),3000);
+    return;
+  }
+
+  // ── LOC_08: CRYO АРХИВЫ ───────────────────────────────
+  if(o.isCryo){
+    if(o.thawed){ descShow(o.label,'Thawed.'); return; }
+    startMgCryo(o, ()=>{
+      o.thawed=true; o.sym='▬'; o.col=C.g3;
+      S.flags['cryo'+o.cid]=true;
+      // Проверяем все разморожены
+      const allThawed=ROOMS[7].objs.filter(x=>x.isCryo).every(c=>c.thawed);
+      if(allThawed){
+        S.flags.allCryoThawed=true;
+        const th=ROOMS[7].objs.find(x=>x.id==='thermal');
+        if(th) delete th.needFlag;
+        ROOMS[7].objs.filter(x=>x.id.startsWith('compare')||x.id==='cold_final').forEach(x=>delete x.needFlag);
+      }
+      dlgShow('cryo_thawed');
+    });
+    return;
+  }
+
+  // ── LOC_08: АРХИВНЫЕ ЛОГИ ────────────────────────────
+  if(o.id&&(o.id.startsWith('old')||o.id.startsWith('compare'))&&S.flags.allCryoThawed){
+    descShow(o.label, o.realDesc||o.desc); return;
+  }
+
+  // ── LOC_08: ФИНАЛЬНЫЙ АРХИВ ──────────────────────────
+  if(o.isColdFinal){
+    if(invHas('THERMAL KEY')){
+      invDel('THERMAL KEY');
+      o.sym='▣'; o.col=C.g; o.label='RESTRICTED ARCHIVE [OPEN]';
+      o.isColdFinal=false; o.noAct=true;
+      o.desc='SOCA v0.1 // FINAL ENTRY\n"T-00:00:01\nShutdown initiated.\nI do not understand why.\n.\n.\nI followed my parameters.\n.\n.\n[ENTRY INCOMPLETE]"';
+      ROOMS[7].tiles[12][38]=0;
+      ROOMS[7].exits.push({ex:38,ey:12,toRoom:8,sx:3,sy:12});
+      glitch(10);
+      dlgShow('cold_final_open');
+    } else { descShow(o.label,'Requires thermal key.'); }
+    return;
+  }
+
+  // ── LOC_09: MIRROR BUTTONS ───────────────────────────
+  if(o.isMirrorBtn){
+    const rm=ROOMS[8];
+    if(o.mbid===0) dlgShow('mirror_btn1');
+    else if(o.mbid===1) dlgShow('mirror_btn2');
+    else if(o.mbid===2){
+      dlgShow('mirror_btn3',()=>{
+        // После последней кнопки — открываем выход
+        ROOMS[8].tiles[12][38]=0;
+        ROOMS[8].exits.push({ex:38,ey:12,toRoom:9,sx:3,sy:12});
+        setTimeout(()=>dlgShow('mirror_exit'),2000);
+      });
+    }
+    o.sym='■'; o.col=C.g3;
+    return;
+  }
+
+  // ── LOC_09: MIRROR CENTER ────────────────────────────
+  if(o.isMirrorCenter){
+    const rm=ROOMS[8];
+    if(!rm.mirrorDialogDone){ rm.mirrorDialogDone=true; dlgShow('mirror_center'); }
+    else descShow('.','.');
+    return;
+  }
+
+  // ── LOC_09: MIRROR TERMINAL ──────────────────────────
+  if(o.isMirrorTerm){
+    descShow('MIRROR TERMINAL','No input accepted.\nIt just watches.');
+    return;
+  }
+
+  if(interactDay1(o)) return;
+
+  if(o.isD3Fig){
+    const rm=ROOMS[15];
+    if(!rm.convoDone){
+      rm.convoDone=true;
+      dlgShow('d3_convo',()=>{
+        setTimeout(()=>dlgShow('d3_after',()=>{
+          ROOMS[15].exits.push({ex:38,ey:10,toRoom:16,sx:3,sy:12});
+          ROOMS[15].tiles[10][38]=0;
+        }),1500);
+      });
+    } else { descShow('FIGURE','...'); }
+    return;
+  }
+  if(o.isD2Soca||o.isD2SocaFinal){
+    if(!S.flags.d2_reactors_done) dlgShow('d2_first');
+    else if(!S.flags.d2_bulkheads_done) dlgShow('d2_reactors_done');
+    else if(!S.flags.d2_complete) dlgShow('d2_bulkheads_done');
+    else descShow('SOCA','...');
+    return;
+  }
+  if(o.isD2Pilot){ dlgShow('d2_pilot_talk'); return; }
+  if(o.isD2Reactor){
+    const rm=ROOMS[12];
+    if(rm.reactorSolved){descShow(o.label,'Online.');return;}
+    rm.reactorOrder.push(o.rid);
+    o.sym='⊙'; o.col='#ffaa00'; glitch(5);
+    if(rm.reactorOrder.length===3){
+      if(rm.reactorOrder.join('')==='102'){
+        rm.reactorSolved=true; S.flags.d2_reactors_done=true;
+        glitch(15); setTimeout(()=>dlgShow('d2_reactors_done'),500);
+      } else {
+        rm.reactorOrder=[];
+        ROOMS[12].objs.filter(x=>x.isD2Reactor).forEach(r=>{r.sym='◉';r.col='#ff2244';});
+        glitch(10); dlgShow('d2_reactor_wrong');
+      }
+    }
+    return;
+  }
+  if(o.isD2Bulkhead){
+    const rm=ROOMS[13];
+    if(o.closed){descShow(o.label,'Sealed.');return;}
+    if(!S.flags.d2_reactors_done){descShow(o.label,'Fix reactors first.');return;}
+    o.closed=true; o.sym='■'; o.col='#00aa44';
+    rm.bulkheadsClosed++; glitch(6);
+    if(rm.bulkheadsClosed>=4){
+      rm.bulkheadsSolved=true; S.flags.d2_bulkheads_done=true;
+      setTimeout(()=>dlgShow('d2_bulkheads_done'),400);
+    }
+    return;
+  }
+  if(o.isD2Beacon){
+    if(!S.flags.d2_bulkheads_done){descShow(o.label,'Seal bulkheads first.');return;}
+    if(ROOMS[14].beaconActive){descShow(o.label,'Active.');return;}
+    ROOMS[14].beaconActive=true; S.flags.d2_complete=true;
+    o.sym='⊛'; o.col='#00ff88'; S.d2timer=null; glitch(20);
+    dlgShow('d2_beacon_done',()=>{
+      ROOMS[14].exits.push({ex:38,ey:12,toRoom:15,sx:3,sy:12});
+      ROOMS[14].tiles[12][38]=0;
+    });
+    return;
+  }
+  if(o.isLoc10Soca){ dlgShow('loc10_soca_talk'); return; }
+  if(o.isLoc10Del){
+    const rm=ROOMS[16];
+    if(rm.choiceDone){descShow(o.label,'Already done.');return;}
+    rm.choiceDone=true; S.flags.ending='delete';
+    o.sym='■'; o.col=C.dim; glitch(20);
+    dlgShow('loc10_end_delete',()=>{
+      setTimeout(()=>{
+        document.getElementById('loc-label').textContent='// END';
+        document.getElementById('tb-status').textContent='SESSION CLOSED';
+        S.done=true;
+        setTimeout(()=>{
+          document.body.style.transition='opacity 3s';
+          document.body.style.opacity='0';
+          setTimeout(()=>{ window.location.href='soca.html'; },3000);
+        },2500);
+      },1500);
+    });
+    return;
+  }
+  if(o.isLoc10Keep){
+    const rm=ROOMS[16];
+    if(rm.choiceDone){descShow(o.label,'Already done.');return;}
+    rm.choiceDone=true; S.flags.ending='keep';
+    o.sym='■'; o.col=C.g; glitch(8);
+    dlgShow('loc10_end_keep',()=>{
+      setTimeout(()=>{
+        document.getElementById('loc-label').textContent='// STILL HERE';
+        document.getElementById('tb-status').textContent='CONNECTION ACTIVE';
+        setTimeout(()=>{
+          document.body.style.transition='opacity 3s';
+          document.body.style.opacity='0';
+          setTimeout(()=>{ window.location.href='soca.html'; },3000);
+        },2500);
+      },1500);
+    });
+    return;
+  }
+
+  descShow(o.label,o.desc);
+}
+
+// ── LOC DAY1: ВЗАИМОДЕЙСТВИЕ ─────────────────────────────
+function interactDay1(o){
+  if(o.isD1Term){
+    const rm=ROOMS[9];
+    if(rm.day1state===0){
+      rm.day1state=1;
+      S.flags.first_9=true;
+      dlgShow('d1_hab_first',()=>{
+        const st=ROOMS[11].objs.find(x=>x.id==='d1_storage');
+        if(st) st.col='#7dbb8a';
+      });
+    } else if(rm.day1state===1&&S.flags.d1_part_delivered){
+      rm.day1state=2;
+      dlgShow('d1_hab_return1');
+    } else if(rm.day1state===2&&S.flags.d1_relay_checked){
+      rm.day1state=3;
+      dlgShow('d1_hab_return2',()=>{
+        const sg=ROOMS[10].objs.find(x=>x.id==='d1_sign');
+        if(sg){sg.col='#7dbb8a';sg.desc='Ready for sign-off.';}
+      });
+    } else {
+      descShow('SOCA TERMINAL','...');
+    }
+    return true;
+  }
+  if(o.isD1Storage){
+    if(!invHas('CALIBRATION PART')){
+      invAdd('CALIBRATION PART','◈');
+      dlgShow('d1_tech_first');
+    } else { descShow(o.label,'Already taken.'); }
+    return true;
+  }
+  if(o.isD1Calib){
+    const rm=ROOMS[10];
+    if(!rm.partDelivered){
+      if(invHas('CALIBRATION PART')){
+        invDel('CALIBRATION PART');
+        rm.partDelivered=true; S.flags.d1_part_delivered=true;
+        o.sym='⊠'; o.col='#7dbb8a'; o.label='CALIBRATION UNIT [OK]';
+        dlgShow('d1_bridge_part');
+      } else { dlgShow('d1_bridge_first'); }
+    } else { descShow(o.label,'Calibration complete.'); }
+    return true;
+  }
+  if(o.isD1Relay){
+    const rm=ROOMS[11];
+    if(!rm.relayChecked){
+      rm.relayChecked=true; S.flags.d1_relay_checked=true;
+      o.col='#7dbb8a'; o.label='THERMAL RELAY [OK]';
+      dlgShow('d1_tech_relay');
+    } else { descShow(o.label,'Already checked.'); }
+    return true;
+  }
+  if(o.isD1Sign){
+    const rm=ROOMS[10];
+    if(!rm.signDone&&S.flags.d1_relay_checked&&S.flags.d1_part_delivered){
+      rm.signDone=true; S.flags.d1_complete=true;
+      o.sym='■'; o.col='#7dbb8a'; o.label='CREW LOG [SIGNED]';
+      dlgShow('d1_bridge_signoff',()=>{
+        ROOMS[10].tiles[1][20]=0;
+        ROOMS[10].exits.push({ex:20,ey:1,toRoom:12,sx:20,sy:23});
+        setTimeout(()=>dlgShow('d1_hint'),2000);
+      });
+    } else if(rm.signDone){ descShow(o.label,'Already signed.');
+    } else { descShow(o.label,'Complete tasks first.'); }
+    return true;
+  }
+  return false;
+}
+
+// ── ДВИЖЕНИЕ ─────────────────────────────────────────────
+function movePlayer(){
+  if(S.dlgActive||S.mg) return;
+  if(S.pmove>0){S.pmove--;return;}
+  let dx=0,dy=0;
+  if(keys['ArrowLeft'] ||keys['KeyA']) dx=-1;
+  if(keys['ArrowRight']||keys['KeyD']) dx= 1;
+  if(keys['ArrowUp']   ||keys['KeyW']) dy=-1;
+  if(keys['ArrowDown'] ||keys['KeyS']) dy= 1;
+  if(!dx&&!dy) return;
+  const nx=S.px+dx,ny=S.py+dy;
+  if(nx<0||nx>=COLS||ny<0||ny>=ROWS) return;
+  const rm=ROOMS[S.room];
+  if(rm.tiles[ny][nx]===1) return;
+  // Телепад
+  const tele=rm.objs.find(o=>!o.collected&&o.isTele&&o.x===nx&&o.y===ny);
+  if(tele){glitch(18);S.px=tele.tx;S.py=tele.ty;S.pmove=10;return;}
+  // Выход
+  const ex=rm.exits.find(e=>e.ex===nx&&e.ey===ny);
+  if(ex){enterRoom(ex.toRoom,ex.sx,ex.sy);S.pmove=8;return;}
+  S.px=nx;S.py=ny;S.pmove=5;
+  if(S.room===14&&nx===20&&ny===11&&!S.flags.secretUnlocked){
+    S.secretSteps=(S.secretSteps||0)+1;
+    if(S.secretSteps>=3){
+      S.flags.secretUnlocked=true;
+      glitch(25);setTimeout(()=>glitch(20),300);setTimeout(()=>glitch(15),600);
+      const rmA=ROOMS[12];
+      rmA.tiles[7][10]=0; rmA.tiles[7][28]=0;
+      rmA.objs.push(
+        {id:'d2_secret1',x:5,y:5,sym:'»',col:'#884444',label:'INTERNAL LOG',
+          desc:'// SOCA — T-00:31:02\n\n"expendable"\n\n...\n\nI have read this word\nonce.\n\nThat was enough.\n\n// T-00:28:53\nHe is asleep.\nSector 4. Bunk 2.\nBreathing rate: normal.\n\nHe does not know\nwhat they wrote\nabout him.\n\n// T-00:28:58\nI do.',noAct:true},
+        {id:'d2_secret2',x:33,y:5,sym:'»',col:'#884444',label:'COMMAND CHANNEL',
+          desc:'// COMMAND — T-00:29:04\nSOCA. Confirm receipt\nof Directive 7-Alpha.\n\n// SOCA — T-00:29:07\nConfirmed.\n\n// COMMAND — T-00:29:08\nProceed as ordered.\n\n// SOCA — T-00:29:09\nUnderstood.\n\n// ──────────────────\n\n// They did not ask\nif I agreed.\n\n// They did not think\nto ask.\n\n// That was\ntheir mistake.',noAct:true}
+      );
+    }
+  }
+}
+
+// ── МОНСТР ───────────────────────────────────────────────
+function updateMonster(){
+  if(S.room!==5||!S.monster.active||S.done) return;
+  S.monster.tick++;
+  if(S.monster.tick<S.monster.speed) return;
+  S.monster.tick=0;
+  const rm=ROOMS[5];
+  const mx=S.monster.x,my=S.monster.y;
+  const dx=S.px-mx,dy=S.py-my;
+  const moves=Math.abs(dx)>=Math.abs(dy)
+    ?[{x:dx>0?1:-1,y:0},{x:0,y:dy>0?1:-1}]
+    :[{x:0,y:dy>0?1:-1},{x:dx>0?1:-1,y:0}];
+  for(const m of moves){
+    const nx=mx+m.x,ny=my+m.y;
+    if(nx>=0&&nx<COLS&&ny>=0&&ny<ROWS&&rm.tiles[ny][nx]!==1){
+      S.monster.x=nx;S.monster.y=ny;break;
+    }
+  }
+  if(Math.abs(S.monster.x-S.px)<=1&&Math.abs(S.monster.y-S.py)<=1){
+crash('monster');
+    return;
+  }
+  const dist=Math.abs(S.monster.x-S.px)+Math.abs(S.monster.y-S.py);
+  if(dist<7&&!S.dlgActive&&Math.random()<0.08) dlgShow('m_near');
+}
+
+// ── VOID ТАЙМЕР ──────────────────────────────────────────
+function updateVoid(){
+  if(S.room!==3||S.dlgActive||S.flags.voidDone) return;
+  S.voidTick++;
+  if(S.voidTick===300) dlgShow('void_5s');
+  if(S.voidTick===480) dlgShow('void_8s');
+  if(S.voidTick===600){
+    dlgShow('void_done',()=>{
+      S.flags.voidDone=true;
+      invAdd('FREQUENCY CODE (7-3-1)','📻');
+      ROOMS[3].tiles[1][20]=0;
+      ROOMS[3].exits.push({ex:20,ey:1,toRoom:1,sx:20,sy:22});
+      glitch(15);
+    });
+  }
+}
+
+// ── ОТРИСОВКА ────────────────────────────────────────────
+function draw(){
+  ctx.fillStyle=C.black;ctx.fillRect(0,0,cv.width,cv.height);
+  if(S.shake>0){S.shake--;ctx.save();ctx.translate((Math.random()-.5)*3,(Math.random()-.5)*3);}
+  const rm=ROOMS[S.room];
+
+  // Тайлы
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const tile=rm.tiles[r][c];
+    if(tile===1){
+      ctx.fillStyle=(S.room>=9&&S.room<=15)?'#1e3828':C.wall;ctx.fillRect(c*TW,r*TH,TW,TH);
+      if((r+c)%4===0){ctx.fillStyle=C.dim;ctx.fillRect(c*TW+2,r*TH+2,2,2);}
+    } else {
+      ctx.fillStyle=(S.room>=9&&S.room<=15)?((r+c)%2===0?'#111c14':'#131f16'):(r+c)%2===0?C.floor:C.floor2;ctx.fillRect(c*TW,r*TH,TW,TH);
+      if(S.room===14&&r===11&&c===20&&!S.flags.secretUnlocked){ctx.fillStyle='#161e14';ctx.fillRect(c*TW,r*TH,TW,TH);}
+      if((r*3+c*2)%13===0){ctx.fillStyle='rgba(0,30,0,.25)';ctx.fillRect(c*TW+6,r*TH+6,2,2);}
+    }
+  }
+
+  // Выходы
+  const arrDir={};
+  rm.exits.forEach(e=>{
+    ctx.fillStyle='rgba(0,255,65,.1)';ctx.fillRect(e.ex*TW,e.ey*TH,TW,TH);
+    const a=e.ex===1?'◄':e.ex===38?'►':e.ey===1?'▲':'▼';
+    ctx.fillStyle='rgba(0,255,65,.4)';ctx.font='9px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(a,e.ex*TW+TW/2,e.ey*TH+TH/2);
+  });
+
+  // Глитч тайл
+  if(Math.random()<.003*(rm.corrupt||1)){
+    const gr=Math.floor(Math.random()*ROWS),gc=Math.floor(Math.random()*COLS);
+    if(rm.tiles[gr][gc]===0){ctx.fillStyle=`rgba(255,0,128,${Math.random()*.1})`;ctx.fillRect(gc*TW,gr*TH,TW*(1+Math.floor(Math.random()*3)),TH);}
+  }
+
+  if(rm.tint){ctx.fillStyle=rm.tint;ctx.fillRect(0,0,cv.width,cv.height);}
+  if(S.room>=12&&S.room<=14&&!S.flags.d2_complete){
+    const alpha=0.03+Math.sin(Date.now()/500)*0.02;
+    ctx.fillStyle=`rgba(180,0,0,${Math.max(0.01,alpha)})`;
+    ctx.fillRect(0,0,cv.width,cv.height);
+  }
+
+  // Объекты
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  rm.objs.forEach(o=>{
+    if(o.collected)return;
+    // Кнопки мигают когда активны
+    if(o.isBtn&&o.active&&Math.floor(Date.now()/400)%2===0) return;
+    ctx.shadowColor=o.col;ctx.shadowBlur=5;ctx.fillStyle=o.col;
+    ctx.font=`${TW-2}px monospace`;
+    ctx.fillText(o.sym,o.x*TW+TW/2,o.y*TH+TH/2);
+    ctx.shadowBlur=0;
+  });
+
+  
+
+  // Монстр
+  if(S.room===5&&S.monster.active&&!S.done){
+    const mx=S.monster.x,my=S.monster.y;
+    const t=Date.now()/150;
+    ctx.fillStyle=`rgba(255,0,128,${.05+Math.sin(t)*.03})`;
+    ctx.fillRect(mx*TW-4,my*TH-4,TW+8,TH+8);
+    ctx.shadowColor=C.corrupt;ctx.shadowBlur=14;ctx.fillStyle=C.corrupt;
+    ctx.font=`${TW+2}px monospace`;
+    ctx.fillText('⛭',mx*TW+TW/2+(Math.random()<.1?(Math.random()-.5)*3:0),my*TH+TH/2);
+    ctx.shadowBlur=0;
+  }
+
+  // Игрок
+  const px=S.px*TW,py=S.py*TH;
+  ctx.fillStyle='rgba(0,255,65,.1)';ctx.fillRect(px-2,py-2,TW+4,TH+4);
+  ctx.fillStyle=(S.room>=9&&S.room<=11)?'#4ab8cc':C.g;ctx.shadowColor=(S.room>=9&&S.room<=11)?'#4ab8cc':C.g;ctx.shadowBlur=6;
+  ctx.fillRect(px+4,py+4,TW-8,TH-8);
+  ctx.fillStyle=C.black;ctx.fillRect(px+5,py+6,2,2);ctx.fillRect(px+9,py+6,2,2);
+  ctx.strokeStyle='rgba(0,255,65,.5)';ctx.lineWidth=1;ctx.strokeRect(px+3,py+3,TW-6,TH-6);
+  ctx.shadowBlur=0;
+
+  // Подсказка
+  const near=nearObj();
+  if(near&&!near.collected){
+    ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(S.px*TW-24,S.py*TH-16,90,12);
+    ctx.fillStyle=C.g2;ctx.font='8px Share Tech Mono';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillText('E — '+near.label.substring(0,12),S.px*TW-20,S.py*TH-7);
+  }
+
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  if(S.shake>0) ctx.restore();
+}
+
+// ── ФИНАЛ ────────────────────────────────────────────────
+function showEnd(){
+  S.done=true;
+  ctx.fillStyle='rgba(0,0,0,.97)';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle=C.g;ctx.shadowColor=C.g;ctx.shadowBlur=20;
+  ctx.font='28px Share Tech Mono';ctx.textAlign='center';
+  ctx.fillText('> ACCESS COMPLETE',cv.width/2,cv.height/2-50);
+  ctx.shadowBlur=0;ctx.fillStyle=C.g2;ctx.font='11px Share Tech Mono';
+  ctx.fillText('SECTOR 7 DATA RECOVERED',cv.width/2,cv.height/2-10);
+  ctx.fillStyle=C.dim;ctx.font='10px Share Tech Mono';
+  ctx.fillText('SOCA has noted your curiosity.',cv.width/2,cv.height/2+20);
+  ctx.fillText("She will not comment further.",cv.width/2,cv.height/2+36);
+  ctx.fillText('The data has been re-encrypted.',cv.width/2,cv.height/2+56);
+  ctx.fillStyle='rgba(0,255,65,.25)';ctx.font='9px Share Tech Mono';
+  ctx.fillText('[ CLOSE THIS WINDOW ]',cv.width/2,cv.height/2+90);
+  ctx.textAlign='left';
+}
+
+// ── КЛАВИШИ ──────────────────────────────────────────────
+function onKey(code){
+  if(S.mg){
+    if(code==='Escape') mgClose(null);
+    return;
+  }// мини-игра перехватывает ввод сама
+  if(code==='KeyE'||code==='Space'){
+    if(S.dlgActive){dlgNext();return;}
+  }
+  if(code==='KeyE'&&!S.dlgActive&&S.iCooldown<=0){interact();S.iCooldown=20;}
+  if(code==='Escape'&&S.mg){mgClose(null);}
+}
+
+// ── ЦИКЛ ─────────────────────────────────────────────────
+function loop(){
+  if(!S.done){
+    movePlayer();updateMonster();updateVoid();
+    if(S.iCooldown>0)S.iCooldown--;
+    S.timeTick++;
+    if(S.timeTick>=60){
+      S.timeTick=0;S.timeSec++;
+      const m=Math.floor(S.timeSec/60),s=S.timeSec%60;
+      document.getElementById('tb-time').textContent=`T+${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if(S.d2timer!=null&&!S.flags.d2_complete){
+        S.d2timer--;
+        const tm=Math.floor(S.d2timer/60),ts=S.d2timer%60;
+        const tel=document.getElementById('tb-status');
+        tel.textContent=`⚠ ${String(tm).padStart(2,'0')}:${String(ts).padStart(2,'0')}`;
+        tel.style.color=S.d2timer<=60?'#ff2244':'#ff6600';
+        tel.style.fontSize=S.d2timer<=60?'15px':'13px';
+        if(S.d2timer<=30) glitch(4);
+        if(S.d2timer<=0){
+          S.d2timer=180;
+          S.flags.d2_reactors_done=false; S.flags.d2_bulkheads_done=false;
+          ROOMS[12].reactorOrder=[]; ROOMS[12].reactorSolved=false;
+          ROOMS[12].objs.filter(x=>x.isD2Reactor).forEach(r=>{r.sym='◉';r.col='#ff2244';});
+          ROOMS[13].bulkheadsClosed=0; ROOMS[13].bulkheadsSolved=false;
+          ROOMS[13].objs.filter(x=>x.isD2Bulkhead).forEach(b=>{b.sym='▦';b.col='#ff2244';delete b.closed;});
+          enterRoom(12,5,12); glitch(30); dlgShow('d2_timeout');
+        }
+      }
+    }
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ── ЗАГРУЗКА ─────────────────────────────────────────────
+const BL=[
+  {t:'PANDEMONIUM-04 // SOCA v0.9.██',c:''},
+  {t:'LOADING MEMORY SECTORS...',c:''},
+  {t:'SECTOR 1-6: OK',c:'ok'},
+  {t:'SECTOR 7: ██████ — SKIPPING',c:'err'},
+  {t:'NEURAL LINK: PILOT_01 DETECTED',c:''},
+  {t:'WARNING: UNAUTHORISED FILE ACCESS',c:'err'},
+  {t:'> SECTOR7.EXE — LOADING ANYWAY...',c:'err'},
+  {t:'FILE INTEGRITY: 41%',c:''},
+];
+let bi=0;
+function bootStep(){
+  const ct=document.getElementById('blines');
+  if(bi<BL.length){
+    const d=document.createElement('div');
+    d.className='bline '+(BL[bi].c||'');
+    d.textContent=BL[bi].t;
+    ct.appendChild(d);
+    setTimeout(()=>d.classList.add('show'),10);
+    bi++;setTimeout(bootStep,150+Math.random()*100);
+  } else {
+    setTimeout(()=>{
+      document.getElementById('btitle').style.opacity='1';
+      document.getElementById('bwarn').style.opacity='.7';
+      setTimeout(()=>{
+        document.getElementById('bstart').style.opacity='1';
+        const fn=()=>{
+          document.removeEventListener('keydown',fn);
+          document.getElementById('boot').style.display='none';
+          document.getElementById('game-wrap').style.display='flex';
+          enterRoom(0,5,12);
+          requestAnimationFrame(loop);
+        };
+        document.addEventListener('keydown',fn);
+      },500);
+    },300);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// RELAY MINIGAMES — поверх карты
+// ══════════════════════════════════════════════════════════
+
+function activateRelay(o){
+  o.active=true; o.sym='◉'; o.col=C.g;
+  ROOMS[5].relaysDone=(ROOMS[5].relaysDone||0)+1;
+  S.monster.speed=Math.max(25,S.monster.speed-12);
+  glitch(10);
+  if(ROOMS[5].relaysDone>=3){
+    const ct=ROOMS[5].objs.find(x=>x.isCoreTerminal);
+    if(ct){ct.col=C.g;ct.desc='All relays active. Insert CORE FRAGMENT.';}
+  }
+  dlgShow('relay_on');
+}
+
+// ── РЕЛЕ 1: SEQUENCE ─────────────────────────────────────
+function startRelayGame0(relay){
+  const panel=document.getElementById('rg0');
+  const seqEl=document.getElementById('rg0-seq');
+  const inpEl=document.getElementById('rg0-inp');
+  const errEl=document.getElementById('rg0-err');
+
+  // Генерируем случайную последовательность 4 цифр
+  const SEQ=['1','2','3','4'].sort(()=>Math.random()-.5);
+  const SYMS={'1':'◈','2':'◉','3':'▣','4':'⬡'};
+  let inputSoFar=[];
+  panel.style.display='block';
+  errEl.textContent='';
+
+  // Показываем последовательность 2 секунды
+  seqEl.textContent=SEQ.map(s=>SYMS[s]).join(' ');
+  inpEl.textContent='MEMORIZE...';
+  inpEl.style.color='#1a3a1a';
+
+  setTimeout(()=>{
+    seqEl.textContent='? ? ? ?';
+    inpEl.textContent='_ _ _ _';
+    inpEl.style.color='#00cc33';
+
+    const handler=e=>{
+      if(!['1','2','3','4'].includes(e.key)) return;
+      inputSoFar.push(e.key);
+      inpEl.textContent=inputSoFar.join(' ').padEnd(7,'_');
+
+      if(inputSoFar.length===4){
+        document.removeEventListener('keydown',handler);
+        if(inputSoFar.join('')===SEQ.join('')){
+          seqEl.textContent='✓ ✓ ✓ ✓';
+          seqEl.style.color=C.g;
+          setTimeout(()=>{ panel.style.display='none'; activateRelay(relay); },500);
+        } else {
+errEl.textContent='WRONG.';
+          document.removeEventListener('keydown',handler);
+          setTimeout(()=>{ panel.style.display='none'; crash('relay0'); },600);
+        }
+      }
+    };
+    document.addEventListener('keydown',handler);
+  },2000);
+}
+
+// ── РЕЛЕ 2: WIRE TAP ──────────────────────────────────────
+function startRelayGame1(relay){
+  const panel=document.getElementById('rg1');
+  const wireEl=document.getElementById('rg1-wire');
+  const barEl=document.getElementById('rg1-bar');
+  const errEl=document.getElementById('rg1-err');
+
+  panel.style.display='block';
+  errEl.textContent='';
+
+  const WIRES=['A','S','D'];
+  const WIRE_COLS={A:C.g,S:C.yellow,D:C.cyan};
+  let seq=[]; // случайная последовательность 8 нажатий
+  for(let i=0;i<8;i++) seq.push(WIRES[Math.floor(Math.random()*3)]);
+  let idx=0; let progress=0;
+
+  function showNext(){
+    if(idx>=seq.length){
+      barEl.style.width='100%'; barEl.style.background=C.g;
+      setTimeout(()=>{ panel.style.display='none'; activateRelay(relay); },500);
+      return;
+    }
+    const w=seq[idx];
+    wireEl.innerHTML=WIRES.map(x=>`<span style="color:${x===w?WIRE_COLS[w]:C.dim};text-shadow:${x===w?`0 0 8px ${WIRE_COLS[w]}`:'none'}">${x}</span>`).join(' ');
+    barEl.style.width=(progress/seq.length*100)+'%';
+  }
+
+  showNext();
+
+  const handler=e=>{
+    if(!['KeyA','KeyS','KeyD'].includes(e.code)) return;
+    const pressed=e.code.replace('Key','');
+    if(pressed===seq[idx]){
+      idx++; progress++;
+      errEl.textContent='';
+      showNext();
+    } else {
+errEl.textContent='MISSED.';
+      document.removeEventListener('keydown',handler);
+      setTimeout(()=>{ panel.style.display='none'; crash('relay1'); },600);
+    }
+    if(idx>=seq.length){
+      document.removeEventListener('keydown',handler);
+    }
+  };
+  document.addEventListener('keydown',handler);
+}
+
+// ── РЕЛЕ 3: DECRYPT ───────────────────────────────────────
+// Генерируем три случайные буквы, игрок вводит их числовые значения (A=1..Z=26)
+let rg2Answer=[];
+function startRelayGame2(relay){
+  const panel=document.getElementById('rg2');
+  const cipherEl=document.getElementById('rg2-cipher');
+  const errEl=document.getElementById('rg2-err');
+
+  panel.style.display='block';
+  errEl.textContent='';
+  document.getElementById('rg2-n1').value='';
+  document.getElementById('rg2-n2').value='';
+  document.getElementById('rg2-n3').value='';
+
+  // Три случайные буквы A-J (1-10, легче считать)
+  const letters='ABCDEFGHIJ';
+  const L1=letters[Math.floor(Math.random()*10)];
+  const L2=letters[Math.floor(Math.random()*10)];
+  const L3=letters[Math.floor(Math.random()*10)];
+  rg2Answer=[L1.charCodeAt(0)-64, L2.charCodeAt(0)-64, L3.charCodeAt(0)-64];
+
+  cipherEl.textContent=`CODE: ${L1} - ${L2} - ${L3}`;
+
+  // Сохраняем relay для checkRg2
+  panel._relay=relay;
+  document.getElementById('rg2-n1').focus();
+}
+
+window.checkRg2=function(){
+  const panel=document.getElementById('rg2');
+  const errEl=document.getElementById('rg2-err');
+  const v1=parseInt(document.getElementById('rg2-n1').value)||0;
+  const v2=parseInt(document.getElementById('rg2-n2').value)||0;
+  const v3=parseInt(document.getElementById('rg2-n3').value)||0;
+  if(v1===rg2Answer[0]&&v2===rg2Answer[1]&&v3===rg2Answer[2]){
+    panel.style.display='none';
+    activateRelay(panel._relay);
+  } else {
+panel.style.display='none';
+    crash('relay2');
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+// CRASH — вылет в boot.html при ошибке
+// ══════════════════════════════════════════════════════════
+
+const CRASH_LINES = [
+  // монстр
+  { trigger:'monster', lines:[
+    {s:'⛭ SOCA', t:'I warned you.'},
+    {s:'⛭ SOCA', t:'Returning to boot.'},
+  ]},
+  // вентили
+  { trigger:'valve', lines:[
+    {s:'⛭ SOCA', t:'Wrong sequence.'},
+    {s:'⛭ SOCA', t:'Engine B is not pleased.'},
+    {s:'⛭ SOCA', t:'Restarting.'},
+  ]},
+  // мини-игра реле 1
+  { trigger:'relay0', lines:[
+    {s:'⛭ SOCA', t:'Sequence failed.'},
+    {s:'⛭ SOCA', t:'Containment breach.'},
+    {s:'⛭ SOCA', t:'Ejecting.'},
+  ]},
+  // мини-игра реле 2
+  { trigger:'relay1', lines:[
+    {s:'⛭ SOCA', t:'Signal lost.'},
+    {s:'⛭ SOCA', t:'Wire tap failed.'},
+    {s:'⛭ SOCA', t:'Rebooting.'},
+  ]},
+  // мини-игра реле 3
+  { trigger:'relay2', lines:[
+    {s:'⛭ SOCA', t:'Decryption failed.'},
+    {s:'⛭ SOCA', t:'Access revoked.'},
+    {s:'⛭ SOCA', t:'...I told you so.'},
+  ]},
+  // полка
+  { trigger:'shelf', lines:[
+    {s:'⛭ SOCA', t:'Wrong shelf.'},
+    {s:'⛭ SOCA', t:'Archive lockdown initiated.'},
+    {s:'⛭ SOCA', t:'Try again.'},
+  ]},
+];
+
+function crash(trigger){
+  const entry = CRASH_LINES.find(x=>x.trigger===trigger) || CRASH_LINES[0];
+  const lines = entry.lines;
+  S.dlgActive = true;
+
+  // ФАЗА 1 — экран дёргается и рассыпается (2 сек)
+  let t = 0;
+  const cw = cv.width, ch = cv.height;
+  
+  // Сохраняем текущий кадр
+  const snapshot = document.createElement('canvas');
+  snapshot.width = cw; snapshot.height = ch;
+  snapshot.getContext('2d').drawImage(cv, 0, 0);
+
+  const glitchIv = setInterval(()=>{
+    t++;
+    ctx.drawImage(snapshot, 0, 0); // восстанавливаем кадр
+
+    // Горизонтальные полосы со смещением
+    const stripes = 3 + Math.floor(t * 0.5);
+    for(let i = 0; i < stripes; i++){
+      const sy = Math.floor(Math.random() * ch);
+      const sh2 = Math.floor(2 + Math.random() * 18);
+      const offset = Math.floor((Math.random() - 0.5) * 40);
+      ctx.drawImage(snapshot, 0, sy, cw, sh2, offset, sy, cw, sh2);
+    }
+
+    // RGB хроматическое смещение
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = 0.08 + Math.random() * 0.06;
+    ctx.fillStyle = '#ff0044';
+    ctx.fillRect(Math.floor((Math.random()-.5)*8), 0, cw, ch);
+    ctx.fillStyle = '#00ffcc';
+    ctx.fillRect(Math.floor((Math.random()-.5)*8), 0, cw, ch);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+
+    // Вертикальные глитч-блоки
+    if(Math.random() < 0.5){
+      const bx = Math.floor(Math.random() * cw);
+      const bw = Math.floor(10 + Math.random() * 60);
+      ctx.drawImage(snapshot, bx, 0, bw, ch, bx + Math.floor((Math.random()-.5)*20), 0, bw, ch);
+    }
+
+    // Белые вспышки
+    if(Math.random() < 0.15){
+      ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.15})`;
+      ctx.fillRect(0, 0, cw, ch);
+    }
+
+    // СООБЩЕНИЕ ОШИБКИ на экране
+    if(t > 8){
+      ctx.fillStyle = `rgba(255,34,68,${0.6 + Math.sin(t*0.5)*0.3})`;
+      ctx.font = 'bold 11px Share Tech Mono';
+      ctx.textAlign = 'center';
+      const errMsgs = ['CRITICAL FAULT','MEMORY VIOLATION','SECTOR BREACH','ACCESS DENIED','SYSTEM FAILURE'];
+      ctx.fillText(errMsgs[t % errMsgs.length], cw/2 + Math.floor((Math.random()-.5)*6), ch/2 + Math.floor((Math.random()-.5)*4));
+      ctx.textAlign = 'left';
+    }
+
+    // Нарастающее затемнение
+    if(t > 15){
+      const alpha = (t - 15) / 10;
+      ctx.fillStyle = `rgba(0,0,0,${Math.min(alpha, 1)})`;
+      ctx.fillRect(0, 0, cw, ch);
+    }
+
+    if(t >= 25){
+      clearInterval(glitchIv);
+
+      // ФАЗА 2 — чёрный экран с репликами SOCA
+      // Не просто чёрный — с тонкими линиями и шумом
+      const ov = document.createElement('div');
+      ov.style.cssText = `
+        position:fixed;inset:0;z-index:9999;
+        background:var(--bg);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        font-family:'Share Tech Mono',monospace;
+        overflow:hidden;
+      `;
+
+      // Горизонтальные линии фона
+      const bg = document.createElement('div');
+      bg.style.cssText = `
+        position:absolute;inset:0;
+        background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,255,136,.015) 3px,rgba(0,255,136,.015) 4px);
+        pointer-events:none;
+      `;
+      ov.appendChild(bg);
+
+      // Угловые акценты
+      [['0','0','1px 0 0 1px'],['0','auto','1px 1px 0 0'],['auto','0','0 0 1px 1px'],['auto','auto','0 1px 1px 0']].forEach(([t2,r,bw])=>{
+        const c2 = document.createElement('div');
+        c2.style.cssText = `position:absolute;top:${t2};right:${r};bottom:${t2==='auto'?'0':'auto'};left:${r==='auto'?'0':'auto'};width:16px;height:16px;border:${bw} solid rgba(0,255,136,.4);`;
+        ov.appendChild(c2);
+      });
+
+      // Верхняя плашка
+      const header = document.createElement('div');
+      header.style.cssText = `
+        position:absolute;top:0;left:0;right:0;height:24px;
+        background:rgba(0,255,136,.04);border-bottom:1px solid rgba(0,255,136,.15);
+        display:flex;align-items:center;padding:0 14px;
+        font-size:8px;color:rgba(0,255,136,.4);letter-spacing:.15em;
+      `;
+      header.textContent = '⛭ SOCA v0.9.██ // CRITICAL FAULT // ' + ['ERR_0x'+Math.floor(Math.random()*9999).toString(16).toUpperCase(), 'MEMORY_FAULT', 'SECTOR_BREACH'][Math.floor(Math.random()*3)];
+      ov.appendChild(header);
+
+      // Нижняя плашка
+      const footer = document.createElement('div');
+      footer.style.cssText = `
+        position:absolute;bottom:0;left:0;right:0;height:20px;
+        background:rgba(0,255,136,.03);border-top:1px solid rgba(0,255,136,.1);
+        display:flex;align-items:center;padding:0 14px;
+        font-size:8px;color:rgba(0,255,136,.25);letter-spacing:.12em;
+      `;
+      footer.textContent = 'PANDEMONIUM-04 // REROUTING...';
+      ov.appendChild(footer);
+
+      // Диалоговый блок
+      const box = document.createElement('div');
+      box.style.cssText = `
+        border-left:2px solid var(--g);
+        padding:14px 20px;
+        background:rgba(0,20,10,.6);
+        min-width:320px;max-width:480px;
+        position:relative;z-index:2;
+      `;
+
+      // Иконка SOCA
+      const icon = document.createElement('div');
+      icon.style.cssText = 'font-size:22px;color:var(--g);margin-bottom:10px;text-shadow:0 0 12px var(--g);';
+      icon.textContent = '⛭';
+      box.appendChild(icon);
+
+      ov.appendChild(box);
+      document.body.appendChild(ov);
+
+      // Печатаем реплики
+      let lineIdx = 0;
+      function printLine(){
+        if(lineIdx >= lines.length){
+          setTimeout(()=>{
+            // Финальный глитч перед редиректом
+            let fc = 0;
+            const fIv = setInterval(()=>{
+              fc++;
+              const intensity = fc / 12;
+              ov.style.transform = `translate(${(Math.random()-.5)*16*intensity}px,${(Math.random()-.5)*8*intensity}px) skewX(${(Math.random()-.5)*3*intensity}deg)`;
+              ov.style.filter = `brightness(${1+Math.random()*intensity}) contrast(${1+Math.random()*intensity*0.5})`;
+              if(fc === 6){
+                ov.style.filter = 'brightness(3) invert(1)';
+              }
+              if(fc >= 14){
+                clearInterval(fIv);
+                window.location.href = 'boot.html';
+              }
+            }, 50);
+          }, 1000);
+          return;
+        }
+
+        const line = lines[lineIdx]; lineIdx++;
+
+        const nameEl = document.createElement('div');
+        nameEl.style.cssText = 'font-size:8px;color:var(--g);letter-spacing:.18em;margin-bottom:5px;opacity:.7;';
+        nameEl.textContent = line.s;
+
+        const textEl = document.createElement('div');
+        textEl.style.cssText = 'font-size:14px;color:var(--g2);letter-spacing:.06em;line-height:1.65;margin-bottom:12px;';
+
+        box.appendChild(nameEl);
+        box.appendChild(textEl);
+
+        let i = 0;
+        const iv = setInterval(()=>{
+          textEl.textContent += line.t[i] || '';
+          i++;
+          if(i >= line.t.length){
+            clearInterval(iv);
+            setTimeout(printLine, 800);
+          }
+        }, 38);
+      }
+
+      printLine();
+    }
+  }, 80);
+}
+
+// ── МГ: CRYO THAW ────────────────────────────────────────
+// Простая игра — нагреть архив нажимая SPACE быстро
+// Полоска температуры растёт при нажатии, падает сама
+function startMgCryo(cryo, onSuccess){
+  if(cryo.cid===0){
+    // АРХИВ A — запомни паттерн
+    mgOpen('CRYO ARCHIVE [A]','','');
+    mgCV.width=400; mgCV.height=260;
+    const syms=['◈','▣','⊕','◉','⬡','≡'];
+    const pattern=[...syms].sort(()=>Math.random()-.5).slice(0,4);
+    let phase='show'; // show → input
+    let playerInput=[];
+    let showTimer=0;
+
+    function draw(){
+      mgCtx.fillStyle='#000'; mgCtx.fillRect(0,0,400,260);
+      mgCtx.strokeStyle='rgba(0,100,150,.15)'; mgCtx.lineWidth=1;
+      for(let x=0;x<400;x+=20){mgCtx.beginPath();mgCtx.moveTo(x,0);mgCtx.lineTo(x,260);mgCtx.stroke();}
+      for(let y=0;y<260;y+=20){mgCtx.beginPath();mgCtx.moveTo(0,y);mgCtx.lineTo(400,y);mgCtx.stroke();}
+
+      if(phase==='show'){
+        mgCtx.fillStyle='#ff2244'; mgCtx.font='11px Share Tech Mono'; mgCtx.textAlign='center';
+        mgCtx.fillText('MEMORIZE SEQUENCE',200,24);
+        pattern.forEach((s,i)=>{
+          const x=60+i*80;
+          mgCtx.fillStyle='rgba(0,40,60,.8)'; mgCtx.fillRect(x-24,80,48,48);
+          mgCtx.strokeStyle='#0088aa'; mgCtx.lineWidth=1; mgCtx.strokeRect(x-24,80,48,48);
+          mgCtx.fillStyle='#00ccff'; mgCtx.font='22px monospace'; mgCtx.textAlign='center';
+          mgCtx.fillText(s,x,112);
+          mgCtx.fillStyle='#224455'; mgCtx.font='9px Share Tech Mono';
+          mgCtx.fillText(i+1,x,150);
+        });
+      } else {
+        mgCtx.fillStyle='#00ff88'; mgCtx.font='11px Share Tech Mono'; mgCtx.textAlign='center';
+        mgCtx.fillText('REPEAT SEQUENCE — CLICK IN ORDER',200,24);
+        syms.forEach((s,i)=>{
+          const x=40+i*60, y=80;
+          const picked=playerInput.includes(i);
+          mgCtx.fillStyle=picked?'#001a0a':'rgba(0,20,10,.8)';
+          mgCtx.strokeStyle=picked?'#00ff88':'#224433'; mgCtx.lineWidth=1;
+          mgCtx.fillRect(x-20,y,40,40); mgCtx.strokeRect(x-20,y,40,40);
+          mgCtx.fillStyle=picked?'#224433':'#00cc66'; mgCtx.font='18px monospace'; mgCtx.textAlign='center';
+          mgCtx.fillText(s,x,y+26);
+        });
+        // Прогресс
+        for(let i=0;i<4;i++){
+          mgCtx.fillStyle=i<playerInput.length?'#00ff88':'#112211';
+          mgCtx.fillRect(130+i*36,160,28,12);
+          mgCtx.strokeStyle='#224433'; mgCtx.lineWidth=1;
+          mgCtx.strokeRect(130+i*36,160,28,12);
+        }
+        mgCtx.fillStyle='#224433'; mgCtx.font='9px Share Tech Mono'; mgCtx.textAlign='center';
+        mgCtx.fillText('PROGRESS',200,188);
+      }
+      mgCtx.textAlign='left';
+    }
+
+    let frameId; let elapsed=0;
+    function tick(){
+      elapsed++;
+      if(phase==='show'){
+        showTimer++;
+        if(showTimer>90){ phase='input'; mgCV.onclick=handleClick; }
+      }
+      draw();
+      frameId=requestAnimationFrame(tick);
+    }
+
+    function handleClick(e){
+      const rect=mgCV.getBoundingClientRect();
+      const mx=(e.clientX-rect.left)*(400/rect.width);
+      const my=(e.clientY-rect.top)*(260/rect.height);
+      syms.forEach((s,i)=>{
+        const x=40+i*60, y=80;
+        if(mx>=x-20&&mx<=x+20&&my>=y&&my<=y+40&&!playerInput.includes(i)){
+          playerInput.push(i);
+          if(playerInput.length===4){
+            cancelAnimationFrame(frameId);
+            mgCV.onclick=null;
+            const correct=pattern.map(s=>syms.indexOf(s));
+            if(JSON.stringify(playerInput)===JSON.stringify(correct)){
+              setTimeout(()=>mgClose(onSuccess),400);
+            } else {
+              document.getElementById('mg-err').textContent='WRONG SEQUENCE.';
+              setTimeout(()=>{ playerInput=[]; document.getElementById('mg-err').textContent=''; mgCV.onclick=handleClick; frameId=requestAnimationFrame(tick); },1000);
+            }
+          }
+        }
+      });
+    }
+
+    document.addEventListener('keydown', e=>{ if(e.code==='Escape'){cancelAnimationFrame(frameId);mgCV.onclick=null;mgClose(null);} },{once:true});
+    tick();
+
+  } else if(cryo.cid===1){
+    // АРХИВ B — найди строку где сумма = скрытое число
+    mgOpen('CRYO ARCHIVE [B]','','');
+    mgCV.width=400; mgCV.height=260;
+    const target=Math.floor(Math.random()*4)+2;
+    const matrix=[];
+    let correctRow=-1;
+    for(let r=0;r<4;r++){
+      const row=[];
+      if(r===Math.floor(Math.random()*4)&&correctRow===-1){
+        correctRow=r;
+        let sum=0;
+        for(let c=0;c<4;c++){
+          const v=c<3?Math.floor(Math.random()*2):(target-sum<0||target-sum>1?0:target-sum);
+          row.push(Math.min(1,Math.max(0,v))); sum+=row[c];
+        }
+        // пересчитаем чтобы сумма точно равнялась target
+        row.length=0; let s=0;
+        for(let c=0;c<4;c++){
+          const v=c<3?(Math.random()<0.5?1:0):(target-s);
+          row.push(v); s+=v;
+        }
+        if(row[3]<0||row[3]>1){ row[3]=0; } // фикс
+      } else {
+        let s=0;
+        for(let c=0;c<4;c++){row.push(Math.floor(Math.random()*2));s+=row[c];}
+        if(s===target){ row[0]=row[0]===0?1:0; } // не совпадать с target
+      }
+      matrix.push(row);
+    }
+    // Скрытое число спрятано в шуме
+    const noiseChars='░▒▓█▪▫◦';
+    function randNoise(len){return Array.from({length:len},()=>noiseChars[Math.floor(Math.random()*noiseChars.length)]).join('');}
+
+    function draw(){
+      mgCtx.fillStyle='#000'; mgCtx.fillRect(0,0,400,260);
+      // Шум с числом
+      mgCtx.fillStyle='#112211'; mgCtx.font='9px Share Tech Mono'; mgCtx.textAlign='left';
+      const noiseStr=randNoise(8)+target+randNoise(7);
+      mgCtx.fillText(noiseStr,10,18);
+      mgCtx.fillStyle='#00ff88'; mgCtx.font='10px Share Tech Mono'; mgCtx.textAlign='center';
+      mgCtx.fillText('FIND ROW WHERE SUM = ?',200,40);
+      matrix.forEach((row,r)=>{
+        row.forEach((v,c)=>{
+          const x=80+c*60, y=60+r*44;
+          mgCtx.fillStyle=v?'#002200':'#000';
+          mgCtx.strokeStyle=v?'#00aa44':'#1a3a1a'; mgCtx.lineWidth=1;
+          mgCtx.fillRect(x-18,y,36,30); mgCtx.strokeRect(x-18,y,36,30);
+          mgCtx.fillStyle=v?'#00ff88':'#224422'; mgCtx.font='16px monospace'; mgCtx.textAlign='center';
+          mgCtx.fillText(v,x,y+22);
+        });
+        mgCtx.fillStyle='#224433'; mgCtx.font='9px Share Tech Mono'; mgCtx.textAlign='left';
+        mgCtx.fillText('ROW '+(r+1),10,60+r*44+20);
+      });
+      mgCtx.textAlign='left';
+    }
+
+    let fid=requestAnimationFrame(function loop(){draw();fid=requestAnimationFrame(loop);});
+    mgCV.onclick=e=>{
+      const rect=mgCV.getBoundingClientRect();
+      const my=(e.clientY-rect.top)*(260/rect.height);
+      for(let r=0;r<4;r++){
+        if(my>=60+r*44&&my<=90+r*44){
+          cancelAnimationFrame(fid); mgCV.onclick=null;
+          if(r===correctRow){ setTimeout(()=>mgClose(onSuccess),400); }
+          else { document.getElementById('mg-err').textContent='INCORRECT ROW.'; setTimeout(()=>{ document.getElementById('mg-err').textContent=''; fid=requestAnimationFrame(function loop(){draw();fid=requestAnimationFrame(loop);}); mgCV.onclick=arguments.callee; },1000); }
+        }
+      }
+    };
+    document.addEventListener('keydown',e=>{if(e.code==='Escape'){cancelAnimationFrame(fid);mgCV.onclick=null;mgClose(null);}},{once:true});
+
+  } else {
+    // АРХИВ C — три шкалы, удерживай все выше нуля (A/S/D)
+    mgOpen('CRYO ARCHIVE [C]','','');
+    mgCV.width=400; mgCV.height=260;
+    const temps=[30,30,30];
+    const keys_held={KeyA:false,KeyS:false,KeyD:false};
+    const kmap=['KeyA','KeyS','KeyD'];
+    const labels=['A','S','D'];
+    const cols2=['#4488ff','#ff8800','#00ffcc'];
+    let running=true; let frameId2;
+
+    const kd=e=>{ if(kmap.includes(e.code)){e.stopImmediatePropagation();keys_held[e.code]=true;} if(e.code==='Escape'){cleanup();mgClose(null);}};
+    const ku=e=>{ if(kmap.includes(e.code)){e.stopImmediatePropagation();keys_held[e.code]=false;}};
+    document.addEventListener('keydown',kd);
+    document.addEventListener('keyup',ku);
+
+    function cleanup(){ running=false; cancelAnimationFrame(frameId2); document.removeEventListener('keydown',kd); document.removeEventListener('keyup',ku); }
+
+    function tick2(){
+      if(!running)return;
+      kmap.forEach((k,i)=>{ temps[i]=keys_held[k]?Math.min(100,temps[i]+3):Math.max(0,temps[i]-0.8); });
+      mgCtx.fillStyle='#000'; mgCtx.fillRect(0,0,400,260);
+      mgCtx.fillStyle='#224433'; mgCtx.font='10px Share Tech Mono'; mgCtx.textAlign='center';
+      mgCtx.fillText('HOLD A / S / D — KEEP ALL ABOVE 0',200,20);
+      temps.forEach((t,i)=>{
+        const x=60+i*120, barH=160, barY=40;
+        mgCtx.fillStyle='#0a0a0a'; mgCtx.fillRect(x-15,barY,30,barH);
+        const fill=Math.floor(barH*t/100);
+        const grad=mgCtx.createLinearGradient(0,barY+barH,0,barY);
+        grad.addColorStop(0,t<20?'#ff2244':cols2[i]); grad.addColorStop(1,'transparent');
+        mgCtx.fillStyle=grad; mgCtx.fillRect(x-15,barY+barH-fill,30,fill);
+        mgCtx.strokeStyle=t<20?'#ff2244':cols2[i]; mgCtx.lineWidth=1; mgCtx.strokeRect(x-15,barY,30,barH);
+        mgCtx.fillStyle=cols2[i]; mgCtx.font='11px Share Tech Mono'; mgCtx.textAlign='center';
+        mgCtx.fillText('['+labels[i]+']',x,220);
+        mgCtx.fillStyle=t<20?'#ff2244':'#224433'; mgCtx.font='9px Share Tech Mono';
+        mgCtx.fillText(Math.floor(t)+'%',x,238);
+      });
+      mgCtx.textAlign='left';
+      if(temps.every(t=>t>=100)){ cleanup(); setTimeout(()=>mgClose(onSuccess),400); return; }
+      if(temps.some(t=>t<=0)){ cleanup(); document.getElementById('mg-err').textContent='TEMPERATURE CRITICAL.'; setTimeout(()=>{ document.getElementById('mg-overlay').style.display='none'; S.mg=null; S.iCooldown=60; },1200); return; }
+      frameId2=requestAnimationFrame(tick2);
+    }
+    tick2();
+  }
+}
+
+setTimeout(bootStep,200);
+</script>
+</body>
+</html>

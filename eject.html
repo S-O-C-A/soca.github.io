@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EJECTION SEQUENCE — PANDEMONIUM-04</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet"/>
+  <style>
+    @font-face {
+      font-family: 'SMILE';
+      src: url('fonts/smaily.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --g:      #00ff88;
+      --g2:     #00ffcc;
+      --b:      #00ccff;
+      --red:    #ff2244;
+      --yellow: #ffcc00;
+      --dim:    #00aa55;
+      --dimmer: #005533;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      color: var(--g);
+      font-family: 'Share Tech Mono', monospace;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    /* ── CANVAS фон ── */
+    #eject-space-cv {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    /* ── ОСНОВНОЙ КОНТЕНТ ── */
+    #eject-ui {
+      position: relative;
+      z-index: 1;
+      width: 100%; height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 40px 20px;
+    }
+
+    /* ── ВЕРХНЯЯ СТРОКА СТАТУСА ── */
+    #eject-statusbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 34, 68, 0.2);
+      background: rgba(0,0,0,0.6);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: rgba(255,34,68,0.6);
+      z-index: 10;
+    }
+    #eject-statusbar .s-left { display: flex; gap: 20px; align-items: center; }
+    #eject-statusbar .s-blink { animation: ejBlink 0.8s infinite; }
+    #eject-timer { color: var(--red); font-family: 'VT323', monospace; font-size: 20px; }
+
+    /* ── ЗАГОЛОВОК ── */
+    #ejc-title {
+      font-family: 'VT323', monospace;
+      font-size: clamp(38px, 7vw, 72px);
+      color: var(--red);
+      text-shadow: 0 0 30px var(--red), 0 0 60px rgba(255,34,68,0.3);
+      letter-spacing: 0.12em;
+      text-align: center;
+      animation: ejGlitch 0.6s infinite;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── СТРОКА СОБЫТИЯ ── */
+    #ejc-line {
+      font-size: 14px;
+      color: var(--dimmer);
+      letter-spacing: 0.22em;
+      margin-top: 10px;
+      min-height: 22px;
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    /* ── РАЗДЕЛИТЕЛЬ ── */
+    .ej-divider {
+      width: 320px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,34,68,0.4), transparent);
+      margin: 24px auto;
+    }
+
+    /* ── БЛОК РЕПЛИК (SOCA + SMILE рядом) ── */
+    #ej-voices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: min(680px, 90vw);
+      margin-top: 4px;
+    }
+
+    .ej-voice-box {
+      padding: 14px 16px;
+      min-height: 110px;
+      font-size: 12px;
+      line-height: 1.8;
+      letter-spacing: 0.07em;
+      position: relative;
+      transition: opacity 0.4s;
+    }
+
+    /* SOCA box */
+    #ej-soca-box {
+      border: 1px solid rgba(0, 204, 255, 0.25);
+      background: rgba(0, 6, 14, 0.85);
+    }
+    #ej-soca-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,204,255,0.5), transparent);
+    }
+    .ej-soca-label {
+      font-size: 9px;
+      color: var(--b);
+      letter-spacing: 0.16em;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+    #ejc-soca {
+      color: var(--g);
+      min-height: 60px;
+      animation: ejGlitch2 4s infinite;
+    }
+    #ejc-soca .soca-name {
+      color: var(--b);
+      font-family: 'VT323', monospace;
+      font-size: 15px;
+    }
+
+    /* SMILE box */
+    #ej-smile-box {
+      border: 1px solid rgba(255, 140, 0, 0.25);
+      background: rgba(12, 6, 0, 0.85);
+    }
+    #ej-smile-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,140,0,0.5), transparent);
+      animation: smScan 5s linear infinite;
+    }
+    .ej-smile-label {
+      font-size: 9px;
+      color: #ff8800;
+      letter-spacing: 0.16em;
+      margin-bottom: 8px;
+      opacity: 0.7;
+      font-family: 'SMILE', 'Share Tech Mono', monospace;
+    }
+    #ejc-smile {
+      color: #cc8800;
+      min-height: 60px;
+    }
+    #ejc-smile .smile-name {
+      color: #ffcc00;
+      font-family: 'SMILE', 'VT323', monospace;
+      font-size: 15px;
+    }
+
+    /* ── НИЖНЯЯ ЧАСТЬ ── */
+    #ej-bottom {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Capsule canvas */
+    #capsuleCanvas {
+      opacity: 0.7;
+      display: block;
+    }
+
+    /* Кнопка возврата */
+    #resume-btn {
+      padding: 12px 40px;
+      border: 1px solid var(--g);
+      color: var(--g);
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      letter-spacing: 0.22em;
+      cursor: pointer;
+      background: transparent;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s, background 0.2s;
+      text-shadow: 0 0 10px var(--g);
+      box-shadow: 0 0 12px rgba(0,255,136,0.1);
+    }
+    #resume-btn.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #resume-btn:hover { background: rgba(0,255,136,0.08); }
+
+    /* Дисклеймер */
+    #ej-note {
+      font-size: 9px;
+      color: var(--dimmer);
+      letter-spacing: 0.12em;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+    #ej-note.visible { opacity: 1; }
+
+    /* ── SCANLINES ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0, transparent 3px,
+        rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ── АНИМАЦИИ ── */
+    @keyframes ejGlitch {
+      0%, 92%, 100% { transform: none; text-shadow: 0 0 30px var(--red), 0 0 60px rgba(255,34,68,0.3); }
+      93%  { transform: translate(-3px, 0) skewX(-1deg); text-shadow: 3px 0 0 rgba(0,255,200,0.4), -3px 0 0 rgba(255,34,68,0.6); }
+      95%  { transform: translate(3px, 0) skewX(1deg);  text-shadow: -3px 0 0 rgba(0,255,200,0.4), 3px 0 0 rgba(255,34,68,0.6); }
+      97%  { transform: translate(-1px,1px); }
+    }
+    @keyframes ejGlitch2 {
+      0%,88%,100% { opacity:1; transform:none; }
+      89% { opacity:0.7; transform:translateX(2px); }
+      90% { opacity:1;   transform:translateX(-1px); }
+    }
+    @keyframes ejBlink {
+      0%,100% { opacity:1; } 50% { opacity:0; }
+    }
+    @keyframes smScan {
+      0%   { left:-20%; right:120%; }
+      100% { left:120%; right:-20%; }
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(6px); }
+      to   { opacity:1; transform:none; }
+    }
+
+    /* ── ИНДИКАТОР ДИСТАНЦИИ ── */
+    #ej-distance {
+      font-family: 'VT323', monospace;
+      font-size: 28px;
+      color: rgba(255,34,68,0.6);
+      letter-spacing: 0.1em;
+      text-align: center;
+      min-height: 36px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="eject-space-cv"></canvas>
+
+<!-- Статусбар -->
+<div id="eject-statusbar">
+  <div class="s-left">
+    <span class="s-blink" style="color:var(--red)">● EJECTION SEQUENCE ACTIVE</span>
+    <span>PANDEMONIUM-04</span>
+    <span>HULL: 87%</span>
+    <span style="color:var(--yellow)">ENGINE B: OFFLINE</span>
+  </div>
+  <div>
+    <span style="color:var(--dimmer);margin-right:8px">MISSION TIME</span>
+    <span id="eject-timer">00:00</span>
+  </div>
+</div>
+
+<!-- Основной UI -->
+<div id="eject-ui">
+
+  <!-- Заголовок события -->
+  <div id="ejc-title">CAPSULE SEPARATION</div>
+  <div id="ejc-line"></div>
+  <div id="ej-distance"></div>
+
+  <div class="ej-divider"></div>
+
+  <!-- Голоса SOCA и SMILE -->
+  <div id="ej-voices">
+
+    <div class="ej-voice-box" id="ej-soca-box">
+      <div class="ej-soca-label">// SOCA — LAST TRANSMISSION</div>
+      <div id="ejc-soca"><span style="color:var(--dimmer);font-size:10px">...establishing link...</span></div>
+    </div>
+
+    <div class="ej-voice-box" id="ej-smile-box">
+      <div class="ej-smile-label">✚ SMILE — MEDICAL CHANNEL</div>
+      <div id="ejc-smile"><span style="color:#443300;font-size:10px">...standby...</span></div>
+    </div>
+
+  </div>
+
+  <!-- Нижняя часть -->
+  <div id="ej-bottom">
+    <canvas id="capsuleCanvas" width="130" height="210"></canvas>
+    <a id="resume-btn" href="soca.html">↩ RESUME SOCA INTERFACE</a>
+    <div id="ej-note">// THIS WAS A SIMULATION — ALL SYSTEMS REMAIN OPERATIONAL</div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// EJECT CINEMATIC — standalone
+// ══════════════════════════════════════════════════════════════
+
+// ── ЗВЁЗДНОЕ НЕБО ─────────────────────────────────────────────
+const cv = document.getElementById('eject-space-cv');
+cv.width = window.innerWidth;
+cv.height = window.innerHeight;
+window.addEventListener('resize', () => { cv.width=window.innerWidth; cv.height=window.innerHeight; });
+
+const ctx = cv.getContext('2d');
+const stars = [];
+for (let i = 0; i < 280; i++) {
+  stars.push({
+    x: Math.random() * cv.width,
+    y: Math.random() * cv.height,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    size: Math.random() * 2,
+    brightness: Math.random(),
+  });
+}
+
+// Дополнительные частицы обломков
+const debris = [];
+for (let i = 0; i < 18; i++) {
+  debris.push({
+    x: Math.random() * cv.width,
+    y: Math.random() * cv.height,
+    vx: (Math.random() - 0.5) * 2.5,
+    vy: (Math.random() - 0.5) * 1.2,
+    len: 20 + Math.random() * 60,
+    alpha: Math.random() * 0.4,
+    col: Math.random() > 0.5 ? 'rgba(255,34,68,' : 'rgba(255,140,0,',
+  });
+}
+
+function animSpace() {
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+
+  // Звёзды
+  stars.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = cv.width;
+    if (p.x > cv.width) p.x = 0;
+    if (p.y < 0) p.y = cv.height;
+    if (p.y > cv.height) p.y = 0;
+    const flicker = p.brightness * (0.5 + Math.random() * 0.5);
+    ctx.fillStyle = `rgba(255,255,255,${flicker * 0.8})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Обломки
+  debris.forEach(d => {
+    d.x += d.vx; d.y += d.vy;
+    if (d.x < -100) d.x = cv.width + 50;
+    if (d.x > cv.width + 100) d.x = -50;
+    if (d.y < -100) d.y = cv.height + 50;
+    if (d.y > cv.height + 100) d.y = -50;
+    ctx.strokeStyle = d.col + d.alpha + ')';
+    ctx.lineWidth = Math.random() * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(d.x, d.y);
+    ctx.lineTo(d.x + d.vx * 10, d.y + d.vy * 10);
+    ctx.stroke();
+  });
+
+  // Редкие вспышки помех
+  if (Math.random() < 0.015) {
+    const fx = Math.random() * cv.width;
+    const fy = Math.random() * cv.height;
+    ctx.strokeStyle = `rgba(255,34,68,${Math.random() * 0.25})`;
+    ctx.lineWidth = Math.random() * 2;
+    ctx.beginPath();
+    ctx.moveTo(fx, fy);
+    ctx.lineTo(fx + Math.random() * 80 - 40, fy + Math.random() * 20 - 10);
+    ctx.stroke();
+  }
+
+  requestAnimationFrame(animSpace);
+}
+animSpace();
+
+// ── ТАЙМЕР ────────────────────────────────────────────────────
+let elapsed = 0;
+const timerEl = document.getElementById('eject-timer');
+setInterval(() => {
+  elapsed++;
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  timerEl.textContent = m + ':' + s;
+}, 1000);
+
+// ── КАПСУЛА ───────────────────────────────────────────────────
+function drawCapsule() {
+  const cc = document.getElementById('capsuleCanvas');
+  if (!cc) return;
+  const c = cc.getContext('2d');
+  const W = cc.width, H = cc.height, cx = W / 2;
+  c.clearRect(0, 0, W, H);
+
+  // Сетка
+  c.strokeStyle = 'rgba(255,34,68,0.06)'; c.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 20) { c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); }
+  for (let y = 0; y < H; y += 20) { c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
+
+  // Корпус
+  c.strokeStyle = 'rgba(0,255,136,0.7)'; c.lineWidth = 1.5;
+  c.shadowColor = 'rgba(0,255,136,0.4)'; c.shadowBlur = 6;
+  c.fillStyle = 'rgba(0,20,12,0.8)';
+  c.beginPath();
+  c.moveTo(cx, 20);
+  c.bezierCurveTo(cx+50,20,cx+60,50,cx+60,80);
+  c.lineTo(cx+60,160); c.lineTo(cx+40,185);
+  c.lineTo(cx-40,185); c.lineTo(cx-60,160);
+  c.lineTo(cx-60,80);
+  c.bezierCurveTo(cx-60,50,cx-50,20,cx,20);
+  c.fill(); c.stroke();
+
+  // Иллюминатор
+  c.strokeStyle = 'rgba(0,204,255,0.8)'; c.fillStyle = 'rgba(0,40,80,0.7)';
+  c.shadowColor = 'rgba(0,204,255,0.5)'; c.shadowBlur = 8;
+  c.beginPath(); c.ellipse(cx,65,28,22,0,0,Math.PI*2); c.fill(); c.stroke();
+  c.shadowBlur = 0;
+
+  // Двигатели
+  c.strokeStyle = 'rgba(255,136,0,0.7)'; c.lineWidth = 1;
+  c.beginPath(); c.moveTo(cx-40,185); c.lineTo(cx-50,200); c.lineTo(cx-30,200); c.closePath(); c.stroke();
+  c.beginPath(); c.moveTo(cx+40,185); c.lineTo(cx+30,200); c.lineTo(cx+50,200); c.closePath(); c.stroke();
+
+  // Пламя двигателей (мигает)
+  if (Math.random() > 0.3) {
+    const fAlpha = 0.4 + Math.random() * 0.5;
+    c.fillStyle = `rgba(255,${Math.floor(100+Math.random()*100)},0,${fAlpha})`;
+    c.beginPath(); c.moveTo(cx-50,200); c.lineTo(cx-40,200+Math.random()*18); c.lineTo(cx-30,200); c.closePath(); c.fill();
+    c.beginPath(); c.moveTo(cx+30,200); c.lineTo(cx+40,200+Math.random()*18); c.lineTo(cx+50,200); c.closePath(); c.fill();
+  }
+
+  // Антенна-маяк
+  c.strokeStyle = `rgba(255,204,0,${0.4+Math.random()*0.5})`;
+  c.lineWidth = 1;
+  c.beginPath(); c.moveTo(cx,20); c.lineTo(cx,4); c.stroke();
+  c.fillStyle = `rgba(255,204,0,${0.6+Math.random()*0.4})`;
+  c.beginPath(); c.arc(cx, 4, 3, 0, Math.PI*2); c.fill();
+}
+setInterval(drawCapsule, 80);
+drawCapsule();
+
+// ── РАССТОЯНИЕ ────────────────────────────────────────────────
+let dist = 0;
+const distEl = document.getElementById('ej-distance');
+const distInterval = setInterval(() => {
+  dist += 4 + Math.floor(Math.random() * 3);
+  distEl.textContent = `PANDEMONIUM-04 — ${dist} km`;
+  if (dist > 1200) clearInterval(distInterval);
+}, 800);
+
+// ── СОБЫТИЯ ───────────────────────────────────────────────────
+const events = [
+  { t: 400,  title: 'CAPSULE SEPARATION',             line: 'Explosive bolts armed...' },
+  { t: 1400, title: 'CAPSULE SEPARATION',             line: 'Hull breach — sector 4 OPEN' },
+  { t: 2400, title: 'EJECTION IN PROGRESS',           line: 'Capsule detached from PANDEMONIUM-04' },
+  { t: 3800, title: 'PILOT AWAY',                     line: 'Retro thrusters: FIRING' },
+  { t: 5400, title: 'BEACON BROADCASTING',            line: 'Distress signal on 121.5MHz' },
+  { t: 7000, title: 'PANDEMONIUM-04 — DRIFTING',      line: 'Vessel entering uncontrolled orbit' },
+  { t: 9500, title: 'AWAITING RECOVERY',              line: 'CTRL-7 notified. ETA: UNKNOWN' },
+];
+
+const titleEl = document.getElementById('ejc-title');
+const lineEl  = document.getElementById('ejc-line');
+
+events.forEach(e => {
+  setTimeout(() => {
+    titleEl.textContent = e.title;
+    lineEl.textContent  = e.line;
+    lineEl.style.color  = 'rgba(255,34,68,0.7)';
+  }, e.t);
+});
+
+// ── РЕПЛИКИ SOCA ──────────────────────────────────────────────
+const socaLines = [
+  { t: 2800,  txt: 'Capsule stable. Beacon acquired on all channels.' },
+  { t: 5200,  txt: 'I can still see you on sensors. 487km and increasing.' },
+  { t: 7500,  txt: 'I will keep broadcasting your position. That\'s my job.' },
+  { t: 10000, txt: 'Route to Waypoint Delta still holds. When you get back — it\'ll be waiting.' },
+  { t: 13000, txt: '...the ship is quiet without the neural link. Efficient, actually.' },
+];
+
+const socaEl = document.getElementById('ejc-soca');
+socaLines.forEach(s => {
+  setTimeout(() => {
+    socaEl.innerHTML = `<span class="soca-name">SOCA:</span> ${s.txt}`;
+  }, s.t);
+});
+
+// ── РЕПЛИКИ SMILE ─────────────────────────────────────────────
+const smileLines = [
+  { t: 1800, txt: 'Vitals nominal! Pulse elevated — expected. You just ejected from a spacecraft.' },
+  { t: 4500, txt: 'Pod bay 2, left side — extra meds. I packed them. You\'re welcome.' },
+  { t: 6800, txt: 'O2 supply: 72 hours. That\'s plenty. Probably. CTRL-7 is fast. Usually.' },
+  { t: 9000, txt: 'Stress index is... high. Understandable. Breathing exercises: recommended. Right now ideally.' },
+  { t: 12000,txt: 'I\'ll keep your biometrics on priority channel until recovery. I\'ve got you, Pilot. ✚' },
+];
+
+const smileEl = document.getElementById('ejc-smile');
+smileLines.forEach(s => {
+  setTimeout(() => {
+    smileEl.innerHTML = `<span class="smile-name">SMILE:</span> <span style="color:#cc8800">${s.txt}</span>`;
+  }, s.t);
+});
+
+// ── КНОПКА ВОЗВРАТА (появляется через 14 сек) ─────────────────
+setTimeout(() => {
+  document.getElementById('resume-btn').classList.add('visible');
+  document.getElementById('ej-note').classList.add('visible');
+}, 14000);
+
+// Для теста — если хочешь видеть кнопку сразу, раскомментируй:
+// document.getElementById('resume-btn').classList.add('visible');
+// document.getElementById('ej-note').classList.add('visible');
+
+</script>
+</body>
+</html>

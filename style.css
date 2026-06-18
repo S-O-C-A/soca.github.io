@@ -1,0 +1,3655 @@
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --g:#00ff88;
+  --g2:#00ffcc;
+  --b:#00ccff;
+  --b2:#0088ff;
+  --dim:#00aa55;
+  --dimmer:#005533;
+  --bg:#040d08;
+  --bg2:#071410;
+  --panel:#081a10;
+  --border:#00ff8844;
+  --border2:#00ccff33;
+  --red:#ff2244;
+  --yellow:#ffcc00;
+}
+
+/* Шрифт SMILE */
+@font-face {
+  font-family: 'SMILE';
+  src: url('fonts/smaily.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--g);
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  overflow-x:hidden;
+  cursor:crosshair;
+  min-height:100vh;
+}
+
+/* ── SCANLINES overlay ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:9999;
+  pointer-events:none;
+  background:repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+}
+/* CRT vignette */
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:9998;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%);
+}
+
+/* ── NOISE texture ── */
+.noise{
+  position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:noiseAnim 0.15s steps(1) infinite;
+}
+@keyframes noiseAnim{0%{transform:translate(0,0)}20%{transform:translate(-2px,1px)}40%{transform:translate(1px,-1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(2px,-2px)}100%{transform:translate(0,0)}}
+
+/* ── GLITCH keyframes ── */
+@keyframes glitch1{
+  0%,94%,100%{transform:none;clip-path:none;opacity:1}
+  95%{transform:translate(-3px,0) skewX(-2deg);clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%);opacity:0.8;color:var(--b)}
+  97%{transform:translate(3px,0);clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);color:var(--red)}
+  99%{transform:translate(-1px,1px) skewX(1deg);opacity:0.9}
+}
+@keyframes glitch2{
+  0%,89%,100%{transform:none;opacity:1;text-shadow:0 0 8px currentColor}
+  90%{transform:translate(4px,-2px);opacity:0.7;text-shadow:3px 0 var(--b),-3px 0 var(--red)}
+  92%{transform:translate(-2px,1px);opacity:0.9;text-shadow:-4px 0 var(--g2)}
+  95%{transform:skewX(5deg) translate(2px);opacity:0.6}
+  98%{transform:none;text-shadow:0 0 8px currentColor}
+}
+@keyframes glitch3{
+  0%,96%,100%{opacity:1;transform:none}
+  97%{opacity:0.3;transform:translate(6px,0) scaleY(0.98)}
+  98%{opacity:0.8;transform:translate(-4px,0)}
+  99%{opacity:0.5;transform:translate(2px,1px) skewX(-4deg)}
+}
+@keyframes flicker{0%,100%{opacity:1}49%{opacity:1}50%{opacity:0.7}51%{opacity:1}88%{opacity:1}89%{opacity:0.4}90%{opacity:1}}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes scan{0%{top:-10%}100%{top:110%}}
+@keyframes pulse{0%,100%{box-shadow:0 0 4px var(--g),0 0 8px var(--g)}50%{box-shadow:0 0 8px var(--g),0 0 20px var(--g),0 0 40px var(--g2)}}
+@keyframes pulseb{0%,100%{box-shadow:0 0 4px var(--b),0 0 8px var(--b)}50%{box-shadow:0 0 8px var(--b),0 0 20px var(--b),0 0 40px var(--b2)}}
+@keyframes boot{from{opacity:0;transform:scaleY(0)}to{opacity:1;transform:scaleY(1)}}
+@keyframes progressFill{from{width:0}to{width:87%}}
+@keyframes chevron{0%{opacity:0;transform:translateX(-8px)}50%{opacity:1}100%{opacity:0.3;transform:translateX(0)}}
+@keyframes textIn{from{opacity:0;letter-spacing:0.5em}to{opacity:1;letter-spacing:inherit}}
+@keyframes rowGlitch{0%,90%,100%{transform:none;opacity:1}91%{transform:translateX(8px);opacity:0.5}93%{transform:translateX(-4px)}95%{transform:none;opacity:0.8}}
+@keyframes borderPulse{0%,100%{border-color:var(--border)}50%{border-color:var(--g)}}
+@keyframes floatNum{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+/* ── GLOW helpers ── */
+.glow{text-shadow:0 0 6px var(--g),0 0 12px var(--g2);animation:glitch2 6s infinite}
+.glow-b{color:var(--b);text-shadow:0 0 6px var(--b),0 0 12px var(--b2)}
+.glow-r{color:var(--red);text-shadow:0 0 6px var(--red)}
+.glow-y{color:var(--yellow);text-shadow:0 0 6px var(--yellow)}
+.dim{color:var(--dim)}
+.flicker{animation:flicker 4s infinite}
+
+/* ── LAYOUT ── */
+.terminal{
+  max-width:1400px;margin:0 auto;padding:8px;
+  min-height:100vh;
+  display:flex;flex-direction:column;gap:6px;
+  animation:boot 0.4s ease both;
+}
+
+/* ── TOP BAR ── */
+.topbar{
+  display:flex;align-items:center;gap:0;
+  border:1px solid var(--border);
+  background:var(--panel);
+  height:36px;
+  position:relative;overflow:hidden;
+}
+.topbar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,255,136,0.03) 0%,transparent 100%)}
+.tb-seg{
+  padding:0 14px;height:100%;display:flex;align-items:center;
+  border-right:1px solid var(--border);
+  font-size:11px;letter-spacing:0.1em;white-space:nowrap;
+}
+.tb-seg.active{background:rgba(0,255,136,0.08);color:var(--g2)}
+.tb-user{color:var(--b);font-size:12px;letter-spacing:0.15em;animation:glitch1 8s infinite}
+.tb-spacer{flex:1;display:flex;align-items:center;padding:0 12px;gap:8px;overflow:hidden}
+.tb-ticker{font-size:10px;color:var(--dimmer);letter-spacing:0.12em;animation:glitch3 7s 2s infinite;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-time{padding:0 14px;font-size:11px;color:var(--b);letter-spacing:0.1em;border-left:1px solid var(--border);white-space:nowrap}
+.tb-status{padding:0 10px;font-size:10px;background:rgba(0,255,136,0.12);color:var(--g);border-left:1px solid var(--border);height:100%;display:flex;align-items:center;letter-spacing:0.08em}
+
+/* ── MAIN GRID ── */
+.main-grid{
+  display:grid;
+  grid-template-columns:220px 1fr 240px;
+  grid-template-rows:auto;
+  gap:6px;
+  flex:1;
+}
+
+/* ── PANELS ── */
+.panel{
+  border:1px solid var(--border);
+  background:var(--panel);
+  position:relative;overflow:hidden;
+  animation:borderPulse 4s ease-in-out infinite;
+}
+.panel::before{
+  content:'';position:absolute;left:0;top:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--g2),transparent);
+  animation:scan 3s linear infinite;opacity:0.3;
+}
+.panel-header{
+  padding:6px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,255,136,0.04);
+  font-size:10px;letter-spacing:0.14em;color:var(--dim);
+}
+.panel-header .title{color:var(--g);font-size:11px;letter-spacing:0.12em}
+.panel-body{padding:10px 12px}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar-left{grid-column:1;display:flex;flex-direction:column;gap:6px}
+
+.nav-panel .panel-body{padding:0}
+.nav-item{
+  padding:10px 14px;border-bottom:1px solid rgba(0,255,136,0.08);
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:background .2s;
+  font-size:11px;letter-spacing:0.1em;color:var(--dim);
+  position:relative;
+}
+.nav-item:hover,.nav-item.active{background:rgba(0,255,136,0.07);color:var(--g)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--g);box-shadow:0 0 8px var(--g)}
+.nav-item .nav-key{font-size:9px;color:var(--dimmer);margin-left:auto}
+.nav-item.danger{color:var(--red)}
+.nav-item.danger:hover{background:rgba(255,34,68,0.07)}
+.nav-item.warn{color:var(--yellow)}
+
+.sys-status .panel-body{display:flex;flex-direction:column;gap:8px}
+.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:10px}
+.stat-label{color:var(--dimmer);letter-spacing:0.08em}
+.stat-val{color:var(--g);letter-spacing:0.06em}
+.stat-bar{height:3px;background:rgba(0,255,136,0.1);border-radius:0;margin-top:2px;position:relative;overflow:hidden}
+.stat-bar-fill{height:100%;background:var(--g);box-shadow:0 0 4px var(--g);transition:width 1s}
+.stat-bar-fill.warn{background:var(--yellow);box-shadow:0 0 4px var(--yellow)}
+.stat-bar-fill.crit{background:var(--red);box-shadow:0 0 4px var(--red);animation:glitch3 1s infinite}
+
+.pilot-panel .panel-body{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 12px}
+.pilot-avatar{
+  width:60px;height:60px;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'VT323',monospace;font-size:28px;color:var(--g);
+  position:relative;overflow:hidden;
+  animation:pulse 3s ease-in-out infinite;
+}
+.pilot-avatar::after{
+  content:'KOKO';position:absolute;bottom:2px;font-size:8px;
+  color:var(--dim);letter-spacing:0.1em;
+}
+.pilot-name{font-size:16px;font-family:'VT323',monospace;color:var(--b);letter-spacing:0.1em;animation:glitch1 9s 1s infinite}
+.pilot-rank{font-size:9px;color:var(--dimmer);letter-spacing:0.14em}
+.pilot-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.badge{font-size:8px;padding:2px 6px;border:1px solid var(--border2);color:var(--b);letter-spacing:0.1em}
+
+/* ── CENTER ── */
+.center-col{grid-column:2;display:flex;flex-direction:column;gap:6px}
+
+/* HERO panel */
+.hero-panel{
+  border:1px solid var(--border);background:var(--panel);
+  padding:32px 40px;position:relative;overflow:hidden;
+  text-align:center;
+}
+.hero-panel::before{
+  content:'';position:absolute;left:0;top:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--b),transparent);
+  animation:scan 4s linear infinite;opacity:0.4;
+}
+.hero-panel::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,204,255,0.04) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%,rgba(0,255,136,0.03) 0%,transparent 60%);
+}
+.soca-skew {
+  display: inline-block;
+  transform: skewX(-12deg) rotate(1deg);
+  
+  /* ГРАДИЕНТ */
+  background: linear-gradient(135deg, var(--g) 0%, var(--g) 30%, var(--b) 70%, var(--b) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  
+  /* 🔥 УТОЛЩЕНИЕ */
+  font-weight: 800;
+  -webkit-text-stroke: 1.5px rgba(0, 255, 136, 0.3);
+  
+  /* Лёгкая тень для объёма */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-logo-text {
+  /* убираем transform отсюда, оставляем только анимацию и тени */
+  font-family:'VT323',monospace;
+  font-size:clamp(72px,12vw,130px);
+  line-height:0.9;
+  letter-spacing:0.05em;
+  filter:drop-shadow(0 0 20px rgba(0,204,255,0.5)) drop-shadow(0 0 40px rgba(0,255,136,0.3));
+  animation:glitch2 4s infinite;
+  position:relative;
+  z-index:1;
+  display: flex;
+  justify-content: center;
+}
+
+/* 🏁 ГОСТИННЫЙ ФЛАГ ЗА ТЕКСТОМ SOCA */
+.racing-flag-behind-soca {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  width: 100%;
+  height: 45%;
+  min-width: 280px;
+  max-width: 450px;
+  
+  /* Шахматный паттерн */
+  background-image: 
+    linear-gradient(45deg, rgba(0, 255, 136, 0.45) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(0, 255, 136, 0.45) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0, 204, 255, 0.45) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0, 204, 255, 0.45) 75%);
+  
+  /* КЛЕТКИ */
+  background-size: 28px 28px;
+  background-position: 0 0, 0 14px, 14px -14px, -14px 0px;
+  
+  /* Анимация движения */
+  animation: racingFlagBehind 25s linear infinite;
+  
+  /* Затемнение по краям*/
+  mask-image: radial-gradient(ellipse at center, black 50%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 90%);
+  
+  z-index: -1;
+  opacity: 0.85; /* ЯРЧЕ */
+  
+  /* Глитч */
+  animation: flagGlitchMove 4s infinite;
+}
+
+@keyframes racingFlagBehind {
+  from {
+    background-position: 0 0, 0 14px, 14px -14px, -14px 0px;
+  }
+  to {
+    background-position: 56px 56px, 56px 70px, 70px 42px, 42px 56px;
+  }
+}
+
+@keyframes flagGlitchMove {
+  0%, 100% { transform: translate(-50%, -50%) translateX(0); opacity: 0.85; }
+  22% { transform: translate(-50%, -50%) translateX(-1px); opacity: 0.95; }
+  44% { transform: translate(-50%, -50%) translateX(1px); opacity: 0.75; }
+  66% { transform: translate(-50%, -50%) translateX(0); opacity: 0.9; }
+  88% { transform: translate(-50%, -50%) translateX(0.5px); opacity: 0.8; }
+}
+
+@keyframes flagGlitchShift {
+  0%, 100% { transform: translateX(0); opacity: 0.4; }
+  20% { transform: translateX(-2px); opacity: 0.7; }
+  40% { transform: translateX(2px); opacity: 0.3; }
+  60% { transform: translateX(-1px); opacity: 0.5; }
+  80% { transform: translateX(1px); opacity: 0.6; }
+}
+
+.hero-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  color: var(--b);
+  margin: 8px 0 24px;
+  animation: glitch3 7s 0.5s infinite;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.hero-subtitle .corrupt {
+  color: var(--dimmer);
+  filter: blur(0.5px);
+  animation: glitch1 3s 1s infinite;
+}
+.progress-container{
+  max-width:600px;margin:0 auto 16px;
+  border:1px solid var(--border);padding:2px;
+  position:relative;z-index:1;
+}
+.progress-label{font-size:10px;color:var(--dim);letter-spacing:0.14em;margin-bottom:6px;text-align:left;animation:glitch3 5s infinite}
+.progress-track{height:18px;background:rgba(0,255,136,0.05);position:relative;overflow:hidden}
+.progress-fill{
+  height:100%;
+  background:repeating-linear-gradient(
+    90deg,
+    var(--g) 0px,var(--g) 16px,
+    var(--g2) 16px,var(--g2) 18px,
+    transparent 18px,transparent 26px,
+    var(--b) 26px,var(--b) 42px,
+    transparent 42px,transparent 50px
+  );
+  width:87%;
+  animation:progressFill 2s .5s ease both;
+  position:relative;
+}
+.progress-fill::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:2px;
+  background:white;box-shadow:0 0 8px white,0 0 16px var(--g2);
+  animation:flicker 0.5s infinite;
+}
+.progress-pct{font-size:10px;color:var(--g);letter-spacing:0.1em;text-align:right;margin-top:4px;animation:glitch1 6s 2s infinite}
+.hero-console{
+  max-width:600px;margin:0 auto;text-align:left;
+  border:1px solid var(--border);padding:10px 14px;
+  background:rgba(0,0,0,0.3);
+  position:relative;z-index:1;
+}
+.console-line{font-size:11px;letter-spacing:0.08em;margin-bottom:3px;line-height:1.4}
+.console-line .prompt{color:var(--dim)}
+.console-line .cmd{color:var(--g2)}
+.console-line .res{color:var(--g)}
+.console-line .err{color:var(--red)}
+.console-line .warn{color:var(--yellow)}
+.cursor{display:inline-block;width:8px;height:12px;background:var(--g);vertical-align:middle;animation:blink 1s infinite}
+
+/* GRID panels */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+
+/* Core status cards */
+.core-card{
+  border:1px solid var(--border);background:rgba(0,0,0,0.4);
+  padding:8px 10px;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.core-card:hover{border-color:var(--g);background:rgba(0,255,136,0.05)}
+.core-card.ready{border-color:rgba(0,255,136,0.3)}
+.core-card.set{border-color:rgba(0,136,255,0.3)}
+.core-card.sync{border-color:rgba(255,204,0,0.3)}
+.core-card.end{border-color:rgba(255,34,68,0.3)}
+.core-label{font-size:9px;color:var(--dimmer);letter-spacing:0.1em;margin-bottom:3px}
+.core-status{font-size:11px;letter-spacing:0.08em}
+.core-card.ready .core-status{color:var(--g)}
+.core-card.set .core-status{color:var(--b)}
+.core-card.sync .core-status{color:var(--yellow)}
+.core-card.end .core-status{color:var(--red);animation:flicker 0.8s infinite}
+
+/* Chevrons */
+.chevrons{display:flex;align-items:center;gap:3px;padding:8px 0}
+.chev{
+  font-size:18px;font-family:'VT323',monospace;
+  animation:chevron 1.5s ease-in-out infinite;
+}
+.chev:nth-child(2){animation-delay:.1s}.chev:nth-child(3){animation-delay:.2s}
+.chev:nth-child(4){animation-delay:.3s}.chev:nth-child(5){animation-delay:.4s}
+.chev:nth-child(6){animation-delay:.5s}.chev:nth-child(7){animation-delay:.6s}
+.chev.dim-c{color:var(--dimmer);animation-delay:.8s}
+.chev.b{color:var(--b)}
+
+/* Reading panel */
+.reading-panel{border:1px solid rgba(0,255,136,0.15);padding:10px;background:rgba(0,0,0,0.3)}
+.read-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px}
+.read-key{color:var(--dimmer);letter-spacing:0.1em}
+.read-val{color:var(--g2);letter-spacing:0.06em;animation:glitch1 8s 3s infinite}
+
+/* Alert panel */
+.alert-item{
+  padding:8px 10px;border-left:2px solid var(--red);background:rgba(255,34,68,0.04);
+  margin-bottom:4px;font-size:10px;letter-spacing:0.08em;
+  animation:glitch3 4s infinite;
+}
+.alert-item.warn{border-color:var(--yellow);background:rgba(255,204,0,0.04);animation:glitch3 6s 1s infinite;color:var(--yellow)}
+.alert-item.info{border-color:var(--b);background:rgba(0,136,255,0.04);color:var(--b);animation:none}
+.alert-time{font-size:9px;color:var(--dimmer);margin-top:2px}
+/* КНОПКА CHAT — теперь в едином стиле */
+.chat-toggle-button {
+  position: fixed;
+  right: 26px;
+  bottom: 24px;
+  z-index: 10005;
+  border: 1px solid var(--border);
+  background: rgba(0, 255, 136, 0.08);
+  color: var(--g);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.15);
+  transition: all 0.2s;
+  
+  /* Убираем скругление — делаем квадратной */
+  border-radius: 0;
+  
+  /* Добавляем глитч-эффекты как у других кнопок */
+  text-transform: uppercase;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.chat-toggle-button:hover {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: var(--g);
+  text-shadow: 0 0 5px var(--g);
+  animation: chatBtnGlitch 0.2s 2;
+}
+
+@keyframes chatBtnGlitch {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); color: var(--red); border-color: var(--red); }
+  75% { transform: translateX(2px); color: var(--b); border-color: var(--b); }
+}
+
+/* Активное состояние (когда нажали) */
+.chat-toggle-button:active {
+  transform: scale(0.97);
+}
+.chat-overlay{
+  position:fixed;right:26px;bottom:80px;z-index:10004;
+  width:min(360px,calc(100vw - 32px));max-height:460px;
+  display:flex;flex-direction:column;gap:8px;
+  border:1px solid var(--border);background:var(--panel);
+  box-shadow:0 20px 60px rgba(0,0,0,0.55);
+}
+.chat-overlay.hidden{display:none}
+.chat-overlay .panel-header{display:flex;justify-content:space-between;align-items:center}
+.chat-close-button{border:1px solid var(--border);background:rgba(0,0,0,0.2);color:var(--g);padding:5px 8px;border-radius:4px;cursor:pointer;font-size:10px}
+.chat-overlay .panel-body{padding:10px 12px}
+.chat-body{max-height:280px;overflow-y:auto;padding-right:4px;display:flex;flex-direction:column;gap:8px;margin:0}
+.chat-message{padding:10px 12px;border:1px solid rgba(0,255,136,0.12);border-radius:6px;font-size:11px;line-height:1.4;background:rgba(0,0,0,0.2);}
+.chat-message.user{align-self:flex-end;border-color:rgba(0,136,255,0.2);background:rgba(0,136,255,0.08);}
+.chat-message.bot{align-self:flex-start;border-color:rgba(0,255,136,0.2);background:rgba(0,255,136,0.08);}
+.chat-label{display:block;font-size:9px;color:var(--dim);letter-spacing:0.12em;margin-bottom:4px}
+.chat-input-row{display:flex;gap:6px;margin:10px 12px 12px}
+.chat-input{flex:1;background:rgba(0,0,0,0.25);border:1px solid var(--border);color:var(--g);padding:8px 10px;border-radius:4px;font-size:11px;outline:none}
+.chat-input:focus{border-color:var(--g2);box-shadow:0 0 8px rgba(0,255,136,0.15)}
+.chat-send{border:1px solid var(--border);background:rgba(0,255,136,0.08);color:var(--g);padding:8px 12px;border-radius:4px;cursor:pointer;transition:background .2s}
+.chat-send:hover{background:rgba(0,255,136,0.18)}
+
+/* ── RIGHT SIDEBAR ── */
+.sidebar-right{grid-column:3;display:flex;flex-direction:column;gap:6px}
+
+/* Telemetry numbers */
+.telem-num{
+  font-family:'VT323',monospace;
+  font-size:42px;line-height:1;
+  animation:floatNum 3s ease-in-out infinite;
+}
+.telem-unit{font-size:10px;color:var(--dimmer);letter-spacing:0.12em}
+.telem-label{font-size:9px;color:var(--dim);letter-spacing:0.12em;margin-top:2px}
+
+.telem-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.telem-cell{text-align:center;padding:8px;border:1px solid var(--border);background:rgba(0,0,0,0.2)}
+
+/* Radar mock */
+.radar{
+  width:100%;aspect-ratio:1;
+  border:1px solid var(--border);
+  border-radius:0;
+  background:var(--bg);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.radar-ring{
+  position:absolute;border:1px solid rgba(0,255,136,0.12);border-radius:50%;
+}
+.rr1{width:30%;height:30%}
+.rr2{width:55%;height:55%}
+.rr3{width:80%;height:80%}
+.rr4{width:100%;height:100%}
+.radar-cross{position:absolute;width:100%;height:1px;background:rgba(0,255,136,0.1)}
+.radar-crossv{position:absolute;width:1px;height:100%;background:rgba(0,255,136,0.1)}
+.radar-sweep{
+  position:absolute;width:50%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--g));
+  transform-origin:right center;
+  right:50%;top:50%;
+  animation:sweep 3s linear infinite;
+  box-shadow:0 0 4px var(--g);
+}
+@keyframes sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.radar-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--b);box-shadow:0 0 6px var(--b)}
+.radar-label{font-size:9px;color:var(--dim);letter-spacing:0.12em;text-align:center;margin-top:4px}
+
+/* ── BOTTOM BAR ── */
+.bottombar{
+  display:flex;align-items:center;gap:0;
+  border:1px solid var(--border);
+  background:var(--panel);height:28px;
+  font-size:10px;letter-spacing:0.1em;
+}
+.bb-seg{
+  padding:0 14px;height:100%;display:flex;align-items:center;
+  border-right:1px solid var(--border);color:var(--dim);
+  white-space:nowrap;
+}
+.bb-seg.active{color:var(--b);background:rgba(0,136,255,0.06)}
+.bb-seg.alert{color:var(--red);animation:flicker 1.5s infinite}
+.bb-spacer{flex:1}
+.bb-version{padding:0 14px;color:var(--dimmer);font-size:9px;letter-spacing:0.08em;border-left:1px solid var(--border)}
+
+/* ── CORRUPT text utility ── */
+.c1{animation:glitch1 5s 0.2s infinite}
+.c2{animation:glitch2 6s 1s infinite}
+.c3{animation:glitch3 4s 0.5s infinite}
+.heavy-corrupt{
+  animation:glitch2 1.5s infinite;
+  filter:blur(0.8px);
+  letter-spacing:0.02em;
+  opacity:0.6;
+}
+
+/* ── scrollbar ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--dimmer)}
+
+/* ── corner decorations ── */
+.corner{position:absolute;width:12px;height:12px}
+.corner.tl{top:4px;left:4px;border-top:1px solid var(--g);border-left:1px solid var(--g)}
+.corner.tr{top:4px;right:4px;border-top:1px solid var(--g);border-right:1px solid var(--g)}
+.corner.bl{bottom:4px;left:4px;border-bottom:1px solid var(--g);border-left:1px solid var(--g)}
+.corner.br{bottom:4px;right:4px;border-bottom:1px solid var(--g);border-right:1px solid var(--g)}
+
+      /* ╔══════════════════════════════════════════════════════╗ */
+      /* ║  SECTION: ABOUT  ║ */
+      /* ╚══════════════════════════════════════════════════════╝ */
+.section-page{display:none}
+.section-page.active{display:block}
+.big-text{
+  font-family:'VT323',monospace;
+  font-size:clamp(18px,3vw,28px);
+  line-height:1.5;letter-spacing:0.06em;
+  color:var(--g);margin-bottom:16px;
+}
+.text-block{
+  border-left:2px solid var(--border);
+  padding:10px 16px;margin-bottom:12px;
+  font-size:12px;color:var(--dim);letter-spacing:0.06em;line-height:1.7;
+}
+.text-block .corrupt-heavy{
+  color:var(--dimmer);filter:blur(1px);
+  font-size:11px;animation:glitch1 2s infinite;
+}
+
+      /* ╔══════════════════════════════════════════════════════╗ */
+      /* ║  SECTION: ABOUT  ║ */
+      /* ╚══════════════════════════════════════════════════════╝ */
+.log-entry{
+  padding:6px 0;border-bottom:1px solid rgba(0,255,136,0.06);
+  font-size:11px;letter-spacing:0.06em;line-height:1.5;
+  animation:rowGlitch 8s infinite;
+}
+.log-entry:nth-child(2){animation-delay:1s}
+.log-entry:nth-child(3){animation-delay:2.5s}
+.log-entry:nth-child(5){animation-delay:0.5s}
+.log-ts{color:var(--dimmer);font-size:10px;margin-right:8px}
+.log-tag{font-size:9px;padding:1px 5px;margin-right:6px;letter-spacing:0.1em}
+.log-tag.err{border:1px solid var(--red);color:var(--red)}
+.log-tag.ok{border:1px solid var(--dim);color:var(--dim)}
+.log-tag.warn{border:1px solid var(--yellow);color:var(--yellow)}
+.log-tag.info{border:1px solid var(--b);color:var(--b)}
+.log-msg{color:var(--g)}
+.log-msg .corrupt{color:var(--dimmer);filter:blur(0.5px);animation:glitch3 3s infinite}
+
+/* ШАХМАТНЫЙ ФОН */
+.racing-flag-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background-image: 
+        linear-gradient(45deg, rgba(0, 255, 136, 0.04) 25%, transparent 25%), 
+        linear-gradient(-45deg, rgba(0, 255, 136, 0.04) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(0, 204, 255, 0.04) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(0, 204, 255, 0.04) 75%);
+    background-size: 60px 60px;
+    background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+    animation: racingFlagShift 40s linear infinite;
+    opacity: 0.6;
+}
+
+@keyframes racingFlagShift {
+    from {
+        background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+    }
+    to {
+        background-position: 300px 300px, 300px 330px, 330px 270px, 270px 300px;
+    }
+}
+
+/* Дополнительный слой для усиления эффекта (с глитчем) */
+.racing-flag-glitch {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background-image: 
+        repeating-linear-gradient(90deg, 
+            transparent, 
+            transparent 30px,
+            rgba(0, 255, 136, 0.02) 30px,
+            rgba(0, 255, 136, 0.02) 60px
+        ),
+        repeating-linear-gradient(0deg, 
+            transparent, 
+            transparent 30px,
+            rgba(0, 204, 255, 0.02) 30px,
+            rgba(0, 204, 255, 0.02) 60px
+        );
+    opacity: 0.4;
+    animation: glitchBgShift 15s infinite steps(2);
+}
+
+@keyframes glitchBgShift {
+    0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+    10% { transform: translate(-2px, 1px); opacity: 0.5; }
+    20% { transform: translate(1px, -1px); opacity: 0.3; }
+    30% { transform: translate(-1px, 2px); opacity: 0.45; }
+    50% { transform: translate(0, 0); opacity: 0.4; }
+    70% { transform: translate(2px, -2px); opacity: 0.35; }
+    85% { transform: translate(-1px, 0); opacity: 0.5; }
+}
+
+/* responsive */
+@media(max-width:1100px){
+  .main-grid{grid-template-columns:180px 1fr 200px}
+}
+@media(max-width:800px){
+  .main-grid{grid-template-columns:1fr}
+  .sidebar-left,.sidebar-right{display:none}
+  body{font-size:12px}
+}
+
+/* ========== СТИЛЬ ЧАТА ========== */
+
+.chat-overlay {
+  position: fixed;
+  right: 26px;
+  bottom: 80px;
+  z-index: 10004;
+  width: min(680px, calc(100vw - 32px));
+  max-height: 550px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  background: rgba(4, 12, 9, 0.96);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+  backdrop-filter: blur(2px);
+  overflow: hidden;
+}
+
+/* Глитч-обводка чата */
+.chat-overlay.glitch-border {
+  animation: borderGlitch 0.3s infinite steps(2);
+}
+
+@keyframes borderGlitch {
+  0%, 100% { border-color: var(--border); }
+  25% { border-color: var(--red); }
+  50% { border-color: var(--g); }
+  75% { border-color: var(--b); }
+}
+
+/* Хедер чата */
+.chat-overlay .panel-header {
+  background: rgba(0, 255, 136, 0.08);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+}
+
+.chat-overlay .panel-header .title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  animation: glitch1 8s infinite;
+}
+
+.chat-close-button {
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--g);
+  padding: 4px 10px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-close-button:hover {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: var(--g);
+  text-shadow: 0 0 5px var(--g);
+}
+
+/* Тело чата */
+.chat-body {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Стиль сообщений - терминальный */
+.chat-message {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  animation: messageAppear 0.2s ease;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Аватар SOCA */
+.chat-avatar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  background: rgba(0, 255, 136, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: var(--g);
+  text-shadow: 0 0 5px var(--g);
+  animation: avatarPulse 3s infinite;
+}
+
+@keyframes avatarPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.2); }
+  50% { box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.4); }
+}
+
+/* Сообщение SOCA (слева) */
+.chat-message.bot {
+  justify-content: flex-start;
+}
+
+.chat-message.bot .chat-bubble {
+  background: rgba(0, 255, 136, 0.05);
+  border-left: 2px solid var(--g);
+  padding: 8px 12px;
+  max-width: 85%;
+}
+
+/* Сообщение пользователя (справа) */
+.chat-message.user {
+  justify-content: flex-end;
+}
+
+.chat-message.user .chat-bubble {
+  background: rgba(0, 204, 255, 0.05);
+  border-right: 2px solid var(--b);
+  padding: 8px 12px;
+  max-width: 85%;
+  text-align: right;
+}
+
+/* Лейблы */
+.chat-label {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+  color: var(--dim);
+}
+
+.chat-message.user .chat-label {
+  color: var(--b);
+}
+
+.chat-message.bot .chat-label {
+  color: var(--g);
+}
+
+/* Текст сообщения с глитчем */
+.chat-text {
+  color: var(--g2);
+  word-wrap: break-word;
+}
+
+.chat-message.bot .chat-text {
+  animation: chatGlitch 8s infinite;
+}
+
+@keyframes chatGlitch {
+  0%, 95%, 100% { text-shadow: none; }
+  96% { text-shadow: -1px 0 var(--red), 1px 0 var(--b); transform: translateX(-0.5px); }
+  97% { text-shadow: 1px 0 var(--red), -1px 0 var(--b); transform: translateX(0.5px); }
+  98% { text-shadow: none; transform: translateX(0); }
+  99% { text-shadow: 0 0 3px var(--red); }
+}
+
+/* Глитч-символы иногда */
+.chat-text.corrupt {
+  animation: corruptFlash 0.3s infinite steps(2);
+}
+
+@keyframes corruptFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; filter: blur(0.5px); }
+}
+
+/* Индикатор "печатает..." */
+.soca-typing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 255, 136, 0.03);
+  border-left: 2px solid var(--g);
+  margin-bottom: 8px;
+  animation: typingPulse 1s infinite;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.typing-dots span {
+  width: 4px;
+  height: 4px;
+  background: var(--g);
+  border-radius: 0;
+  animation: dotBlink 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBlink {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; text-shadow: 0 0 3px var(--g); }
+}
+
+@keyframes typingPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Поле ввода */
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.chat-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  color: var(--g);
+  padding: 8px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  outline: none;
+}
+
+.chat-input:focus {
+  border-color: var(--g);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+}
+
+/* Промпт перед инпутом */
+.chat-prompt {
+  color: var(--g);
+  font-size: 12px;
+  animation: blink 1s infinite;
+}
+
+.chat-send {
+  border: 1px solid var(--border);
+  background: rgba(0, 255, 136, 0.1);
+  color: var(--g);
+  padding: 8px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-send:hover {
+  background: rgba(0, 255, 136, 0.2);
+  border-color: var(--g);
+  text-shadow: 0 0 5px var(--g);
+}
+
+/* Скроллбар чата */
+.chat-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+  background: var(--dim);
+}
+
+/* Мигающий курсор */
+.cursor-blink {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background: var(--g);
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: blink 1s infinite;
+}
+
+
+/* ========== СИСТЕМНАЯ ОШИБКА ПОСЛЕ ШУТКИ ========== */
+.system-error-message {
+  background: rgba(255, 34, 68, 0.15);
+  border: 2px solid var(--red);
+  padding: 12px;
+  margin: 10px 0;
+  font-family: 'Share Tech Mono', monospace;
+  animation: errorGlitch 0.3s infinite steps(2);
+  box-shadow: 0 0 20px rgba(255, 34, 68, 0.3);
+}
+
+.error-header {
+  color: var(--red);
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-align: center;
+  border-bottom: 1px solid var(--red);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  animation: blink 0.5s infinite;
+}
+
+.error-body {
+  padding: 8px 0;
+}
+
+.error-line {
+  font-size: 9px;
+  color: var(--red);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  font-family: monospace;
+}
+
+.error-footer {
+  font-size: 9px;
+  color: var(--dim);
+  border-top: 1px solid rgba(255, 34, 68, 0.3);
+  padding-top: 6px;
+  margin-top: 4px;
+  text-align: center;
+}
+
+@keyframes errorGlitch {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); border-color: var(--g); }
+  50% { transform: translateX(2px); border-color: var(--b); }
+  75% { transform: translateX(-1px); border-color: var(--red); }
+}
+
+@keyframes redFlash {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(255, 34, 68, 0.15); }
+}
+
+/* Класс для красного мигания */
+.chat-body.red-flash {
+  animation: redFlash 0.3s 3;
+}
+
+/* ========== MISSION_CONTROL (HERO) ========== */
+.mission-hero {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  padding: 16px 24px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mission-header .pt {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--b);
+  text-shadow: 0 0 6px var(--b);
+}
+
+.mission-header .badge {
+  font-size: 9px;
+  color: var(--dim);
+  letter-spacing: 2px;
+}
+
+.big-status {
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  letter-spacing: 4px;
+  color: var(--g);
+  text-shadow: 0 0 12px var(--g);
+  margin-bottom: 12px;
+  animation: glheavy 8s infinite;
+}
+
+.progress-wrap {
+  margin-bottom: 16px;
+}
+
+.progress-bar-big {
+  height: 10px;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.progress-fill-big {
+  height: 100%;
+  background: repeating-linear-gradient(-45deg, var(--g), var(--g) 8px, var(--dim) 8px, var(--dim) 16px);
+  background-size: 22px 100%;
+  box-shadow: 0 0 8px var(--g);
+  animation: pmove 0.5s linear infinite;
+  transition: width 1s;
+  width: 73%;
+}
+
+.progress-fill-big.cyan {
+  background: repeating-linear-gradient(-45deg, var(--b), var(--b) 8px, #004466 8px, #004466 16px);
+  box-shadow: 0 0 8px var(--b);
+}
+
+.mission-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--dim);
+  letter-spacing: 1px;
+}
+
+/* ========== CORES GRID ========== */
+.cores-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.core-card {
+  border: 1px solid var(--border);
+  padding: 8px 4px;
+  text-align: center;
+  background: rgba(0, 20, 8, 0.5);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.core-card:hover {
+  border-color: var(--b);
+  background: rgba(0, 229, 255, 0.07);
+}
+
+.core-card.on {
+  border-color: var(--g);
+  background: rgba(0, 255, 136, 0.09);
+}
+
+.core-card.err {
+  border-color: var(--red);
+  animation: coreerr 1.5s infinite;
+}
+
+.core-num {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.core-status {
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+
+.core-status.ok { color: var(--g); }
+.core-status.sync { color: var(--b); }
+.core-status.err { color: var(--red); }
+.core-status.warn { color: #ffaa00; }
+
+/* ========== УЛУЧШЕННЫЙ RECENT_LOG ========== */
+.log-panel {
+  margin-top: 16px;
+}
+
+.log-header {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--dim);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.log-stream {
+  height: 140px;
+  overflow-y: auto;
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 6px;
+  background: rgba(0, 10, 4, 0.6);
+  border: 1px solid var(--border);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,255,136,0.3) rgba(0,0,0,0.3);
+}
+
+.log-entry {
+  margin-bottom: 4px;
+  animation: logfade 0.2s ease;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(0, 255, 136, 0.05);
+}
+
+.log-time {
+  color: var(--dim);
+  margin-right: 8px;
+  font-size: 9px;
+}
+
+.log-tag {
+  font-size: 8px;
+  padding: 1px 4px;
+  margin-right: 8px;
+  border-radius: 0;
+  display: inline-block;
+}
+
+.log-tag.ok {
+  border: 1px solid var(--g);
+  color: var(--g);
+}
+
+.log-tag.err {
+  border: 1px solid var(--red);
+  color: var(--red);
+  animation: blink 1s infinite;
+}
+
+.log-tag.warn {
+  border: 1px solid #ffaa00;
+  color: #ffaa00;
+}
+
+.log-tag.soca {
+  border: 1px solid var(--b);
+  color: var(--b);
+}
+
+.log-message {
+  color: var(--g2);
+}
+
+.log-message.soca {
+  color: var(--b);
+  font-style: italic;
+}
+
+/* SOCA комментарии с аватаром */
+.soca-comment {
+  background: rgba(0, 204, 255, 0.05);
+  border-left: 2px solid var(--b);
+  padding: 6px 10px;
+  margin: 8px 0;
+  font-size: 10px;
+  animation: logfade 0.3s ease;
+}
+
+.soca-comment .soca-icon {
+  color: var(--b);
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+/* ========== ВСПЛЫВАЮЩИЕ КОММЕНТАРИИ СОКИ ========== */
+.soca-toast {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 10001;
+  background: rgba(0, 20, 12, 0.98);
+  border: 1px solid var(--b);
+  border-left: 3px solid var(--b);
+  padding: 10px 14px;
+  max-width: 280px;
+  font-size: 11px;
+  box-shadow: 0 0 20px rgba(0, 204, 255, 0.2);
+  animation: toastIn 0.3s ease, glitch1 0.5s 2;
+  backdrop-filter: blur(4px);
+}
+
+.soca-toast .toast-header {
+  color: var(--b);
+  font-size: 9px;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.soca-toast .toast-header::before {
+  content: '⛭';
+  animation: pulse 2s infinite;
+}
+
+.soca-toast .toast-body {
+  color: var(--g);
+  line-height: 1.5;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Дополнительные анимации */
+@keyframes pmove {
+  from { background-position: 0 0; }
+  to { background-position: 22px 0; }
+}
+
+@keyframes coreerr {
+  0%, 100% { background: rgba(255, 0, 60, 0.05); }
+  50% { background: rgba(255, 0, 60, 0.18); }
+}
+
+@keyframes logfade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* SYS LOG страница */
+#page-log {
+  display: none;
+}
+#page-log.active {
+  display: block;
+}
+
+.log-container {
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+  background: rgba(0, 10, 4, 0.6);
+  border: 1px solid var(--border);
+  padding: 10px;
+}
+
+.log-entry-full {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(0, 255, 136, 0.08);
+  font-size: 11px;
+  font-family: 'Share Tech Mono', monospace;
+  animation: logfade 0.2s ease;
+}
+
+.log-entry-full .log-time {
+  color: var(--dim);
+  margin-right: 12px;
+  font-size: 10px;
+}
+
+.log-entry-full .log-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  margin-right: 10px;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+.log-entry-full .log-tag.ok {
+  border: 1px solid var(--g);
+  color: var(--g);
+}
+
+.log-entry-full .log-tag.err {
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+.log-entry-full .log-tag.warn {
+  border: 1px solid #ffaa00;
+  color: #ffaa00;
+}
+
+.log-entry-full .log-tag.soca {
+  border: 1px solid var(--b);
+  color: var(--b);
+}
+
+.log-entry-full .log-msg {
+  color: var(--g2);
+}
+
+.log-entry-full .log-msg.soca {
+  color: var(--b);
+  font-style: italic;
+}
+
+      /* ╔══════════════════════════════════════════════════════╗ */
+      /* ║ DIAGNOSTICS  ║ */
+      /* ╚══════════════════════════════════════════════════════╝ */
+.diag-log-entry {
+  margin-bottom: 4px;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(0, 255, 136, 0.05);
+  font-family: 'Share Tech Mono', monospace;
+  animation: diagFadeIn 0.2s ease;
+}
+
+.diag-log-entry.heavy-corrupt {
+  animation: glitch2 0.3s infinite;
+  filter: blur(0.3px);
+}
+
+.diag-test-pass {
+  color: var(--g);
+  text-shadow: 0 0 3px var(--g);
+}
+
+.diag-test-warn {
+  color: #ffaa00;
+  text-shadow: 0 0 3px #ffaa00;
+  animation: glitch3 4s infinite;
+}
+
+.diag-test-fail {
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red);
+  animation: blink 0.8s infinite, glitch1 3s infinite;
+}
+
+.diag-progress-fill {
+  transition: width 0.2s linear;
+}
+
+@keyframes diagFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+/* ========== ПАРАМЕТРЫ ДИАГНОСТИКИ ========== */
+.diag-param-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(0, 255, 136, 0.08);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.diag-param-name {
+  color: var(--dim);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.diag-param-value {
+  color: var(--g);
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: bold;
+}
+
+.diag-param-value.warn {
+  color: #ffaa00;
+  text-shadow: 0 0 4px #ffaa00;
+  animation: glitch3 3s infinite;
+}
+
+.diag-param-value.crit {
+  color: var(--red);
+  text-shadow: 0 0 4px var(--red);
+  animation: blink 1s infinite, glitch1 4s infinite;
+}
+
+.diag-param-value.heavy-corrupt,
+.diag-param-name.heavy-corrupt {
+  animation: glitch2 2s infinite;
+  filter: blur(0.3px);
+}
+
+      /* ╔══════════════════════════════════════════════════════╗ */
+      /* ║ AUTOPILOT  ║ */
+      /* ╚══════════════════════════════════════════════════════╝ */
+.ap-corr-btn {
+  transition: all 0.1s;
+}
+.ap-corr-btn:hover {
+  border-color: var(--cyan);
+  background: rgba(0, 229, 255, 0.1);
+  text-shadow: 0 0 5px var(--cyan);
+}
+.ap-corr-btn:active {
+  transform: scale(0.95);
+}
+.ap-warning {
+  animation: warnflicker 3s infinite;
+}
+.ap-warning:last-child {
+  margin-bottom: 0;
+}
+.ap-log-entry {
+  margin-bottom: 4px;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(0, 255, 136, 0.05);
+}
+.glow-path {
+  filter: drop-shadow(0 0 3px var(--cyan));
+  animation: pulse 2s infinite;
+}
+@keyframes warnflicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ========== НАВИГАЦИОННАЯ КАРТА ========== */
+.navmap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(135deg, #030a06, #010502);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+/* Звёздный фон */
+.navmap-stars {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(1px 1px at 15% 20%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 45% 55%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 70% 15%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 85% 80%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 30% 85%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 60% 40%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 92% 35%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 8% 60%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 50% 90%, #fff 1px, transparent 1px),
+    radial-gradient(1px 1px at 78% 50%, #fff 1px, transparent 1px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+}
+
+/* Сетка */
+.navmap-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 255, 136, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.06) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* Корабль */
+.navmap-ship {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  z-index: 20;
+  transition: none;
+}
+
+.navmap-ship::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 12px solid var(--g);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 0 6px var(--g));
+}
+
+.navmap-ship::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: rgba(0, 255, 136, 0.2);
+  border-radius: 50%;
+  left: 8px;
+  top: 5px;
+  animation: shipPulse 2s infinite;
+}
+
+/* Цель - в конце траектории (правый край) */
+.navmap-target {
+  position: absolute;
+  left: 96%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.navmap-target::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--cyan);
+  transform: rotate(45deg);
+  left: -8px;
+  top: -8px;
+  box-shadow: 0 0 10px var(--cyan);
+  animation: targetPulse 1.5s infinite;
+}
+
+.navmap-target::after {
+  content: 'TARGET';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  font-size: 7px;
+  color: var(--cyan);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+@keyframes targetPulse {
+  0%, 100% { transform: rotate(45deg) scale(1); opacity: 0.8; }
+  50% { transform: rotate(45deg) scale(1.2); opacity: 1; }
+}
+
+/* Объекты */
+.navmap-object {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+}
+
+.navmap-object .obj-label {
+  position: absolute;
+  top: -16px;
+  left: 10px;
+  font-size: 7px;
+  color: var(--dim);
+  letter-spacing: 1px;
+  white-space: nowrap;
+  background: rgba(0, 10, 4, 0.7);
+  padding: 1px 4px;
+  border: 1px solid var(--border);
+}
+
+.navmap-object.debris {
+  background: var(--yellow);
+  box-shadow: 0 0 6px var(--yellow);
+  animation: debrisBlink 2s infinite;
+}
+
+.navmap-object.unknown {
+  background: var(--red);
+  box-shadow: 0 0 6px var(--red);
+  animation: unknownBlink 0.8s infinite;
+}
+
+.navmap-object.station {
+  background: var(--b);
+  box-shadow: 0 0 6px var(--b);
+  width: 8px;
+  height: 8px;
+}
+
+.navmap-object.asteroid {
+  background: var(--dim);
+  box-shadow: 0 0 4px var(--dim);
+  width: 4px;
+  height: 4px;
+}
+
+@keyframes debrisBlink {
+  0%, 100% { opacity: 0.6; transform: rotate(45deg) scale(1); }
+  50% { opacity: 1; transform: rotate(45deg) scale(1.2); }
+}
+
+@keyframes unknownBlink {
+  0%, 100% { background: var(--red); transform: rotate(45deg) scale(1); }
+  50% { background: #ff6600; transform: rotate(45deg) scale(1.3); }
+}
+
+/* Траектория */
+.navmap-trajectory {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Координаты */
+.navmap-coords {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 8px;
+  color: var(--dim);
+  letter-spacing: 1px;
+  text-align: right;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  z-index: 15;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.navmap-coords div {
+  margin-bottom: 2px;
+}
+
+.navmap-coords span {
+  color: var(--cyan);
+}
+
+.ap-corr-btn {
+  transition: all 0.1s;
+}
+.ap-corr-btn:hover {
+  border-color: var(--cyan);
+  background: rgba(0, 229, 255, 0.1);
+  text-shadow: 0 0 5px var(--cyan);
+}
+.ap-corr-btn:active {
+  transform: scale(0.95);
+}
+.ap-warning {
+  animation: warnflicker 3s infinite;
+}
+.ap-warning:last-child {
+  margin-bottom: 0;
+}
+.ap-log-entry {
+  margin-bottom: 4px;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(0, 255, 136, 0.05);
+}
+.glow-path {
+  filter: drop-shadow(0 0 3px var(--cyan));
+  animation: pulse 2s infinite;
+}
+@keyframes warnflicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ========== TACTICAL MAP ========== */
+#tacMap {
+  border: 1px solid var(--border);
+  cursor: crosshair;
+}
+
+/* ========== SHIP SCHEMATIC ========== */
+#shipSchema {
+  border: 1px solid var(--border);
+}
+/* FORCE RESET EFFECT */
+.ap-reset-shake {
+  animation: apShake 0.15s infinite !important;
+}
+
+@keyframes apShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.ap-reset-glow {
+  animation: apGlowFlash 0.2s 3 !important;
+}
+
+@keyframes apGlowFlash {
+  0%, 100% { box-shadow: 0 0 0 transparent; }
+  50% { box-shadow: 0 0 30px 5px var(--red); }
+}
+
+/* VESSEL SCHEMATIC — интерактивный */
+.schema-container {
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  background: #040d08;
+  border: 1px solid var(--border);
+}
+
+.schema-container:active {
+  cursor: grabbing;
+}
+
+.schema-canvas-wrapper {
+  position: relative;
+  transform-origin: 0 0;
+  transition: transform 0.05s linear;
+}
+
+/* Индикатор масштаба */
+.schema-zoom-indicator {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 9px;
+  color: var(--dim);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace;
+  pointer-events: none;
+  z-index: 10;
+  letter-spacing: 0.08em;
+}
+
+/* SIGNAL LOST эффект на карте */
+#tacMap.signal-lost {
+  filter: grayscale(0.8) brightness(0.4);
+  animation: signalGlitch 0.2s infinite;
+}
+
+@keyframes signalGlitch {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; transform: translateX(1px); }
+}
+
+.signal-lost-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 34, 68, 0.15) 0px,
+    rgba(255, 34, 68, 0.15) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+  pointer-events: none;
+  z-index: 15;
+  animation: signalNoise 0.15s infinite;
+}
+
+@keyframes signalNoise {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.nc-btn{padding:6px;border:1px solid var(--border);color:var(--dim);cursor:pointer;text-align:center;font-size:9px;letter-spacing:0.08em;transition:all .2s}
+.nc-btn:hover{color:var(--g);border-color:rgba(0,255,136,0.3)}
+
+@keyframes borderPulse-red{0%,100%{border-color:rgba(255,34,68,0.3)}50%{border-color:rgba(255,34,68,0.8)}}
+
+/* NAV CORE - стили для карты и легенды */
+#starmap {
+  cursor: grab;
+  background: #020a05;
+  display: block;
+}
+
+#starmap:active {
+  cursor: grabbing;
+}
+
+/* Легенда карты - правильное позиционирование */
+.starmap-legend {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  font-size: 9px;
+  color: rgba(0, 255, 136, 0.35);
+  letter-spacing: 0.08em;
+  text-align: right;
+  pointer-events: none;
+  line-height: 1.7;
+  z-index: 5;
+}
+
+#page-navcore .panel {
+  position: relative;
+}
+
+/* Для элементов внутри панели карты */
+#page-navcore .panel-body {
+  position: relative;
+  padding: 0;
+}
+
+      /* ╔══════════════════════════════════════════════════════╗ */
+      /* ║ EJECT SYS  ║ */
+      /* ╚══════════════════════════════════════════════════════╝ */
+
+/* Красная пульсирующая рамка для заголовка */
+@keyframes borderPulse-red {
+  0%, 100% { border-color: rgba(255, 34, 68, 0.3); }
+  50% { border-color: rgba(255, 34, 68, 0.8); }
+}
+
+/* Контейнер для капсулы */
+#capsuleCanvas {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 34, 68, 0.15);
+}
+
+/* Поля ввода авторизации */
+.auth-digit {
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 34, 68, 0.4);
+  color: var(--red);
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  outline: none;
+  caret-color: var(--red);
+  transition: all 0.2s;
+}
+
+.auth-digit:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 10px rgba(255, 34, 68, 0.3);
+}
+
+/* Кнопка удержания EJECT */
+#eject-hold-btn {
+  padding: 14px;
+  border: 2px solid var(--red);
+  color: var(--red);
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+  letter-spacing: 0.16em;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  transition: background 0.2s;
+  animation: flicker 3s infinite;
+}
+
+#eject-hold-btn:hover {
+  background: rgba(255, 34, 68, 0.1);
+}
+
+#eject-hold-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: rgba(255, 34, 68, 0.2);
+  transition: none;
+  pointer-events: none;
+}
+
+/* Окно обратного отсчёта */
+#eject-countdown-box {
+  text-align: center;
+  padding: 12px;
+  border: 2px solid var(--red);
+  background: rgba(255, 34, 68, 0.08);
+  margin-bottom: 10px;
+  animation: borderPulse-red 0.5s infinite;
+}
+
+#eject-countdown-num {
+  font-family: 'VT323', monospace;
+  font-size: 72px;
+  color: var(--red);
+  text-shadow: 0 0 20px var(--red);
+  line-height: 1;
+  animation: glitch2 0.4s infinite;
+}
+
+/* Кинематографический экран отделения капсулы */
+#eject-cinematic {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+  font-family: 'VT323', monospace;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#eject-space-cv {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Стили для чеклиста */
+#checklist-body div {
+  transition: background 0.2s;
+}
+
+/* Анимация для кнопки ABORT */
+#abort-btn {
+  animation: pulse 0.8s infinite;
+}
+
+#abort-btn:hover {
+  background: rgba(0, 255, 136, 0.08);
+}
+
+/* EJECT LOCK SCREEN */
+.eject-lock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 34, 68, 0.3);
+  margin: 6px 0;
+}
+
+.eject-lock-panel {
+  text-align: center;
+  padding: 30px 40px;
+  border: 1px solid var(--border);
+  background: rgba(8, 26, 16, 0.95);
+  min-width: 350px;
+}
+
+.eject-lock-title {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--red);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  animation: glitch1 3s infinite;
+}
+
+.eject-lock-input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 24px;
+  text-align: center;
+  padding: 10px 15px;
+  width: 150px;
+  letter-spacing: 4px;
+  outline: none;
+  margin-bottom: 15px;
+}
+
+.eject-lock-input:focus {
+  border-color: var(--g);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.eject-lock-btn {
+  background: transparent;
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 8px 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+
+.eject-lock-btn:hover {
+  background: rgba(255, 34, 68, 0.1);
+  border-color: var(--g);
+  color: var(--g);
+}
+
+.eject-lock-error {
+  font-size: 10px;
+  color: var(--red);
+  margin-top: 12px;
+  min-height: 20px;
+  letter-spacing: 1px;
+  animation: flicker 0.5s infinite;
+}
+
+/* ═══ SMILE DESIGN SYSTEM ═══ */
+/* Override: SMILE panel background & fonts differ from SOCA */
+#page-smaily{font-family:'Share Tech Mono',monospace}
+#page-smaily *{box-sizing:border-box}
+
+.sm-header{display:flex;align-items:center;gap:12px;padding:10px 14px;border:2px solid rgba(255,150,0,0.5);background:rgba(20,10,0,0.95);margin-bottom:5px;position:relative;overflow:hidden}
+.sm-header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,rgba(255,120,0,0.03) 3px,rgba(255,120,0,0.03) 6px);pointer-events:none}
+.sm-header::after{content:'';position:absolute;left:-5%;top:0;bottom:0;width:8%;background:linear-gradient(90deg,transparent,rgba(255,150,0,0.06),transparent);animation:smScan 5s linear infinite}
+.sm-logo-wrap{display:flex;align-items:center;gap:12px}
+.sm-logo-cross{font-size:32px;color:#ffaa00;text-shadow:0 0 12px #ff8800,0 0 24px rgba(255,120,0,0.4);animation:smBlink 2s ease-in-out infinite}
+.sm-logo-title{font-family:'VT323',monospace;font-size:28px;color:#ffcc00;letter-spacing:0.12em;text-shadow:0 0 10px #ff8800;line-height:1}
+.sm-logo-sub{font-size:9px;color:#886600;letter-spacing:0.14em;margin-top:2px}
+.sm-header-center{display:flex;flex-direction:column;gap:5px;align-items:center;flex:1}
+.sm-status-pill{padding:4px 12px;border-radius:0;font-size:10px;letter-spacing:0.14em}
+.sm-status-pill.sm-ok{border:1px solid rgba(0,200,0,0.4);color:#44cc44;background:rgba(0,100,0,0.15)}
+.sm-status-pill.sm-warn{border:1px solid rgba(255,150,0,0.5);color:#ffaa00;background:rgba(255,100,0,0.1);animation:smBlink 2s infinite}
+.sm-header-right{display:flex;gap:10px;margin-left:auto}
+.sm-time-box{border:1px solid rgba(255,150,0,0.3);padding:5px 10px;background:rgba(10,5,0,0.8);text-align:center}
+.sm-time-label{font-size:8px;color:#664400;letter-spacing:0.14em}
+.sm-time-val{font-family:'VT323',monospace;font-size:22px;color:#ffaa00;letter-spacing:0.1em;text-shadow:0 0 8px #ff8800}
+
+.sm-tabs{display:flex;align-items:center;gap:0;margin-bottom:5px;border-bottom:2px solid rgba(255,150,0,0.3)}
+.sm-tab{padding:8px 16px;font-size:11px;letter-spacing:0.1em;color:#664400;cursor:pointer;border:1px solid transparent;border-bottom:none;transition:all .2s;background:rgba(10,5,0,0.8)}
+.sm-tab:hover{color:#ffaa00;background:rgba(255,100,0,0.06)}
+.sm-tab.active{color:#ffcc00;background:rgba(255,100,0,0.12);border-color:rgba(255,150,0,0.4);border-bottom-color:rgba(20,10,0,1);position:relative;top:2px}
+.sm-tab-spacer{flex:1}
+.sm-ver{font-size:9px;color:#442200;letter-spacing:0.1em;padding:0 12px;align-self:center}
+
+.sm-page{display:none}.sm-page.active{display:block}
+
+.sm-panel{border:1px solid rgba(255,150,0,0.25);background:rgba(12,6,0,0.95);position:relative;overflow:hidden}
+.sm-panel::before{content:'';position:absolute;left:0;top:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,150,0,0.5),transparent);animation:smScan 6s linear infinite;opacity:0.4}
+.sm-ph{padding:5px 10px;border-bottom:1px solid rgba(255,150,0,0.2);display:flex;justify-content:space-between;align-items:center;background:rgba(255,100,0,0.04)}
+.sm-ph-title{font-size:10px;color:#cc8800;letter-spacing:0.12em}
+.sm-ph-tag{font-size:9px;color:#554400;letter-spacing:0.1em}
+.sm-pb{padding:10px 12px}
+
+.sm-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.sm-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+
+.sm-diag-row{display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:4px;border-bottom:1px solid rgba(255,150,0,0.06);padding-bottom:3px}
+.sm-dk{color:#554400;letter-spacing:0.08em}
+.sm-dv{color:#cc9900;letter-spacing:0.06em}
+.sm-ok-txt{color:#ffcc00!important;text-shadow:0 0 6px rgba(255,200,0,0.4)}
+.sm-warn-txt{color:#ff8800!important;text-shadow:0 0 4px rgba(255,100,0,0.4)}
+.sm-crit-txt{color:#ff3300!important;text-shadow:0 0 6px rgba(255,50,0,0.5)}
+
+.sm-supply-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:10px}
+.sm-sup-name{color:#886600;letter-spacing:0.06em;width:130px;flex-shrink:0}
+.sm-sup-bar{flex:1;height:6px;background:rgba(255,150,0,0.1);border:1px solid rgba(255,150,0,0.15)}
+.sm-sup-fill{height:100%}
+.sm-fill-ok{background:#ffaa00;box-shadow:0 0 4px rgba(255,170,0,0.5)}
+.sm-fill-warn{background:#ff6600;box-shadow:0 0 4px rgba(255,100,0,0.5)}
+.sm-fill-crit{background:#ff2200;box-shadow:0 0 4px rgba(255,0,0,0.5);animation:smBlink 1s infinite}
+.sm-sup-val{font-size:9px;color:#886600;letter-spacing:0.06em;width:55px;text-align:right}
+
+.sm-proc{padding:5px 0;border-bottom:1px solid rgba(255,150,0,0.08);font-size:10px;margin-bottom:3px}
+.sm-proc-time{font-size:9px;color:#554400;letter-spacing:0.1em;margin-bottom:1px}
+.sm-proc-name{color:#cc9900;letter-spacing:0.06em}
+.sm-proc-note{font-size:9px;color:#664400;margin-top:1px}
+.sm-proc.warn .sm-proc-name{color:#ff8800}
+.sm-proc.crit .sm-proc-name{color:#ff3300;animation:smBlink 1.5s infinite}
+.sm-corrupt{opacity:0.6;filter:blur(0.4px);animation:smBlink 2s infinite}
+
+.sm-vital-box{border:1px solid rgba(255,150,0,0.2);background:rgba(5,3,0,0.8);padding:8px;text-align:center}
+.sm-vital-num{font-family:'VT323',monospace;font-size:38px;line-height:1;text-shadow:0 0 10px currentColor}
+.sm-vital-unit{font-size:9px;color:#664400;letter-spacing:0.12em;margin-top:1px}
+.sm-vital-label{font-size:8px;color:#554400;letter-spacing:0.1em;margin-top:2px}
+.sm-vital-bar{height:3px;background:rgba(255,150,0,0.1);margin-top:5px}
+.sm-vital-fill{height:100%}
+
+.sm-alert-item{padding:7px 8px;border-left:3px solid rgba(255,150,0,0.5);margin-bottom:5px;background:rgba(255,100,0,0.04)}
+.sm-alert-item.sm-warn{border-color:rgba(255,120,0,0.6)}
+.sm-alert-item.sm-crit{border-color:rgba(255,30,0,0.8);background:rgba(255,30,0,0.05)}
+.sm-alert-title{font-size:10px;color:#ff8800;letter-spacing:0.08em;margin-bottom:2px}
+.sm-alert-body{font-size:9px;color:#664400;line-height:1.5}
+.sm-alert-time{font-size:8px;color:#443300;margin-top:2px;letter-spacing:0.08em}
+
+.sm-weapon-card{border:1px solid rgba(255,150,0,0.2);background:rgba(8,4,0,0.9);padding:8px 10px;margin-bottom:5px;cursor:pointer;transition:all .2s}
+.sm-weapon-card:hover,.sm-weapon-card.selected{border-color:rgba(255,180,0,0.6);background:rgba(255,100,0,0.07)}
+.sm-wc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.sm-wc-name{font-size:11px;color:#cc9900;letter-spacing:0.1em}
+.sm-wc-status{font-size:9px;letter-spacing:0.1em}
+.sm-wc-shape{width:100%;display:block;margin:4px 0;background:#020100;border:1px solid rgba(255,150,0,0.1)}
+.sm-wc-stats{font-size:9px}
+.sm-crit-card{border-color:rgba(255,30,0,0.3);background:rgba(20,0,0,0.8);opacity:0.7}
+
+.sm-ctrl-btn{padding:8px;border:1px solid rgba(255,150,0,0.3);color:#886600;cursor:pointer;text-align:center;letter-spacing:0.1em;transition:all .2s;background:rgba(5,3,0,0.8)}
+.sm-ctrl-btn:hover{color:#ffaa00;background:rgba(255,100,0,0.1)}
+.sm-ok-btn{border-color:rgba(0,200,0,0.3);color:#44aa44}
+.sm-ok-btn:hover{color:#66cc66;background:rgba(0,100,0,0.1)}
+.sm-warn-btn{border-color:rgba(255,100,0,0.4);color:#ff8800}
+.sm-warn-btn:hover{background:rgba(255,100,0,0.1)}
+.sm-crit-btn{border-color:rgba(255,30,0,0.5);color:#ff3300;animation:smBlink 2s infinite}
+.sm-crit-btn:hover{background:rgba(255,0,0,0.1);animation:none;opacity:1}
+@keyframes borderPulse-red{0%,100%{border-color:rgba(255,34,68,0.3)}50%{border-color:rgba(255,34,68,0.8)}}
+.nc-btn{padding:6px;border:1px solid var(--border);color:var(--dim);cursor:pointer;text-align:center;font-size:9px;letter-spacing:0.08em;transition:all .2s}
+.nc-btn:hover{color:var(--g);border-color:rgba(0,255,136,0.3)}
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  LOGO — GEAR (ШЕСТЕРЁНКА) — градиент + свечение + ржавые рывки     */
+/* ═══════════════════════════════════════════════════════════════════ */
+
+.gear-logo {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10000;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  
+  /* Шестерёнка символом */
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* ГРАДИЕНТ: зелёный → голубой (немного затемнённый) */
+  background: linear-gradient(135deg, #00cc66 0%, #00ff88 25%, #00ccff 70%, #0088cc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  
+  /* ЛЁГКОЕ СВЕЧЕНИЕ (неяркое) */
+  text-shadow: 0 0 3px rgba(0, 255, 136, 0.3), 0 0 5px rgba(0, 204, 255, 0.2);
+  
+  /* Лёгкая тень для объёма */
+  filter: drop-shadow(0 0 2px rgba(0, 200, 100, 0.2));
+  
+  transition: none;
+  
+  /* Анимация: ржавая шестерёнка с рывками и остановками */
+  animation: rustyGearSpin 8s infinite cubic-bezier(0.8, 0.2, 0.2, 0.8);
+}
+
+/* Эффект "ржавчины" — лёгкое затемнение поверх градиента */
+.gear-logo::before {
+  content: '⛭';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00cc66 0%, #00ff88 25%, #00ccff 70%, #0088cc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0.25;
+  filter: blur(0.8px);
+  pointer-events: none;
+  animation: rustOverlay 12s infinite;
+}
+
+/* Глитч-слой (помехи) */
+.gear-logo::after {
+  content: '⛭';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00ffcc 0%, #00ff88 50%, #00ccff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  animation: gearGlitchOverlay 5s infinite;
+}
+
+/* ========== АНИМАЦИИ ========== */
+
+/* РЖАВАЯ ШЕСТЕРЁНКА — рывки, остановки, заедания */
+@keyframes rustyGearSpin {
+  /* Долгая пауза в начале */
+  0%, 10% { transform: rotate(0deg); }
+  
+  /* Резкий рывок на 1 зубец */
+  12% { transform: rotate(0deg); }
+  14% { transform: rotate(8deg); }
+  16% { transform: rotate(0deg); }
+  
+  /* Короткая пауза */
+  18%, 22% { transform: rotate(0deg); }
+  
+  /* Ещё один рывок */
+  24% { transform: rotate(0deg); }
+  26% { transform: rotate(12deg); }
+  28% { transform: rotate(4deg); }
+  30% { transform: rotate(0deg); }
+  
+  /* Пауза */
+  32%, 40% { transform: rotate(0deg); }
+  
+  /* Рывок на 2 зубца */
+  42% { transform: rotate(0deg); }
+  44% { transform: rotate(12deg); }
+  46% { transform: rotate(18deg); }
+  48% { transform: rotate(6deg); }
+  50% { transform: rotate(0deg); }
+  
+  /* Длинная пауза (заело) */
+  52%, 70% { transform: rotate(0deg); }
+  
+  /* Сильный рывок с проскальзыванием */
+  72% { transform: rotate(0deg); }
+  74% { transform: rotate(15deg); }
+  76% { transform: rotate(25deg); }
+  78% { transform: rotate(10deg); }
+  80% { transform: rotate(0deg); }
+  
+  /* Пауза */
+  82%, 90% { transform: rotate(0deg); }
+  
+  /* Финальный доворот до 30 градусов (не полный оборот!) */
+  92% { transform: rotate(0deg); }
+  94% { transform: rotate(15deg); }
+  96% { transform: rotate(30deg); }
+  98% { transform: rotate(20deg); }
+  100% { transform: rotate(30deg); }
+}
+
+/* Ржавый слой (лёгкое затемнение поверх градиента) */
+@keyframes rustOverlay {
+  0%, 100% { opacity: 0.25; filter: blur(0.8px); }
+  20% { opacity: 0.35; filter: blur(1px); }
+  40% { opacity: 0.2; filter: blur(0.5px); }
+  60% { opacity: 0.4; filter: blur(1.2px); }
+  80% { opacity: 0.2; filter: blur(0.6px); }
+}
+
+/* Глитч-оверлей (редкие помехи) */
+@keyframes gearGlitchOverlay {
+  0%, 100% { opacity: 0; transform: translateX(0); }
+  8% { opacity: 0.5; transform: translateX(-1.5px); }
+  9% { opacity: 0; transform: translateX(1.5px); }
+  15% { opacity: 0; }
+  22% { opacity: 0.4; transform: translateX(-1px); }
+  23% { opacity: 0; transform: translateX(1px); }
+  45% { opacity: 0; }
+  68% { opacity: 0.3; transform: translateX(-0.5px); }
+  69% { opacity: 0; transform: translateX(0.5px); }
+  85% { opacity: 0; }
+  92% { opacity: 0.5; transform: translateX(-2px); }
+  93% { opacity: 0; transform: translateX(2px); }
+}
+
+/* Мгновенный глитч (дерганье) — через JS */
+.gear-logo.glitch-instant {
+  animation: gearInstantGlitch 0.2s steps(3);
+}
+
+@keyframes gearInstantGlitch {
+  0% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-3px) rotate(5deg); }
+  50% { transform: translateX(3px) rotate(-4deg); }
+  75% { transform: translateX(-1px) rotate(2deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+
+/* Критический глитч (редкое событие) */
+.gear-logo.critical-glitch {
+  animation: gearCritGlitch 0.4s infinite;
+}
+
+@keyframes gearCritGlitch {
+  0%, 100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+  20% { transform: translateX(-4px) rotate(10deg); opacity: 0.5; filter: blur(0.5px); }
+  40% { transform: translateX(4px) rotate(-8deg); opacity: 0.8; }
+  60% { transform: translateX(-2px) rotate(6deg); opacity: 0.3; filter: blur(1px); }
+  80% { transform: translateX(2px) rotate(-4deg); opacity: 0.9; }
+}
+
+/* Блокировка автоскролла */
+html {
+  scroll-behavior: auto !important;
+}
+
+body {
+  overflow-anchor: none;
+  position: static;
+}
+
+/* Убираем transform, который может влиять на скролл */
+.terminal, .wrapper {
+  transform: none !important;
+}
+
+/* ========== ЭФФЕКТЫ ДЛЯ ЧАТА ========== */
+
+/* 1. Общий контейнер чата — добавляем CRT-эффекты */
+/* ОСНОВНЫЕ СТИЛИ ЧАТА (без поломок) */
+.chat-overlay {
+  position: fixed;
+  right: 26px;
+  bottom: 80px;
+  z-index: 10004;
+  width: min(400px, calc(100vw - 32px));
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  background: rgba(4, 12, 9, 0.96);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+  backdrop-filter: blur(2px);
+  overflow: hidden;
+}
+
+/* SCANLINES поверх чата (не ломает функционал) */
+.chat-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+}
+
+/* Шум поверх чата */
+.chat-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 11;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: chatNoiseAnim 0.2s steps(1) infinite;
+}
+
+@keyframes chatNoiseAnim {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-1px, 1px); }
+  50% { transform: translate(1px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Остальные эффекты для элементов внутри чата (безопасные) */
+.chat-overlay .panel-header {
+  background: rgba(0, 255, 136, 0.08);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  position: relative;
+  z-index: 12;
+}
+
+.chat-overlay .panel-header .title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  animation: chatTitleGlitch 6s infinite;
+  display: inline-block;
+}
+
+@keyframes chatTitleGlitch {
+  0%, 90%, 100% { text-shadow: none; transform: none; }
+  92% { text-shadow: -1px 0 var(--red), 1px 0 var(--b); transform: translateX(-1px); }
+  94% { text-shadow: 1px 0 var(--red), -1px 0 var(--b); transform: translateX(1px); }
+  96% { text-shadow: none; transform: none; }
+}
+
+.chat-close-button:hover {
+  animation: closeBtnGlitch 0.2s 2;
+}
+
+@keyframes closeBtnGlitch {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); color: var(--red); }
+  75% { transform: translateX(2px); color: var(--b); }
+}
+
+.chat-message {
+  animation: messageAppear 0.25s ease-out;
+}
+
+@keyframes messageAppear {
+  0% { opacity: 0; transform: translateX(-8px); filter: blur(1px); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+.chat-avatar {
+  animation: avatarPulse 3s infinite, avatarGlitch 8s infinite;
+}
+
+@keyframes avatarPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.2); }
+  50% { box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.3); }
+}
+
+@keyframes avatarGlitch {
+  0%, 95%, 100% { transform: none; }
+  96% { transform: skewX(-5deg); border-color: var(--red); }
+  97% { transform: skewX(5deg); border-color: var(--b); }
+  98% { transform: skewX(0); }
+}
+
+.chat-message.bot .chat-text {
+  animation: textSoftGlitch 10s infinite;
+}
+
+@keyframes textSoftGlitch {
+  0%, 98%, 100% { text-shadow: none; }
+  99% { text-shadow: -1px 0 var(--red), 1px 0 var(--b); transform: translateX(-0.5px); }
+}
+
+.chat-input:focus {
+  animation: inputFocusGlitch 0.2s;
+}
+
+@keyframes inputFocusGlitch {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); border-color: var(--red); }
+  40% { transform: translateX(2px); border-color: var(--b); }
+  60% { transform: translateX(-1px); border-color: var(--yellow); }
+}
+
+.chat-send:active {
+  animation: sendClickGlitch 0.1s 2;
+}
+
+@keyframes sendClickGlitch {
+  0%, 100% { transform: scale(0.96) translateX(0); }
+  50% { transform: scale(0.96) translateX(2px); color: var(--red); }
+}
+
+.soca-typing {
+  animation: typingPulse 1.5s infinite;
+}
+
+@keyframes typingPulse {
+  0%, 100% { opacity: 0.6; border-left-color: var(--g); }
+  50% { opacity: 1; border-left-color: var(--b); }
+}
+
+.chat-overlay.glitch-border {
+  animation: chatBorderGlitch 0.2s infinite steps(2);
+}
+
+@keyframes chatBorderGlitch {
+  0%, 100% { border-color: var(--border); }
+  25% { border-color: var(--red); }
+  50% { border-color: var(--g); }
+  75% { border-color: var(--b); }
+}
+
+/* 15. Эффект "ряби" при получении сообщения */
+.chat-body.ripple {
+  animation: chatRipple 0.3s ease-out;
+}
+
+@keyframes chatRipple {
+  0% { box-shadow: inset 0 0 0 0 rgba(0, 255, 136, 0); }
+  50% { box-shadow: inset 0 0 20px 5px rgba(0, 255, 136, 0.1); }
+  100% { box-shadow: inset 0 0 0 0 rgba(0, 255, 136, 0); }
+}
+
+/* ========== ЧАТ С БОКОВОЙ ПАНЕЛЬЮ ========== */
+
+/* Структура чата */
+.chat-layout {
+  display: flex;
+  height: 100%;
+  flex: 1;
+  min-height: 0; /* Важно для правильной работы flex */
+}
+
+/* Боковая панель с контактами */
+.chat-sidebar {
+  width: 80px;
+  border-right: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 10px 0;
+  gap: 8px;
+  overflow-x: hidden;
+}
+
+/* Контакт в боковой панели */
+.chat-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.chat-contact:hover {
+  background: rgba(0, 255, 136, 0.08);
+}
+
+.chat-contact.active {
+  background: rgba(0, 255, 136, 0.12);
+}
+
+.chat-contact.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 2px;
+  background: var(--g);
+  box-shadow: 0 0 6px var(--g);
+}
+
+.chat-contact.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chat-contact.locked:hover {
+  background: rgba(255, 34, 68, 0.08);
+  opacity: 0.6;
+}
+
+/* Аватар */
+.chat-avatar-small {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--g);
+  flex-shrink: 0;
+}
+
+.chat-contact.locked .chat-avatar-small {
+  filter: grayscale(0.6);
+  opacity: 0.7;
+}
+
+/* Имя контакта — ОБРЕЗАЕМ, ЧТОБЫ НЕ ВЫЛЕЗАЛО */
+.chat-contact-info {
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.chat-contact-name {
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+  padding: 0 4px;
+}
+
+/* Скрываем статус, чтобы не загромождать */
+.chat-contact-status {
+  display: none;
+}
+
+/* Область сообщений */
+.chat-messages-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Тело чата (сообщения) */
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Поле ввода — ПРИЖИМАЕМ К НИЗУ, УБИРАЕМ ПУСТОТУ */
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.chat-input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  color: var(--g);
+  padding: 8px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  outline: none;
+}
+
+.chat-send {
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  background: rgba(0, 255, 136, 0.08);
+  color: var(--g);
+  padding: 8px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-prompt {
+  color: var(--g);
+  font-size: 12px;
+  animation: blink 1s infinite;
+  flex-shrink: 0;
+}
+
+/* ========== СТИЛИ ДЛЯ ЧАТА С SMILE ========== */
+
+/* Аватар SMILE */
+.chat-avatar-small.smaily-avatar {
+  color: #ffaa00;
+  border-color: rgba(255, 170, 0, 0.5);
+  text-shadow: 0 0 5px rgba(255, 170, 0, 0.5);
+}
+
+.chat-contact-name.smaily-name {
+  color: #ffaa00;
+}
+
+/* ========== ПОЛНЫЙ СТИЛЬ ДЛЯ ЧАТА С SMILE (ФИНАЛ) ========== */
+
+.chat-overlay.smaily-mode {
+  border-color: rgba(255, 170, 0, 0.6);
+  box-shadow: 0 0 30px rgba(255, 170, 0, 0.2);
+  background: rgba(10, 8, 0, 0.97);
+}
+
+.chat-overlay.smaily-mode .panel-header {
+  background: rgba(255, 170, 0, 0.1);
+  border-bottom-color: rgba(255, 170, 0, 0.4);
+}
+
+.chat-overlay.smaily-mode .panel-header .title {
+  color: #ffaa00;
+  text-shadow: 0 0 5px rgba(255, 170, 0, 0.4);
+}
+
+.chat-overlay.smaily-mode .chat-close-button {
+  border-color: rgba(255, 170, 0, 0.4);
+  color: #ffaa00;
+}
+
+.chat-overlay.smaily-mode .chat-close-button:hover {
+  background: rgba(255, 170, 0, 0.15);
+  border-color: #ffaa00;
+}
+
+.chat-overlay.smaily-mode .chat-sidebar {
+  border-right-color: rgba(255, 170, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.chat-overlay.smaily-mode .chat-contact.active {
+  background: rgba(255, 170, 0, 0.12);
+}
+
+.chat-overlay.smaily-mode .chat-contact.active::before {
+  background: #ffaa00;
+  box-shadow: 0 0 6px #ffaa00;
+}
+
+.chat-overlay.smaily-mode .chat-body {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* АВАТАР В СООБЩЕНИЯХ — УБИРАЕМ ЗЕЛЁНОЕ СВЕЧЕНИЕ */
+.chat-overlay.smaily-mode .chat-message.bot .chat-avatar {
+  border-color: rgba(255, 170, 0, 0.5);
+  color: #ffaa00;
+  background: rgba(255, 170, 0, 0.05);
+  box-shadow: none;
+  text-shadow: 0 0 5px #ffaa00;
+}
+
+/* ПУЗЫРЬ СООБЩЕНИЯ BOT — ПОЛНОСТЬЮ ОРАНЖЕВЫЙ */
+.chat-overlay.smaily-mode .chat-message.bot .chat-bubble {
+  border-left-color: #ffaa00;
+  background: rgba(255, 170, 0, 0.1);
+  box-shadow: none;
+}
+
+/* ПУЗЫРЬ СООБЩЕНИЯ USER — ОРАНЖЕВАЯ РАМКА */
+.chat-overlay.smaily-mode .chat-message.user .chat-bubble {
+  border-right-color: #ffaa00;
+  background: rgba(255, 170, 0, 0.05);
+}
+
+/* ЛЕЙБЛ — ОРАНЖЕВЫЙ */
+.chat-overlay.smaily-mode .chat-label {
+  color: #ffaa00;
+}
+
+/* ТЕКСТ СООБЩЕНИЙ — НЕ ЗЕЛЁНЫЙ */
+.chat-overlay.smaily-mode .chat-text {
+  color: #ffcc66;
+}
+
+.chat-overlay.smaily-mode .chat-message.bot .chat-text {
+  color: #ffcc66;
+}
+
+.chat-overlay.smaily-mode .chat-message.user .chat-text {
+  color: #ffaa33;
+}
+
+/* ПОЛОСКА ВНИЗУ (border-top у .chat-input-row) — УБИРАЕМ ЗЕЛЁНУЮ */
+.chat-overlay.smaily-mode .chat-input-row {
+  border-top-color: rgba(255, 170, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ПОЛЕ ВВОДА */
+.chat-overlay.smaily-mode .chat-input {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 170, 0, 0.4);
+  color: #ffaa00;
+}
+
+.chat-overlay.smaily-mode .chat-input:focus {
+  border-color: #ffaa00;
+  box-shadow: 0 0 10px rgba(255, 170, 0, 0.2);
+}
+
+/* КНОПКА SEND */
+.chat-overlay.smaily-mode .chat-send {
+  border-color: rgba(255, 170, 0, 0.5);
+  color: #ffaa00;
+  background: rgba(255, 170, 0, 0.08);
+}
+
+.chat-overlay.smaily-mode .chat-send:hover {
+  background: rgba(255, 170, 0, 0.18);
+  border-color: #ffaa00;
+  text-shadow: 0 0 5px #ffaa00;
+}
+
+/* ПРОМПТ >_ */
+.chat-overlay.smaily-mode .chat-prompt {
+  color: #ffaa00;
+}
+
+/* ИНДИКАТОР ПЕЧАТАНИЯ */
+.chat-overlay.smaily-mode .soca-typing {
+  border-left-color: #ffaa00;
+  background: rgba(255, 170, 0, 0.05);
+}
+
+.chat-overlay.smaily-mode .typing-dots span {
+  background: #ffaa00;
+}
+
+/* СКРОЛЛБАР */
+.chat-overlay.smaily-mode .chat-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+.chat-overlay.smaily-mode .chat-body::-webkit-scrollbar-thumb {
+  background: #ffaa00;
+}
+
+/* УБИРАЕМ ОСТАТКИ ЗЕЛЁНОГО СВЕЧЕНИЯ С ИКОНОК В БОКОВОЙ ПАНЕЛИ */
+.chat-overlay.smaily-mode .chat-avatar-small {
+  border-color: rgba(255, 170, 0, 0.4);
+  color: #ffaa00;
+  text-shadow: 0 0 3px rgba(255, 170, 0, 0.5);
+}
+
+/* ЕСЛИ ГДЕ-ТО ОСТАЛСЯ GLOW — ПЕРЕОПРЕДЕЛЯЕМ */
+.chat-overlay.smaily-mode .glow,
+.chat-overlay.smaily-mode .glow-b,
+.chat-overlay.smaily-mode .glow-r,
+.chat-overlay.smaily-mode .glow-y {
+  text-shadow: 0 0 5px #ffaa00;
+}
+
+/* Анимация переключения */
+@keyframes smailyModeGlitch {
+  0%, 100% { filter: none; }
+  20% { filter: hue-rotate(30deg); }
+  40% { filter: hue-rotate(-30deg); }
+  60% { filter: brightness(1.1); }
+}
+
+.chat-overlay.smaily-mode {
+  animation: smailyModeGlitch 0.3s ease-out;
+}
+
+.smaily-toggle-wrap {
+  /* Сохраняем базовые стили chat-toggle-button, переопределяем внешний вид */
+  padding: 0 !important;
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid #ffaa00 !important;
+  background: #0a0800 !important;
+  box-shadow: 0 0 16px rgba(255, 170, 0, 0.25), inset 0 0 8px rgba(255, 170, 0, 0.05) !important;
+  transition: all 0.22s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Пульсирующая рамка */
+.smaily-toggle-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid rgba(255, 170, 0, 0.35);
+  animation: smailyRingPulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes smailyRingPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%       { opacity: 0.8; transform: scale(1.04); }
+}
+
+/* Сама иконка-лицо */
+.smaily-icon-face {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+
+  /* DEFAULT: жёлтый текст :) на тёмном фоне */
+  color: #ffcc00;
+  text-shadow: 0 0 8px rgba(255, 200, 0, 0.6);
+  background: transparent;
+  padding: 0 2px;
+
+  transition: color 0.2s ease, text-shadow 0.2s ease,
+              background 0.2s ease, transform 0.15s ease;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* HOVER: инверсия — :D тёмным на жёлтом фоне */
+.smaily-toggle-wrap:hover {
+  background: #ffcc00 !important;
+  border-color: #ffaa00 !important;
+  box-shadow: 0 0 28px rgba(255, 200, 0, 0.55),
+              0 0 8px rgba(255, 170, 0, 0.35) !important;
+  animation: smailyHoverGlitch 0.18s 1 !important;
+}
+
+.smaily-toggle-wrap:hover .smaily-icon-face {
+  color: #0a0800;
+  text-shadow: none;
+  transform: scale(1.08);
+}
+
+@keyframes smailyHoverGlitch {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-2px) skewX(-3deg); }
+  75%  { transform: translateX(2px) skewX(3deg); }
+  100% { transform: translateX(0); }
+}
+
+/* Когда чат открыт — иконка активна */
+.smaily-toggle-wrap.is-open {
+  background: rgba(255, 200, 0, 0.12) !important;
+  border-color: #ffcc00 !important;
+  box-shadow: 0 0 20px rgba(255, 200, 0, 0.4) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOG TAG  —  тег SMILE в логах
+   ═══════════════════════════════════════════════════════════ */
+
+.log-tag.smaily {
+  border: 1px solid #ffaa00;
+  color: #ffcc00;
+  text-shadow: 0 0 4px rgba(255, 170, 0, 0.5);
+  background: rgba(255, 170, 0, 0.06);
+  animation: smailyTagBlink 3s ease-in-out infinite;
+}
+
+@keyframes smailyTagBlink {
+  0%, 80%, 100% { opacity: 1; }
+  85%           { opacity: 0.55; }
+}
+
+.log-message.smaily,
+.log-msg.smaily {
+  color: #ffcc66;
+  font-style: italic;
+}
+
+/* В полном SYS LOG */
+.log-entry-full .log-tag.smaily {
+  border: 1px solid #ffaa00;
+  color: #ffcc00;
+  background: rgba(255, 170, 0, 0.06);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SMILE TOAST  —  всплывающее уведомление от SMILE
+   ═══════════════════════════════════════════════════════════ */
+
+.smaily-toast {
+  position: fixed;
+  bottom: 220px;          /* выше SOCA-toast */
+  right: 20px;
+  z-index: 10002;
+  background: rgba(12, 9, 0, 0.98);
+  border: 1px solid rgba(255, 170, 0, 0.5);
+  border-left: 3px solid #ffaa00;
+  padding: 10px 14px;
+  max-width: 280px;
+  font-size: 11px;
+  font-family: 'Share Tech Mono', monospace;
+  box-shadow: 0 0 24px rgba(255, 170, 0, 0.22);
+  animation: smailyToastIn 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes smailyToastIn {
+  from { opacity: 0; transform: translateX(50px) skewX(-4deg); }
+  to   { opacity: 1; transform: translateX(0) skewX(0); }
+}
+
+.smaily-toast .smaily-toast-header {
+  color: #ffaa00;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.smaily-toast .smaily-toast-header .st-icon {
+  font-size: 13px;
+  animation: smailyFaceWiggle 2s ease-in-out infinite;
+}
+
+@keyframes smailyFaceWiggle {
+  0%, 90%, 100% { transform: rotate(0deg); }
+  93%           { transform: rotate(-8deg); }
+  96%           { transform: rotate(8deg); }
+}
+
+.smaily-toast .smaily-toast-body {
+  color: #ffcc66;
+  line-height: 1.6;
+}
+
+.smaily-toast .smaily-toast-vitals {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(255, 170, 0, 0.2);
+  font-size: 9px;
+  color: rgba(255, 170, 0, 0.55);
+  letter-spacing: 0.06em;
+}
+
+/* Тип WARN — красная левая полоска */
+.smaily-toast.warn {
+  border-left-color: #ff6600;
+  box-shadow: 0 0 24px rgba(255, 100, 0, 0.3);
+}
+
+.smaily-toast.warn .smaily-toast-header {
+  color: #ff8800;
+}
+
+/* Тип OK — зеленоватая */
+.smaily-toast.ok {
+  border-left-color: #88cc00;
+  box-shadow: 0 0 20px rgba(136, 204, 0, 0.18);
+}
+
+.smaily-toast.ok .smaily-toast-header {
+  color: #aadd44;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RECENT LOG  —  пометка SMILE-записей в боковом логе
+   ═══════════════════════════════════════════════════════════ */
+
+.log-entry.smaily-entry {
+  border-left: 2px solid rgba(255, 170, 0, 0.4);
+  background: rgba(255, 170, 0, 0.03);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SMILE CONTACT ICON  — иконка в боковой панели чата
+   Уже покрыта смайли-аватаром, но добавляем :) символ
+   ═══════════════════════════════════════════════════════════ */
+
+.chat-avatar-small.smaily-smiley {
+  font-size: 18px;
+  color: #ffcc00;
+  border-color: rgba(255, 200, 0, 0.5);
+  background: #0a0800;
+  text-shadow: 0 0 6px rgba(255, 200, 0, 0.5);
+  transition: color 0.2s, background 0.2s, text-shadow 0.2s;
+}
+
+.chat-contact:hover .chat-avatar-small.smaily-smiley,
+.chat-contact.active .chat-avatar-small.smaily-smiley {
+  color: #0a0800;
+  background: #ffcc00;
+  text-shadow: none;
+}
+.chat-avatar-small.smaily-face {
+  font-family: 'VT323', monospace;
+  font-size: 17px;
+  letter-spacing: -0.05em;
+  color: #ffcc00;
+  background: #0a0800;
+  border-color: rgba(255, 200, 0, 0.5) !important;
+  text-shadow: 0 0 7px rgba(255, 200, 0, 0.55);
+  transition: color 0.18s, background 0.18s, text-shadow 0.18s, transform 0.15s;
+}
+
+.chat-contact:hover .chat-avatar-small.smaily-face,
+.chat-contact.active .chat-avatar-small.smaily-face {
+  color: #0a0800;
+  background: #ffcc00;
+  text-shadow: none;
+  transform: scale(1.08);
+  border-color: #ffcc00 !important;
+}
+
+/* ── :) / :D аватар в области сообщений ────────────────────── */
+
+.smaily-msg-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  color: #ffcc00;
+  background: #0a0800;
+  border: 1px solid rgba(255, 200, 0, 0.45);
+  text-shadow: 0 0 7px rgba(255, 200, 0, 0.5);
+  transition: color 0.18s, background 0.18s, text-shadow 0.18s;
+}
+
+/* ── ПОЛНОЕ УНИЧТОЖЕНИЕ зелёного в smaily-mode ──────────────
+   Используем максимальную специфичность чтобы перебить ВСЕ
+   базовые стили (включая строки 477-479 и 805-848)
+   ─────────────────────────────────────────────────────────── */
+
+/* Общий контейнер сообщения — убираем зелёный border */
+.chat-overlay.smaily-mode .chat-body .chat-message {
+  border-color: rgba(255, 170, 0, 0.12) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Сообщение бота — фон и левая полоска */
+.chat-overlay.smaily-mode .chat-body .chat-message.bot {
+  border-color: rgba(255, 170, 0, 0.15) !important;
+  background: rgba(255, 170, 0, 0.03) !important;
+}
+
+/* Пузырь бота */
+.chat-overlay.smaily-mode .chat-body .chat-message.bot .chat-bubble {
+  background: rgba(255, 170, 0, 0.07) !important;
+  border-left: 2px solid #ffaa00 !important;
+  border-right: none !important;
+}
+
+/* Пузырь юзера */
+.chat-overlay.smaily-mode .chat-body .chat-message.user {
+  border-color: rgba(255, 170, 0, 0.1) !important;
+  background: transparent !important;
+}
+.chat-overlay.smaily-mode .chat-body .chat-message.user .chat-bubble {
+  background: rgba(255, 170, 0, 0.05) !important;
+  border-right: 2px solid rgba(255, 170, 0, 0.6) !important;
+  border-left: none !important;
+}
+
+/* Лейбл в сообщениях */
+.chat-overlay.smaily-mode .chat-body .chat-message.bot .chat-label {
+  color: #ffaa00 !important;
+}
+.chat-overlay.smaily-mode .chat-body .chat-message.user .chat-label {
+  color: rgba(255, 170, 0, 0.6) !important;
+}
+
+/* Текст — убираем зелёный цвет И зелёную glitch-анимацию */
+.chat-overlay.smaily-mode .chat-body .chat-text {
+  color: #ffcc66 !important;
+  animation: none !important;
+  text-shadow: none !important;
+}
+.chat-overlay.smaily-mode .chat-body .chat-message.bot .chat-text {
+  color: #ffcc66 !important;
+  animation: smailyChatGlitch 10s infinite !important;
+}
+.chat-overlay.smaily-mode .chat-body .chat-message.user .chat-text {
+  color: #ffaa44 !important;
+  animation: none !important;
+}
+
+/* Замена зелёного глитча на оранжевый */
+@keyframes smailyChatGlitch {
+  0%, 94%, 100% { text-shadow: none; }
+  95% { text-shadow: -1px 0 #ff6600, 1px 0 #cc8800; transform: translateX(-0.5px); }
+  96% { text-shadow:  1px 0 #ff4400, -1px 0 #ffcc00; transform: translateX(0.5px); }
+  97% { text-shadow: none; transform: translateX(0); }
+  98% { text-shadow: 0 0 3px #ff8800; }
+}
+
+/* Аватар в сообщениях (оригинальный .chat-avatar) */
+.chat-overlay.smaily-mode .chat-body .chat-message.bot .chat-avatar {
+  border-color: rgba(255, 200, 0, 0.5) !important;
+  color: #ffcc00 !important;
+  background: #0a0800 !important;
+  box-shadow: none !important;
+  text-shadow: 0 0 6px rgba(255, 200, 0, 0.5) !important;
+  animation: none !important;
+}
+
+/* Убираем зелёный avatarPulse */
+.chat-overlay.smaily-mode .chat-body .chat-avatar {
+  animation: smailyAvatarPulse 3s ease-in-out infinite !important;
+}
+@keyframes smailyAvatarPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.2); }
+  50%       { box-shadow: 0 0 0 2px rgba(255, 170, 0, 0.4); }
+}
+
+/* ── LOG TAG smaily ─────────────────────────────────────────── */
+
+.log-tag.smaily {
+  border: 1px solid #ffaa00 !important;
+  color: #ffcc00 !important;
+  background: rgba(255, 170, 0, 0.06) !important;
+  text-shadow: 0 0 4px rgba(255, 170, 0, 0.45);
+  animation: smailyTagPulse 3s ease-in-out infinite;
+}
+
+@keyframes smailyTagPulse {
+  0%, 80%, 100% { opacity: 1; }
+  88%           { opacity: 0.5; }
+}
+
+.log-message.smaily,
+.log-msg.smaily {
+  color: #ffcc66 !important;
+  font-style: italic;
+}
+
+.log-entry.smaily-entry {
+  border-left: 2px solid rgba(255, 170, 0, 0.35);
+  background: rgba(255, 170, 0, 0.025);
+}
+
+.log-entry-full.smaily-entry {
+  border-left: 2px solid rgba(255, 170, 0, 0.3);
+  background: rgba(255, 170, 0, 0.02);
+}
+
+/* ── SMILE TOAST ────────────────────────────────────────────── */
+
+.smaily-toast {
+  position: fixed;
+  bottom: 148px;
+  right: 20px;
+  z-index: 10002;
+  background: rgba(12, 9, 0, 0.97);
+  border: 1px solid rgba(255, 170, 0, 0.45);
+  border-left: 3px solid #ffaa00;
+  padding: 10px 14px;
+  max-width: 285px;
+  font-size: 11px;
+  font-family: 'Share Tech Mono', monospace;
+  box-shadow: 0 0 24px rgba(255, 170, 0, 0.2);
+  animation: smailyToastIn 0.28s ease;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+@keyframes smailyToastIn {
+  from { opacity: 0; transform: translateX(50px) skewX(-3deg); }
+  to   { opacity: 1; transform: translateX(0)    skewX(0);     }
+}
+
+.smaily-toast-header {
+  color: #ffaa00;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.smaily-toast-face {
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  animation: smailyFaceWiggle 2.5s ease-in-out infinite;
+}
+
+@keyframes smailyFaceWiggle {
+  0%, 88%, 100% { transform: rotate(0deg)  scale(1);    }
+  92%           { transform: rotate(-10deg) scale(1.1); }
+  96%           { transform: rotate(8deg)  scale(1.05); }
+}
+
+.smaily-toast-body   { color: #ffcc66; line-height: 1.6; }
+
+.smaily-toast-vitals {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(255, 170, 0, 0.18);
+  font-size: 9px;
+  color: rgba(255, 170, 0, 0.5);
+  letter-spacing: 0.06em;
+}
+
+.smaily-toast.warn {
+  border-left-color: #ff6600;
+  box-shadow: 0 0 24px rgba(255, 100, 0, 0.25);
+}
+.smaily-toast.warn .smaily-toast-header { color: #ff8800; }
+.smaily-toast.warn .smaily-toast-body   { color: #ffaa44; }
+
+.smaily-toast.ok {
+  border-left-color: #88cc00;
+  box-shadow: 0 0 20px rgba(136, 204, 0, 0.18);
+}
+.smaily-toast.ok .smaily-toast-header { color: #aadd44; }
+
+/* ════════════════════════════════════════════════════════════
+   TOAST STACK SYSTEM — добавить в конец style.css
+   ════════════════════════════════════════════════════════════ */
+ 
+/* ── Контейнер-стек (фиксированный, правый нижний угол) ───── */
+#toast-stack {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10050;
+  display: flex;
+  flex-direction: column-reverse; /* новые снизу, старые уходят вверх */
+  gap: 8px;
+  align-items: flex-end;
+  pointer-events: none; /* сам контейнер не перехватывает клики */
+  width: 300px;
+}
+ 
+/* ── Базовый тост ─────────────────────────────────────────── */
+.ts-toast {
+  width: 100%;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  padding: 9px 12px 9px 14px;
+  border-left-width: 3px;
+  border-left-style: solid;
+  border: 1px solid transparent;
+  border-left-width: 3px;
+  position: relative;
+  pointer-events: all; /* тосты кликабельны */
+  backdrop-filter: blur(6px);
+ 
+  /* Появление */
+  animation: tsSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity  0.35s ease,
+              margin   0.35s ease;
+}
+ 
+@keyframes tsSlideIn {
+  from { opacity: 0; transform: translateX(70px) skewX(-3deg); }
+  to   { opacity: 1; transform: translateX(0)    skewX(0);     }
+}
+ 
+/* Исчезновение (класс добавляется JS-ом) */
+.ts-toast.ts-hiding {
+  opacity: 0;
+  transform: translateX(70px) skewX(3deg);
+  margin-bottom: -100px; /* «схлопывается» место */
+  pointer-events: none;
+  transition: opacity 0.4s ease,
+              transform 0.4s ease,
+              margin 0.4s ease;
+}
+ 
+/* ── Кнопка закрытия ─────────────────────────────────────── */
+.ts-close {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.15s, color 0.15s;
+  font-family: 'Share Tech Mono', monospace;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.ts-close:hover { opacity: 1; }
+ 
+/* ── Заголовок тоста ─────────────────────────────────────── */
+.ts-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  margin-bottom: 4px;
+  padding-right: 18px; /* место под крестик */
+}
+ 
+.ts-icon {
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+}
+ 
+/* ── Тело ────────────────────────────────────────────────── */
+.ts-body {
+  line-height: 1.55;
+  padding-right: 4px;
+}
+ 
+.ts-vitals {
+  margin-top: 5px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 9px;
+  opacity: 0.5;
+  letter-spacing: 0.06em;
+}
+ 
+/* ══ Тема SOCA (зелёная) ════════════════════════════════════ */
+.ts-toast.ts-soca {
+  background: rgba(4, 15, 8, 0.97);
+  border-color: rgba(0, 255, 136, 0.35);
+  border-left-color: #00ff88;
+  color: #00ff88;
+  box-shadow: 0 0 18px rgba(0, 255, 136, 0.14);
+}
+.ts-toast.ts-soca .ts-header { color: #00aa55; }
+.ts-toast.ts-soca .ts-body   { color: #00ffcc; }
+ 
+.ts-toast.ts-soca.ts-warn {
+  border-left-color: #ffcc00;
+  box-shadow: 0 0 18px rgba(255, 204, 0, 0.15);
+}
+.ts-toast.ts-soca.ts-warn .ts-header { color: #ffcc00; }
+ 
+.ts-toast.ts-soca.ts-err {
+  border-left-color: #ff2244;
+  box-shadow: 0 0 18px rgba(255, 34, 68, 0.18);
+}
+.ts-toast.ts-soca.ts-err .ts-header { color: #ff2244; }
+ 
+/* ══ Тема SMILE (янтарная) ═════════════════════════════════ */
+.ts-toast.ts-smaily {
+  background: rgba(12, 9, 0, 0.97);
+  border-color: rgba(255, 170, 0, 0.38);
+  border-left-color: #ffaa00;
+  color: #ffcc66;
+  box-shadow: 0 0 18px rgba(255, 170, 0, 0.16);
+}
+.ts-toast.ts-smaily .ts-header { color: #ffaa00; }
+ 
+.ts-toast.ts-smaily.ts-warn {
+  border-left-color: #ff6600;
+  box-shadow: 0 0 18px rgba(255, 100, 0, 0.2);
+}
+.ts-toast.ts-smaily.ts-warn .ts-header { color: #ff8800; }
+.ts-toast.ts-smaily.ts-warn .ts-body   { color: #ffaa44; }
+ 
+.ts-toast.ts-smaily.ts-ok {
+  border-left-color: #88cc00;
+  box-shadow: 0 0 18px rgba(136, 204, 0, 0.15);
+}
+.ts-toast.ts-smaily.ts-ok .ts-header { color: #aadd44; }
+ 
+/* Иконка SMILE wiggle */
+.ts-toast.ts-smaily .ts-icon {
+  animation: tsFaceWiggle 3s ease-in-out infinite;
+}
+@keyframes tsFaceWiggle {
+  0%,85%,100% { transform: rotate(0)    scale(1);   }
+  90%         { transform: rotate(-9deg) scale(1.1); }
+  95%         { transform: rotate(7deg)  scale(1.05);}
+}
+
+/* Чат поверх тостов */
+#chat-overlay {
+  z-index: 10010 !important;
+}
+
+/* Стек тостов — ниже чата */
+#toast-stack {
+  z-index: 10005 !important;
+}
+
+.ts-toast {
+  z-index: 10005 !important;
+}
+
+/* SMILE — весь интерфейс с её шрифтом */
+#page-smaily,
+.smaily-toast,
+.smaily-toast *,
+.chat-overlay.smaily-mode,
+.chat-overlay.smaily-mode *,
+.smaily-mode .chat-text,
+.smaily-mode .chat-label,
+.smaily-toggle-wrap,
+.smaily-icon-face {
+  font-family: 'SMILE', 'Share Tech Mono', monospace !important;
+}
+
+/* Аватар :) и :D — тоже её шрифт */
+.chat-avatar-small.smaily-face,
+.smaily-msg-avatar,
+.smaily-toast-face {
+  font-family: 'SMILE', 'VT323', monospace !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ШРИФТ SMILE — вся вкладка F7, чат, тосты
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Вся страница SMILE (вкладка F7) */
+#page-smaily,
+#page-smaily *,
+.sm-header,
+.sm-tabs,
+.sm-tab,
+.sm-panel,
+.sm-panel *,
+.sm-ph,
+.sm-pb,
+.sm-diag-row,
+.sm-supply-row,
+.sm-proc,
+.sm-vital-box,
+.sm-alert-item,
+.sm-weapon-card,
+.sm-ctrl-btn,
+.smaily-toggle-wrap,
+.smaily-icon-face {
+  font-family: 'SMILE', 'Share Tech Mono', monospace !important;
+}
+
+/* Тосты SMILE */
+.smaily-toast,
+.smaily-toast *,
+.ts-toast.ts-smaily,
+.ts-toast.ts-smaily * {
+  font-family: 'SMILE', 'Share Tech Mono', monospace !important;
+}
+
+/* Чат в режиме SMILE */
+.chat-overlay.smaily-mode,
+.chat-overlay.smaily-mode *,
+.smaily-mode .chat-text,
+.smaily-mode .chat-label,
+.smaily-mode .chat-message,
+.smaily-mode .chat-bubble {
+  font-family: 'SMILE', 'Share Tech Mono', monospace !important;
+}
+
+/* Аватар :) и :D */
+.chat-avatar-small.smaily-face,
+.smaily-msg-avatar,
+.smaily-toast-face,
+.chat-overlay.smaily-mode .chat-avatar {
+  font-family: 'SMILE', 'VT323', monospace !important;
+}
+
+/* ── LOG STREAM scrollbar ── */
+#logStream::-webkit-scrollbar {
+  width: 3px;
+}
+#logStream::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.3);
+}
+#logStream::-webkit-scrollbar-thumb {
+  background: rgba(0,255,136,0.25);
+}
+#logStream::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,255,136,0.55);
+}
