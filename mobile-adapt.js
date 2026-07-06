@@ -10,6 +10,7 @@
 //
 // Подключить ОДНОЙ строкой перед закрывающим </body>:
 //   <script src="mobile-adapt.js"></script>
+// Подключён на: soca.html, index.html, eject.html, pilot.html
 // ═══════════════════════════════════════════════════════════
 
 (function(){
@@ -52,9 +53,60 @@
   window.addEventListener('orientationchange', applyViewport);
 
   // ══════════════════════════════════════════════════════
-  // CSS: база чата + заглушка поворота.
-  // Перестроечных media-правил (одна колонка, сжатие шапки
-  // и т.д.) больше НЕТ — они и создавали "урезанный" вид.
+  // ВЫСОКИЕ СТРАНИЦЫ (index.html, eject.html): спроектированы
+  // под высокий экран. На низких экранах рендерим контейнер
+  // в виртуальной высоте 800px и ужимаем ЦЕЛИКОМ одним scale.
+  // Ширина задаётся В ПИКСЕЛЯХ (не %!) — иначе композиция
+  // уезжает влево. На soca.html таких контейнеров нет.
+  // ══════════════════════════════════════════════════════
+  const PAGE_DESIGN_HEIGHT = 800;
+
+  function scaleTallPage(){
+    const target = document.querySelector('.boot-container')
+                || document.getElementById('eject-ui');
+    if(!target) return;
+    const H = window.innerHeight;
+    const W = window.innerWidth;
+
+    if(H < 620){
+      const k = H / PAGE_DESIGN_HEIGHT;
+      // Вытаскиваем контейнер из флекс-центрирования body
+      // (иначе body центрирует контейнер шире экрана,
+      // выдвигая его левый край в минус — сдвиг влево)
+      target.style.position = 'absolute';
+      target.style.left = '0';
+      target.style.top = '0';
+      target.style.width = (W / k) + 'px';
+      target.style.height = PAGE_DESIGN_HEIGHT + 'px';
+      target.style.minHeight = '0';
+      target.style.transform = 'scale(' + k + ')';
+      target.style.transformOrigin = 'top left';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    }else{
+      target.style.position = '';
+      target.style.left = '';
+      target.style.top = '';
+      target.style.width = '';
+      target.style.height = '';
+      target.style.minHeight = '';
+      target.style.transform = '';
+      target.style.transformOrigin = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+  }
+
+  scaleTallPage();
+  window.addEventListener('resize', scaleTallPage);
+
+  // Страницы измеряют экран при загрузке — ДО нашей смены
+  // viewport. Пинаем их обработчики resize (канвас звёзд
+  // в eject.html пересоберёт свой буфер под новый размер).
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+
+  // ══════════════════════════════════════════════════════
+  // CSS: база чата + компактные тосты + заглушка поворота
   // ══════════════════════════════════════════════════════
   const style = document.createElement('style');
   style.textContent = `
@@ -81,6 +133,42 @@
       bottom: 3vh;
     }
     .chat-body{ max-height: 38vh; }
+  }
+
+  /* ── ТОСТЫ / SMAILY / ОПРОС — компактнее на тач-устройствах.
+     pointer:coarse = палец вместо мыши, max-height отсекает
+     планшеты с большим экраном. !important обязателен:
+     #toast-stack задаёт размеры инлайн-стилями. ── */
+  @media (pointer:coarse) and (max-height:620px){
+
+    /* Стек системных тостов — уже и ближе к углу */
+    #toast-stack{
+      width: 230px !important;
+      bottom: 12px !important;
+      right: 12px !important;
+      gap: 6px !important;
+    }
+    .ts-toast{ padding: 7px 10px; }
+    .ts-body{ font-size: 10px; line-height: 1.45; }
+
+    /* Тосты SMAILY */
+    .smaily-toast{
+      max-width: 220px;
+      bottom: 110px;
+      right: 12px;
+      padding: 8px 10px;
+      font-size: 10px;
+    }
+    .smaily-toast-body{ line-height: 1.45; }
+
+    /* Окно опроса SOCA — уже + скролл внутри, если не влезает
+       по высоте (на телефонах виртуальная высота всего ~450-520px) */
+    #soca-survey-box{
+      width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
   }
 
   /* ── ЗАГЛУШКА "ПОВЕРНИТЕ УСТРОЙСТВО" ── */

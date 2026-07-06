@@ -512,7 +512,7 @@
             <span id="soca-note-text">—</span><span class="cursor" style="margin-left:2px"></span>
           </div>
           <div style="font-size:9px;color:var(--dimmer);margin-bottom:4px;letter-spacing:.1em">// ADD NOTE</div>
-          <textarea class="terminal-input" placeholder="> type mission note..." rows="3" style="font-size:10px;width:100%;resize:none"></textarea>
+          <textarea id="note-input" class="terminal-input" placeholder="> type mission note..." rows="3" style="font-size:10px;width:100%;resize:none"></textarea>
           <div onclick="addNote()" style="margin-top:4px;padding:5px;border:1px solid var(--border);color:var(--dim);font-size:9px;text-align:center;cursor:pointer;letter-spacing:.1em" onmouseover="this.style.color='var(--g)'" onmouseout="this.style.color='var(--dim)'">SUBMIT NOTE</div>
           <div id="note-out" style="font-size:9px;color:var(--dim);margin-top:4px;min-height:14px"></div>
         </div>
@@ -572,6 +572,7 @@
 <script src="sounds.js"></script>
 <script src="pilot.js"></script>
 <script src="pilots_data.js"></script>
+<script src="mobile-adapt.js"></script>
  
 </body>
 </html>

@@ -256,6 +256,15 @@ effectIntervals.push(coordGlitchInterval);
 
 // ===== NOTE SUBMIT =====
 function addNote(){
+  // Секретка: если в заметке написано SOCA (в любом виде —
+  // SOCA, S+O+C+A, s o c a, s.o.c.a) — открываем секретное окно
+  const inp = document.getElementById('note-input');
+  const val = (inp ? inp.value : '').trim().toLowerCase().replace(/[\s+._-]/g, '');
+  if (val === 'soca') {
+    if (inp) inp.value = '';
+    showSecretWindow();
+    return;
+  }
   const out=document.getElementById('note-out');
   if(out) out.innerHTML='<span style="color:var(--g)">✓ Note logged to SOCA record</span>';
   trackTimeout(setTimeout(()=>{ if(out) out.innerHTML=''; },3000));

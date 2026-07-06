@@ -20,10 +20,32 @@
   #game-selector > :first-child{ margin-top: auto; }
   #game-selector > :last-child{ margin-bottom: auto; }
 
-  #game-arena{
+#game-arena{
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+  }
+
+  /* ── Низкие экраны: игра ЦЕЛИКОМ в кадре, без скролла.
+     Канвас ужимается по высоте с сохранением пропорций —
+     клики не ломаются, все игры пересчитывают координаты
+     через getBoundingClientRect. ── */
+  @media (max-height:620px){
+    #game-canvas{
+      max-height: calc(100vh - 140px);
+      width: auto;
+      max-width: 100%;
+    }
+    #game-msg{
+      font-size: 20px;
+      min-height: 24px;
+      margin-top: 6px;
+    }
+    #game-left-panel, #game-right-panel{
+      width: 110px;
+      min-width: 110px;
+      font-size: 9px;
+    }
   }
 
   /* ── Виртуальный геймпад ── */

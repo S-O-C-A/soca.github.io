@@ -349,7 +349,17 @@
 const cv = document.getElementById('eject-space-cv');
 cv.width = window.innerWidth;
 cv.height = window.innerHeight;
-window.addEventListener('resize', () => { cv.width=window.innerWidth; cv.height=window.innerHeight; });
+window.addEventListener('resize', () => {
+  // Пересчитываем позиции звёзд и обломков пропорционально
+  // новому размеру — иначе при смене viewport они остаются
+  // в старых координатах и кучкуются слева
+  const kx = window.innerWidth / cv.width;
+  const ky = window.innerHeight / cv.height;
+  cv.width = window.innerWidth;
+  cv.height = window.innerHeight;
+  stars.forEach(p => { p.x *= kx; p.y *= ky; });
+  debris.forEach(p => { p.x *= kx; p.y *= ky; });
+});
 
 const ctx = cv.getContext('2d');
 const stars = [];
@@ -566,5 +576,8 @@ setTimeout(() => {
 // document.getElementById('ej-note').classList.add('visible');
 
 </script>
+
+<script src="mobile-adapt.js"></script>
+
 </body>
 </html>
