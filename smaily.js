@@ -484,7 +484,7 @@ const _smMsgs = [
 ];
 
 function _scheduleSmaily() {
-  const delay = 12000 + Math.random() * 13000;
+  const delay = 40000 + Math.random() * 20000;
   const timeoutId = setTimeout(() => {
     if (!window.smDialogueActive) {
       const item = _smMsgs[Math.floor(Math.random() * _smMsgs.length)];
@@ -526,7 +526,7 @@ function _scheduleSmaily() {
 
 // БАЛОВСТВО: случайные короткие сообщения каждые 30-60 секунд
 function _scheduleSmailyMischief() {
-  const delay = 30000 + Math.random() * 30000;
+  const delay = 50000 + Math.random() * 30000;
   const timeoutId = setTimeout(() => {
     if (!window.smDialogueActive) {
       const mischiefMessages = [

@@ -5,7 +5,10 @@ function updateClock(){
   const pad=v=>String(v).padStart(2,'0');
   const clockEl = document.getElementById('clock');
   if (clockEl) {
-    clockEl.textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const shifted = new Date(n.getTime());
+shifted.setFullYear(n.getFullYear() - 53);
+clockEl.textContent = `${String(shifted.getDate()).padStart(2,'0')} ${months[shifted.getMonth()]} ${shifted.getFullYear()} // ${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
   }
 }
 setInterval(() => { if (!document.hidden) updateClock(); }, 1000);
@@ -355,6 +358,29 @@ function sendChat() {
   const text = input.value.trim();
   if (!text) return;
 
+  const activeContact = document.querySelector('.chat-contact.active');
+  const activePilot = activeContact ? activeContact.dataset.contact : null;
+  if (activePilot === 'pilot02' || activePilot === 'pilot03') {
+    const now = new Date();
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const shifted = new Date(now.getTime());
+    shifted.setFullYear(now.getFullYear() - 53);
+    const timeStr = `PD-04 // ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const chatBody = document.getElementById('chat-body');
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-message user';
+    wrap.innerHTML = `
+      <div class="chat-bubble">
+        <span class="chat-label">KOKO >_ <span style="opacity:0.4;font-size:8px;margin-left:6px;">${timeStr}</span></span>
+        <span class="chat-text">${text}</span>
+      </div>
+    `;
+    chatBody.appendChild(wrap);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    input.value = '';
+    return;
+  }
+
   // В начале функции sendChat(), после проверки text
 if (text.toLowerCase().includes('шутк') || text.toLowerCase().includes('joke')) {
   startBlackJoke();
@@ -547,7 +573,42 @@ window.sendChat = function() {
   if (!input) return;
   const text = input.value.trim();
   if (!text) return;
-  
+
+  const activeContact = document.querySelector('.chat-contact.active');
+  const activePilot = activeContact ? activeContact.dataset.contact : null;
+  if (activePilot === 'pilot02' || activePilot === 'pilot03') {
+    const now = new Date();
+    const timeStr = `PD-04 // ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const chatBody = document.getElementById('chat-body');
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const shifted = new Date(now.getTime());
+    shifted.setFullYear(now.getFullYear() - 53);
+    const dateStr = `PD-04 // DAY ████ // ${String(shifted.getDate()).padStart(2,'0')} ${months[shifted.getMonth()]} ${shifted.getFullYear()}`;
+
+    // Добавляем разделитель даты если это первое сообщение за этот день
+    const lastDateDiv = chatBody.querySelector('.chat-date-divider:last-of-type');
+    if (!lastDateDiv || lastDateDiv.textContent !== `— ${dateStr} —`) {
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'chat-date-divider';
+      dateDiv.style.cssText = 'text-align:center;font-size:9px;color:var(--dimmer);letter-spacing:0.14em;margin:10px 0 4px;';
+      dateDiv.textContent = `— ${dateStr} —`;
+      chatBody.appendChild(dateDiv);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-message user';
+    wrap.innerHTML = `
+      <div class="chat-bubble">
+        <span class="chat-label">KOKO >_ <span style="opacity:0.4;font-size:8px;margin-left:6px;">${timeStr}</span></span>
+        <span class="chat-text">${text}</span>
+      </div>
+    `;
+    chatBody.appendChild(wrap);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    input.value = '';
+    return;
+  }
+
   // Добавляем сообщение пользователя
   appendChat(text, 'user');
   input.value = '';
@@ -4335,8 +4396,76 @@ function initChatContacts() {
       const contactName = contact.querySelector('.chat-contact-name')?.textContent || 'SOCA';
       const isSmaily = contactName === 'SMILE';
       
-      // Заблокированные пилоты
+// Заблокированные и разблокированные пилоты
       if (contact.classList.contains('locked')) {
+        const pilotId = contact.dataset.contact;
+if (pilotId === 'pilot02' || pilotId === 'pilot03') {
+          contacts.forEach(c => c.classList.remove('active'));
+          contact.classList.add('active');
+          chatOverlay.classList.remove('smaily-mode');
+          chatOverlay.classList.remove('smaily-mode');
+          if (sendBtn) { sendBtn.style.borderColor = ''; sendBtn.style.color = ''; sendBtn.style.background = ''; }
+          if (inputField) { inputField.style.borderColor = ''; inputField.style.color = ''; }
+          if (inputRow) { inputRow.style.borderTopColor = ''; }
+          if (chatTitle) chatTitle.innerHTML = `// SECURE_COMMS_CHANNEL // ${contactName}`;
+          if (chatBody) {
+            chatBody.innerHTML = '';
+            if (pilotId === 'pilot03') {
+               const alphaLog = [
+  { date: 'PD-04 // DAY ████ // 14 APR 1973', msgs: [
+    { from: 'koko', time: 'PD-04 // 11:02', text: 'Heyyyy how are you?' },
+    { from: 'koko', time: 'PD-04 // 11:07', text: 'SOCA says its okay to write here, just so you know!' },
+    { from: 'koko', time: 'PD-04 // 11:17', text: 'Youre such a busy person' },
+  ]},
+  { date: 'PD-04 // DAY ████ // 25 APR 1973', msgs: [
+    { from: 'koko', time: 'PD-04 // 14:33', text: 'Are your letters on a paid plan???' },
+    { from: 'koko', time: 'PD-04 // 14:33', text: 'Or do you just not know how to type' },
+  ]},
+  { date: 'PD-04 // DAY ████ // 03 MAY 1973', msgs: [
+    { from: 'koko', time: 'PD-04 // 09:10', text: '<img src="картинк/alpha.jpg" style="width:100%;max-width:110px;max-height:110px;border:1px solid var(--border);display:block;cursor:pointer;" onclick="this.style.maxWidth=this.style.maxWidth===\'none\'?\'110px\':\'none\';this.style.maxHeight=this.style.maxHeight===\'none\'?\'110px\':\'none\'">' },
+    { from: 'koko', time: 'PD-04 // 09:10', text: 'thats you' },
+    { from: 'koko', time: 'PD-04 // 09:45', text: 'Wanna fly to Pluto later??? Its SO cool there!!!!' },
+    { from: 'koko', time: 'PD-04 // 09:45', text: 'Ill take your silence as a yes' },
+  ]},
+  { date: 'PD-04 // DAY ████ // 15 MAY 1973', msgs: [
+    { from: 'koko', time: 'PD-04 // 16:20', text: 'What do I do if SOCA stopped following my commands?' },
+    { from: 'koko', time: 'PD-04 // 16:22', text: 'Right! Thank you Alpha!!!' },
+  ]},
+  { date: 'PD-04 // DAY ████ // 21 MAY 1973', msgs: [
+    { from: 'koko', time: 'PD-04 // 20:05', text: 'I almost beat your record' },
+    { from: 'koko', time: 'PD-04 // 20:05', text: 'I will beat it.... someday' },
+  ]},
+  { date: 'PD-04 // DAY ████ // 14 JUN 1973', msgs: [
+    { from: 'koko', time: 'PD-04 // 13:11', text: 'Why do you think Pandemonium still hasnt exploded?' },
+    { from: 'koko', time: 'PD-04 // 13:12', text: 'You really think so???' },
+    { from: 'koko', time: 'PD-04 // 13:14', text: 'Youre so cool' },
+    { from: 'alpha', time: 'PD-04 // 13:59', text: '👍' },
+  ]},
+];
+              alphaLog.forEach(day => {
+                const dateDiv = document.createElement('div');
+                dateDiv.style.cssText = 'text-align:center;font-size:9px;color:var(--dimmer);letter-spacing:0.14em;margin:10px 0 4px;';
+                dateDiv.textContent = `— ${day.date} —`;
+                chatBody.appendChild(dateDiv);
+                day.msgs.forEach(m => {
+                  const isKoko = m.from === 'koko';
+                  const wrap = document.createElement('div');
+                  wrap.className = `chat-message ${isKoko ? 'user' : 'bot'}`;
+                  wrap.innerHTML = `
+                    ${!isKoko ? '<div class="chat-avatar" style="font-size:13px;display:flex;align-items:center;justify-content:center;">=^..^=</div>' : ''}
+                    <div class="chat-bubble">
+                      <span class="chat-label" style="${isKoko ? '' : 'color:var(--g);'}">${isKoko ? 'KOKO >_' : 'ALPHA >_'} <span style="opacity:0.4;font-size:8px;margin-left:6px;">${m.time}</span></span>
+                      <span class="chat-text">${m.text}</span>
+                    </div>
+                  `;
+                  chatBody.appendChild(wrap);
+                });
+              });
+              chatBody.scrollTop = chatBody.scrollHeight;
+            }
+          }
+          return;
+        }
         if (typeof playError === 'function') playError();
         if (typeof appendChat === 'function') {
           appendChat(`ACCESS DENIED. ${contactName} is not available.`, 'bot');
@@ -4412,6 +4541,15 @@ function initChatContacts() {
           botAvatar.style.color = '';
           botAvatar.style.borderColor = '';
         }
+
+        if (inputField) {
+          inputField.style.borderColor = '';
+          inputField.style.color = '';
+        }
+        if (inputRow) {
+          inputRow.style.borderTopColor = '';
+        }
+
         if (botLabel) {
           botLabel.textContent = 'SOCA >_';
           botLabel.style.color = '';
