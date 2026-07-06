@@ -36,10 +36,15 @@
     if(landscapeWidth < DESIGN_WIDTH){
       // Телефон / небольшой планшет: рисуем макет в DESIGN_WIDTH
       // виртуальных px, браузер сам ужмёт его до ширины экрана.
-      meta.setAttribute('content', 'width=' + DESIGN_WIDTH);
+      // Пользователь может свободно приближать (до 5x) и
+      // отдалять (до 0.25x) щипком двумя пальцами.
+      meta.setAttribute('content',
+        'width=' + DESIGN_WIDTH +
+        ', user-scalable=yes, minimum-scale=0.25, maximum-scale=5');
     }else{
-      // Десктоп / большой планшет: обычное поведение.
-      meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+      // Десктоп / большой планшет: обычное поведение, зум разрешён.
+      meta.setAttribute('content',
+        'width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5');
     }
   }
 
