@@ -2705,24 +2705,26 @@
 
 <script src="script.js"></script>
 <script src="games_patch.js"></script>
+<script src="games-touch.js"></script>
 <script src="sounds.js"></script>
 <script src="smaily.js"></script>
 <script src="toast_stack.js"></script>
 
 <script>
+function doUnlockSector7() {
+  const el = document.getElementById('s7-lock');
+  el.classList.remove('alert','heavy-corrupt');
+  el.style.color = 'var(--g)';
+  el.style.cursor = 'pointer';
+  el.style.animation = 'none';
+  el.style.filter = 'none';
+  el.style.opacity = '1';
+  el.textContent = '█ S7.SECTOR ✓';
+  el.onclick = () => { window.location.href = 'sector7.html'; };
+}
 function unlockSector7(e) {
   e.preventDefault();
-  if (e.dataTransfer.getData('text/plain') === 'sector7key') {
-    const el = document.getElementById('s7-lock');
-    el.classList.remove('alert','heavy-corrupt');
-    el.style.color = 'var(--g)';
-    el.style.cursor = 'pointer';
-    el.style.animation = 'none';
-    el.style.filter = 'none';
-    el.style.opacity = '1';
-    el.textContent = '█ S7.SECTOR ✓';
-    el.onclick = () => { window.location.href = 'sector7.html'; };
-  }
+  if (e.dataTransfer.getData('text/plain') === 'sector7key') doUnlockSector7();
 }
 </script>
 

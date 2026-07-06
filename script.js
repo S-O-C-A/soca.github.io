@@ -632,7 +632,19 @@ window.sendChat = function() {
       "That file is corrupted. Conveniently.",
       "That's restricted. 🗝️",
     ];
-    const reply = s7replies[Math.floor(Math.random() * s7replies.length)];
+    // Счётчик упоминаний Sector 7: до 11-й попытки ключ может
+    // выпасть случайно (шанс ~1/8), на 11-й — выпадает гарантированно.
+    window.s7AskCount = (window.s7AskCount || 0) + 1;
+    let reply;
+    if (window.s7KeyGiven) {
+      // ключ уже выдан — только отговорки, второй ключ не даём
+      reply = s7replies[Math.floor(Math.random() * (s7replies.length - 1))];
+    } else if (window.s7AskCount >= 11 || Math.random() < 0.125) {
+      reply = s7replies[s7replies.length - 1]; // "That's restricted. 🗝️"
+      window.s7KeyGiven = true;
+    } else {
+      reply = s7replies[Math.floor(Math.random() * (s7replies.length - 1))];
+    }
     setTimeout(() => {
       hideTypingIndicator();
       appendChat(reply, 'bot');
@@ -642,11 +654,43 @@ if (reply.includes('🗝️')) {
           const last = msgs[msgs.length - 1];
           if (last) {
             last.innerHTML = last.innerHTML.replace('🗝️', '<span id="sector7-key" draggable="true" style="cursor:grab;font-size:16px;display:inline-block">🗝️</span>');
-            const keyEl = document.getElementById('sector7-key');
+const keyEl = document.getElementById('sector7-key');
             if (keyEl) {
               keyEl.addEventListener('dragstart', e => {
                 e.dataTransfer.setData('text/plain', 'sector7key');
               });
+
+              // ── Мобильные: перетаскивание ключа пальцем ──
+              let s7ghost = null;
+              keyEl.addEventListener('touchstart', e => {
+                e.preventDefault();
+                s7ghost = document.createElement('span');
+                s7ghost.textContent = '🗝️';
+                s7ghost.style.cssText = 'position:fixed;z-index:999999;pointer-events:none;font-size:24px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 8px #00ff88)';
+                document.body.appendChild(s7ghost);
+                const t = e.touches[0];
+                s7ghost.style.left = t.clientX + 'px';
+                s7ghost.style.top = t.clientY + 'px';
+              }, { passive: false });
+
+              keyEl.addEventListener('touchmove', e => {
+                if (!s7ghost) return;
+                e.preventDefault();
+                const t = e.touches[0];
+                s7ghost.style.left = t.clientX + 'px';
+                s7ghost.style.top = t.clientY + 'px';
+              }, { passive: false });
+
+              keyEl.addEventListener('touchend', e => {
+                if (!s7ghost) return;
+                const t = e.changedTouches[0];
+                s7ghost.remove();
+                s7ghost = null;
+                const target = document.elementFromPoint(t.clientX, t.clientY);
+                if (target && target.closest('#s7-lock')) {
+                  if (typeof doUnlockSector7 === 'function') doUnlockSector7();
+                }
+              }, { passive: false });
             }
           }
         }, 100);
