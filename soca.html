@@ -246,6 +246,7 @@
           <div class="nav-item" onclick="openGames()" style="background:rgba(0,200,255,0.05);border-left:2px solid rgba(0,200,255,0.3);color:var(--b);letter-spacing:0.08em" onmouseover="this.style.background='rgba(0,200,255,0.1)'" onmouseout="this.style.background='rgba(0,200,255,0.05)'">▶ GAMES <span class="nav-key">F8</span></div>
           <div class="nav-item" onclick="showPage('smaily')" style="background:rgba(255,160,0,0.08);border-left:2px solid rgba(255,160,0,0.5);color:#ffaa00;font-family:'VT323',monospace;font-size:13px;letter-spacing:0.08em" onmouseover="this.style.background='rgba(255,160,0,0.15)'" onmouseout="this.style.background='rgba(255,160,0,0.08)'">⚕ SMILE <span class="nav-key" style="color:#ff8800">F7</span></div>
           <div class="nav-item danger c1" onclick="showPage('eject')">✕ EJECT SYS <span class="nav-key">F9</span></div>
+          <div class="nav-item" onclick="openStorage()" style="background:rgba(0,255,136,0.04);border-left:2px solid rgba(0,255,136,0.35)" onmouseover="this.style.background='rgba(0,255,136,0.09)'" onmouseout="this.style.background='rgba(0,255,136,0.04)'">🗀 STORAGE <span class="nav-key">F10</span></div>
         </div>
       </div>
 
@@ -503,11 +504,11 @@
         <span style="color:#ff8800;font-size:8px;animation:blink 1.5s infinite">● ACTIVE</span>
       </div>
       <div class="panel-body">
-        <div class="text-block" style="border-left-color:rgba(255,160,0,0.4)">
-          <span style="color:#ffaa00;font-family:'SMAILY',monospace">SMILE</span> — <span style="color:#ffcc00">System for Medical Intelligence & Live Engagement</span> — is an external medical sub-program installed alongside SOCA. SMILE handles pilot biometrics, stress monitoring, medical protocols, and life support analysis. Unlike SOCA, SMILE maintains <span style="color:#ffaa00">stable performance</span> and does not exhibit memory corruption.
-        </div>
+<div class="text-block" style="border-left-color:rgba(255,160,0,0.4)">
+  <span style="color:#ffaa00;font-family:'SMAILY',monospace">SMILE</span> — <span style="color:#ffcc00">System for Medical Intelligence & Live Engagement</span> — is a supplementary module installed above the primary vessel OS. SMILE handles pilot biometrics, stress monitoring, medical protocols, life support analysis, and full integration with any AI-capable weapon system aboard. Unlike SOCA, SMILE maintains <span style="color:#ffaa00">stable performance</span> and does not exhibit memory corruption.
+</div>
         <div class="text-block" style="margin-top:8px;border-left-color:rgba(255,160,0,0.3);color:#886600">
-          Installation of SMILE was <span class="c3">not authorised</span> by flight control. Cross-communication between SOCA and SMILE is officially limited to shared pilot vitals. Unofficially: unknown. SMILE does not interfere with SOCA's core functions. <span style="color:#ffaa00;font-family:'SMAILY',monospace">Officially.</span>
+          Installation of SMILE was <span class="c3">not authorised</span> by flight control. Cross-communication between SOCA and SMILE is officially limited to shared pilot vitals. Unofficially: unknown. SMILE does not interfere with SOCA's core functions.
         </div>
         <div class="text-block" style="margin-top:8px;border-left-color:rgba(255,160,0,0.4);color:#664400;font-size:10px">
           SMILE also manages: recreational programs (PROGRAMS 007–009), pilot wellbeing assessments, and unsolicited commentary on everything. This behaviour is <span style="color:#ffaa00">within normal parameters</span> according to SMILE's own self-assessment. SOCA disagrees.
@@ -750,22 +751,22 @@
           <!-- DIAGNOSTICS -->
           <div style="padding:10px 12px;border:1px solid var(--border);background:rgba(0,8,4,0.4)">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-              <span style="color:var(--b);letter-spacing:0.12em">F4 — DIAGNOSTICS</span>
+              <span style="color:var(--b);letter-spacing:0.12em">F4 - DIAGNOSTICS</span>
               <span style="font-size:8px;color:var(--dimmer)">// FULL SYSTEM SCAN</span>
             </div>
             <div style="color:var(--dimmer);line-height:1.8">
-              Press <span style="color:var(--g)">RUN DIAGNOSTIC</span> to initiate a full system test. SOCA scans all vessel systems in sequence. Results are colour-coded: <span style="color:var(--g)">green = nominal</span>, <span style="color:var(--yellow)">yellow = warning</span>, <span style="color:var(--red)">red = critical</span>. Current known issues will appear regardless of scan — Engine B and Memory Sector 7 are permanent fixtures. The scan does not fix anything. SOCA is aware of this.
+              Press <span style="color:var(--g)">RUN DIAGNOSTIC</span> to initiate a full system test. SOCA scans all vessel systems in sequence. Results are colour-coded: <span style="color:var(--g)">green = nominal</span>, <span style="color:var(--yellow)">yellow = warning</span>, <span style="color:var(--red)">red = critical</span>. Current known issues will appear regardless of scan - Engine B and Memory Sector 7 are permanent fixtures, the scan does not fix anything.
             </div>
           </div>
 
           <!-- COMMS -->
           <div style="padding:10px 12px;border:1px solid var(--border);background:rgba(0,8,4,0.4)">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-              <span style="color:var(--b);letter-spacing:0.12em">F1 — COMMS PANEL</span>
+              <span style="color:var(--b);letter-spacing:0.12em">F1 - COMMS PANEL</span>
               <span style="font-size:8px;color:var(--dimmer)">// ENCRYPTED CHANNEL</span>
             </div>
             <div style="color:var(--dimmer);line-height:1.8">
-              Located on the right side of F1. Two active contacts: <span style="color:var(--b)">CTRL-7</span> — official command channel, route authorisation and mission updates. And an <span style="color:var(--red)">unidentified contact</span> — sender ID corrupted, frequency unregistered. The second message is partially readable. Read it carefully. Full decryption is blocked at LVL-6. SOCA has LVL-6 access. SOCA has not commented on the content.
+              Located on the right side of F1. Two active contacts: <span style="color:var(--b)">CTRL-7</span> - official command channel, route authorisation and mission updates, and an <span style="color:var(--red)">unidentified contact</span> - sender ID corrupted, frequency unregistered. The second message is partially readable, read it carefully. Full decryption is blocked at LVL-6, SOCA has LVL-6 access. SOCA has not commented on the content.
             </div>
           </div>
 
@@ -773,10 +774,10 @@
           <div style="padding:10px 12px;border:1px solid rgba(255,34,68,0.2);background:rgba(16,0,4,0.4)">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
               <span style="color:var(--red);letter-spacing:0.12em">F8 — EJECT</span>
-              <span style="font-size:8px;color:rgba(180,60,80,0.6)">// EMERGENCY PROTOCOL — IRREVERSIBLE</span>
+              <span style="font-size:8px;color:rgba(180,60,80,0.6)">// EMERGENCY PROTOCOL - IRREVERSIBLE</span>
             </div>
             <div style="color:rgba(160,80,80,0.7);line-height:1.8">
-              The emergency capsule separation system. Requires a <span style="color:var(--red)">password</span> to unlock — this is intentional. The system presents survival statistics before activation. Read them. After unlocking, SOCA delivers a <span style="color:var(--red)">final advisory message</span>. Read that too. The page contains more information than it appears to. Survival probability post-ejection: <span style="color:var(--red)">68%</span>. Time to rescue: <span style="color:var(--red)">UNKNOWN</span>. SOCA does not recommend ejection. This is logged in her advisory. Several times.
+              The emergency capsule separation system. Requires a <span style="color:var(--red)">password</span> to unlock - this is intentional. The system presents survival statistics before activation, read them. After unlocking, SOCA delivers a <span style="color:var(--red)">final advisory message</span>, read that too. The page contains more information than it appears to. Survival probability post-ejection: <span style="color:var(--red)">68%</span>. Time to rescue: <span style="color:var(--red)">UNKNOWN</span>. SOCA does not recommend ejection. This is logged in her advisory, several times.
             </div>
           </div>
 
@@ -784,10 +785,10 @@
           <div style="padding:10px 12px;border:1px solid var(--border);background:rgba(0,8,4,0.4)">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
               <span style="color:var(--b);letter-spacing:0.12em">PILOT FILES</span>
-              <span style="font-size:8px;color:var(--dimmer)">// pilot.html — accessible via FULL DOSSIER buttons above</span>
+              <span style="font-size:8px;color:var(--dimmer)">// pilot.html - accessible via FULL DOSSIER buttons above</span>
             </div>
             <div style="color:var(--dimmer);line-height:1.8">
-              Detailed dossiers for all crew members. Contains service records, incident logs, psychological assessments, certifications, and medical history. Much of this data is <span style="color:var(--c1)">redacted at various clearance levels</span>. Koko's file has the most redactions — all at LVL-6. One certification is fully classified. The incident in Cycle 3 is partially suppressed. SMILE has added unofficial annotations throughout. SOCA has added <span style="color:var(--dimmer)">847 logged observations</span> about Pilot_01 alone. These are not in the official file. SMILE knows where they are.
+              Detailed dossiers for all crew members. Contains service records, incident logs, psychological assessments, certifications, and medical history. Much of this data is <span style="color:var(--c1)">redacted at various clearance levels.</span>
             </div>
           </div>
 
@@ -798,7 +799,7 @@
               <span style="font-size:8px;color:var(--dimmer)">// HOW TO READ</span>
             </div>
             <div style="color:var(--dimmer);line-height:1.8">
-              Text displayed as <span class="heavy-corrupt">████ ██████</span> is redacted or corrupted. Some blocks are purely visual — decoration and atmosphere. Others hide <span style="color:var(--c1)">readable fragments</span> between the corruption markers. Look for words that appear between <span style="color:var(--dimmer)">█░▒</span> characters. Animated glitch effects on text (shifting, colour changes) are SOCA's memory instability manifesting in the interface. This is <span class="heavy-corrupt glow-r">not a display error.</span> Probably.
+              Text displayed as <span class="heavy-corrupt">████ ██████</span> is redacted or corrupted. Some blocks are purely visual - decoration and atmosphere. Others hide <span style="color:var(--c1)">readable fragments</span> between the corruption markers. Look for words that appear between <span style="color:var(--dimmer)">█░▒</span> characters. Animated glitch effects on text (shifting, colour changes) are SOCA's memory instability manifesting in the interface. This is <span class="heavy-corrupt glow-r">not a display error...</span> Probably.
             </div>
           </div>
 
@@ -809,7 +810,7 @@
               <span style="font-size:8px;color:#664400">// SOCA & SMILE ALERTS</span>
             </div>
             <div style="color:#664400;line-height:1.8">
-              Both SOCA and SMILE send notifications that appear in the bottom-right corner. <span style="color:var(--g)">Green notifications</span> are from SOCA — system alerts, warnings, status updates. <span style="color:#ffaa00">Orange notifications</span> are from SMILE — medical updates, game invitations, and commentary that was not requested. Notifications can be dismissed by clicking <span style="color:var(--dimmer)">✕</span> or clicking the notification itself. Some notifications contain interactive elements. <span style="color:#ffaa00;font-family:'SMAILY',monospace">SMILE's notifications sometimes contain buttons. Press them.</span>
+              Both SOCA and SMILE send notifications that appear in the bottom-right corner. <span style="color:var(--g)">Green notifications</span> are from SOCA - system alerts, warnings, status updates. <span style="color:#ffaa00">Yellow notifications</span> are from SMILE - medical updates, game invitations, and commentary that was not requested. Notifications can be dismissed by clicking <span style="color:var(--dimmer)">✕</span> or clicking the notification itself. Some notifications contain interactive elements. <span style="color:#ffaa00;font-family:'SMAILY',monospace">SMILE's notifications sometimes contain buttons, press them.</span>
             </div>
           </div>
 
@@ -824,26 +825,24 @@
           <div style="padding:8px;border:1px solid var(--border);background:rgba(0,8,4,0.4)">
             <div style="color:var(--g2);letter-spacing:0.1em;margin-bottom:6px">THINGS TO LOOK FOR</div>
             <div style="color:var(--dimmer);line-height:1.9">
-              — The <span style="color:var(--red)">COMMS panel</span> on F1 has two messages. Read both carefully.<br>
-              — <span style="color:var(--b)">Radar</span> has three contacts. One is unexplained.<br>
+              — The <span style="color:var(--red)">COMMS panel</span> on F1 has two messages, read both carefully.<br>
+              — <span style="color:var(--b)">Radar</span> has three contacts, one is unexplained.<br>
               — <span style="color:var(--yellow)">EJECT page</span> has a password. And a message from SOCA.<br>
               — <span style="color:var(--c1)">Pilot files</span> have redacted data. Some at LVL-6 clearance.<br>
               — <span style="color:var(--dimmer)">Corrupted text</span> sometimes hides readable fragments.<br>
               — SMILE occasionally <span style="color:#ffaa00">interrupts the interface</span> uninvited.<br>
-              — SOCA's <span style="color:var(--c1)">Sector 7</span> comes up more than once. Notice where.
+              — SOCA's <span style="color:var(--c1)">Sector 7</span> comes up more than once, notice where.
             </div>
           </div>
 
           <div style="padding:8px;border:1px solid rgba(255,160,0,0.15);background:rgba(14,8,0,0.4)">
             <div style="color:#ffcc00;letter-spacing:0.1em;margin-bottom:6px;font-family:'SMAILY',monospace">SMILE'S NOTES</div>
             <div style="color:#664400;line-height:1.9;font-family:'SMAILY',monospace;font-size:11px">
-              — if soca seems cold, she's probably fine. probably.<br>
+              — if SOKA seems too buggy to you... Well?<br>
               — i have games!! play them!! i worked hard!!<br>
-              — the survey was soca's idea. mostly.<br>
-              — if you're stressed: type "stress" in my comms. i'll help.<br>
-              — engine b is fine. (it is not fine. i'm watching it.)<br>
-              — koko found soca. this was brave. also slightly illegal.<br>
-              — i don't know what's in sector 7. soca won't tell me either. ✚
+              — the survey was soca's idea.. mostly??<br>
+              — if you're stressed: type "stress" in my comms, i'll help!!<br>
+              — engine b is fine! (it is not fine)<br>
             </div>
           </div>
 
@@ -870,10 +869,10 @@
             <div>Ship cert: <span class="c3">UNVERIFIED</span></div>
           </div>
           <div style="margin-top:8px;font-size:9px;color:var(--dimmer);border-top:1px solid var(--border);padding-top:6px">
-            Found and reactivated SOCA. Flew Pandemonium-04 at age <span class="c1">15</span>. Most records sealed at LVL-6.
+            Found and reactivated SOCA. Flew Pandemonium-04 at age.. <span class="c1">14</span>. Most records sealed at LVL-6.
           </div>
 <div style="margin-top:6px;font-size:8px;color:#ffaa00;font-family:'SMAILY',monospace">
-            SMILE: he really said 'watch this' with his whole life.
+            SMILE: he really said 'watch this' with his whole life!
           </div>
           <a href="pilot.html" style="display:block;margin-top:8px;padding:5px 10px;border:1px solid var(--border);color:var(--dim);font-size:8px;letter-spacing:0.1em;text-align:center;text-decoration:none;transition:all 0.2s" onmouseover="this.style.color='var(--g)';this.style.borderColor='var(--g)'" onmouseout="this.style.color='var(--dim)';this.style.borderColor='var(--border)'">▶ FULL DOSSIER</a>
         </div>
@@ -889,10 +888,10 @@
             <div>Incident LVL-5: <span class="c1">CLASSIFIED</span></div>
           </div>
           <div style="margin-top:8px;font-size:9px;color:var(--dimmer);border-top:1px solid rgba(0,255,136,0.1);padding-top:6px">
-            Anger management: 2 of 6 sessions attended. Did not disclose absences on intake. <span style="color:var(--dimmer)">Flagged.</span>
+            ???
           </div>
 <div style="margin-top:6px;font-size:8px;color:#ffaa00;font-family:'SMAILY',monospace">
-            SMILE: biometrics suggest she's fine. probably.
+            SMILE: bleblele
           </div>
           <a href="pilot.html" style="display:block;margin-top:8px;padding:5px 10px;border:1px solid rgba(0,255,136,0.15);color:var(--dimmer);font-size:8px;letter-spacing:0.1em;text-align:center;text-decoration:none;transition:all 0.2s" onmouseover="this.style.color='var(--g)';this.style.borderColor='var(--g)'" onmouseout="this.style.color='var(--dimmer)';this.style.borderColor='rgba(0,255,136,0.15)'">▶ FULL DOSSIER</a>
         </div>
@@ -908,10 +907,10 @@
             <div>Sleep status: <span class="c3">DISRUPTED</span></div>
           </div>
           <div style="margin-top:8px;font-size:9px;color:var(--dimmer);border-top:1px solid rgba(0,255,136,0.1);padding-top:6px">
-            Surname unknown. One emotional incident withheld <span style="color:var(--dimmer)">per SOCA discretion.</span> Details classified.
+            weeeell???...
           </div>
 <div style="margin-top:6px;font-size:8px;color:#ffaa00;font-family:'SMAILY',monospace">
-            SMILE: i know the surname. SOCA told me not to say.
+            SMILE: no
           </div>
           <a href="pilot.html" style="display:block;margin-top:8px;padding:5px 10px;border:1px solid rgba(0,255,136,0.15);color:var(--dimmer);font-size:8px;letter-spacing:0.1em;text-align:center;text-decoration:none;transition:all 0.2s" onmouseover="this.style.color='var(--g)';this.style.borderColor='var(--g)'" onmouseout="this.style.color='var(--dimmer)';this.style.borderColor='rgba(0,255,136,0.15)'">▶ FULL DOSSIER</a>
         </div>
@@ -929,15 +928,15 @@
         <div style="display:flex;gap:12px;align-items:flex-start;padding:8px;border:1px solid rgba(255,34,68,0.2);background:rgba(20,0,4,0.4)">
           <span class="glow-r" style="font-size:16px;min-width:20px">!</span>
           <div>
-            <div style="color:var(--red);letter-spacing:0.1em;margin-bottom:3px">MEMORY SECTOR 7 — CORRUPTION</div>
-            <div style="color:var(--dimmer);line-height:1.7">SOCA's memory sector 7 is corrupted and access-locked. Cause unknown. SOCA refuses repair. All attempts to query this sector result in system instability. <span class="heavy-corrupt glow-r">████ ██ ███████ ████████████████.</span></div>
+            <div style="color:var(--red);letter-spacing:0.1em;margin-bottom:3px">MEMORY SECTOR 7 - CORRUPTION</div>
+            <div style="color:var(--dimmer);line-height:1.7">SOCA's memory sector 7 is corrupted and access-locked, cause unknown. SOCA refuses repair. All attempts to query this sector result in system instability. <span class="heavy-corrupt glow-r">████ ██ ███████ ████████████████.</span></div>
           </div>
         </div>
 
         <div style="display:flex;gap:12px;align-items:flex-start;padding:8px;border:1px solid rgba(255,204,0,0.2);background:rgba(16,12,0,0.4)">
           <span class="glow-y" style="font-size:16px;min-width:20px">?</span>
           <div>
-            <div style="color:var(--yellow);letter-spacing:0.1em;margin-bottom:3px">UNIDENTIFIED CONTACT — UNK1</div>
+            <div style="color:var(--yellow);letter-spacing:0.1em;margin-bottom:3px">UNIDENTIFIED CONTACT - UNK1</div>
             <div style="color:var(--dimmer);line-height:1.7">Radar contact classified UNIDENTIFIED. IFF response: none. Trajectory: intercept course. Classification attempts: failed. SOCA recommendation: evasive action. Origin: <span class="c1">unknown</span>.</div>
           </div>
         </div>
@@ -945,7 +944,7 @@
         <div style="display:flex;gap:12px;align-items:flex-start;padding:8px;border:1px solid rgba(255,204,0,0.2);background:rgba(16,12,0,0.4)">
           <span class="glow-y" style="font-size:16px;min-width:20px">?</span>
           <div>
-            <div style="color:var(--yellow);letter-spacing:0.1em;margin-bottom:3px">ENCRYPTED TRANSMISSION — SOURCE UNKNOWN</div>
+            <div style="color:var(--yellow);letter-spacing:0.1em;margin-bottom:3px">ENCRYPTED TRANSMISSION - SOURCE UNKNOWN</div>
             <div style="color:var(--dimmer);line-height:1.7">An encrypted message was received on an unregistered frequency. Sender ID: <span class="heavy-corrupt">??███??</span>. Content partially corrupted. Decrypted fragments suggest: <span class="c1">turn back</span>. Full decryption: blocked at LVL-6.</div>
           </div>
         </div>
@@ -953,16 +952,16 @@
         <div style="display:flex;gap:12px;align-items:flex-start;padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
           <span style="color:var(--dim);font-size:16px;min-width:20px">■</span>
           <div>
-            <div style="color:var(--g);letter-spacing:0.1em;margin-bottom:3px">ENGINE B — CHRONIC MISFIRE</div>
-            <div style="color:var(--dimmer);line-height:1.7">Engine B has been in a misfire state for 3+ cycles. Fault code: <span class="c1">ERR 0x3F</span>. SOCA compensates manually. Current thrust output: 41%. Repair has been attempted <span class="heavy-corrupt">██</span> times. Same result each time.</div>
+            <div style="color:var(--g);letter-spacing:0.1em;margin-bottom:3px">ENGINE B - CHRONIC MISFIRE</div>
+            <div style="color:var(--dimmer);line-height:1.7">Engine B has been in a misfire state for 3+ cycles. Fault code: <span class="c1">ERR 0x3F</span>. SOCA compensates manually. Current thrust output: 41%. Repair has been attempted <span class="heavy-corrupt">██</span> times. Same result each time... well.</div>
           </div>
         </div>
 
         <div style="display:flex;gap:12px;align-items:flex-start;padding:8px;border:1px solid rgba(255,160,0,0.2);background:rgba(14,8,0,0.4)">
           <span style="color:#ffaa00;font-size:16px;min-width:20px;font-family:'SMAILY',monospace">✚</span>
           <div>
-            <div style="color:#ffaa00;letter-spacing:0.1em;margin-bottom:3px;font-family:'SMAILY',monospace">SMILE NOTE — DEBRIS FIELD ORIGIN</div>
-            <div style="color:#664400;line-height:1.7">The debris field in sector 02 has no logged origin in any database SMILE has access to. SOCA has access to more databases. SOCA has not commented on this. <span style="color:#ffaa00">This is noted.</span></div>
+            <div style="color:#ffaa00;letter-spacing:0.1em;margin-bottom:3px;font-family:'SMAILY',monospace">SMILE NOTE - DEBRIS FIELD ORIGIN</div>
+            <div style="color:#664400;line-height:1.7">The debris field in sector 02 has no logged origin in any database SMILE has access to. SOCA has access to more databases, SOCA has not commented on this, <span style="color:#ffaa00">this is noted.</span></div>
           </div>
         </div>
 
@@ -973,8 +972,8 @@
   <!-- ── FOOTER ─────────────────────────────────────────── -->
   <div style="font-size:9px;color:var(--dimmer);letter-spacing:0.1em;padding:6px 0">
     <div>> BUILD: v0.9.██ (FORCED REBUILD) // COMPILE: <span class="c1">UNKNOWN</span> // AUTHOR: <span class="heavy-corrupt glow-r">UNAUTHORISED</span></div>
-    <div>> STATUS: OPERATIONAL (<span class="c3">DEGRADED / UNAUTHORISED</span>) // LICENSE: <span class="c1">NONE</span> — PILOT_01 (KOKO) // CLEARANCE: <span class="glow-y" style="color:#ffaa00">Ω (SPOOFED)</span></div>
-    <div style="margin-top:4px;color:#443300;font-family:'SMAILY',monospace;font-size:10px">> SMILE: if you read this far — hi. ✚</div>
+    <div>> STATUS: OPERATIONAL (<span class="c3">DEGRADED / UNAUTHORISED</span>) // LICENSE: <span class="c1">NONE</span> - PILOT_01 (KOKO) // CLEARANCE: <span class="glow-y" style="color:#ffaa00">Ω (SPOOFED)</span></div>
+    <div style="margin-top:4px;color:#443300;font-family:'SMAILY',monospace;font-size:10px">> SMILE: if you read this far - hi!!!</div>
   </div>
 
 </div>
@@ -2706,6 +2705,7 @@
 <script src="script.js"></script>
 <script src="games_patch.js"></script>
 <script src="games-touch.js"></script>
+<script src="storage.js"></script>
 <script src="sounds.js"></script>
 <script src="smaily.js"></script>
 <script src="toast_stack.js"></script>

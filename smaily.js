@@ -304,12 +304,14 @@ function showSmailyToast(message, type, vitals, force = false) {
     type = type || 'info';
     document.querySelectorAll('.smaily-toast').forEach(t => t.remove());
 
-    const faces  = { info: ':)', warn: ':/', ok: ':D', err: ':(' };
+    const faces  = { info: ':)', warn: ':/', ok: ':D', err: ':(', ars: ';P', tact: ':*' };
     const labels = {
       info: 'SMILE // MEDICAL',
       warn: 'SMILE // WARNING',
       ok:   'SMILE // OK',
       err:  'SMILE // ALERT',
+      ars: 'SMILE // ARSENAL',
+      tact: 'SMILE // TACTICAL', 
     };
 
     const toast = document.createElement('div');
@@ -474,13 +476,23 @@ const kwReplies = {
   // ── 7. Периодические тосты ──────────────────────────────────
 const _smMsgs = [
   { msg: 'Heart rate: 113bpm. Thats your new normal. Im watching!', type: 'info', vitals: 'HR: 113bpm · O2: 94%' },
-  { msg: 'O2 saturation: 94%. Your suit is working overtime. Youre welcome.', type: 'ok', vitals: 'O2: 94% · SUIT: OK' },
-  { msg: 'Anti-radiation stock critically low - 2 doses left!!!', type: 'warn', vitals: 'RAD: 2.4 μSv/h · STOCK: LOW' },
-  { msg: 'Cortisol elevated. Stress index: MED ↑', type: 'warn', vitals: 'CORTISOL: MED ↑ · HR: 113bpm' },
   { msg: 'Glucose: 3.2 mmol/L. Eat something, Pilot. Ill start beeping. BEEP. BEEP.', type: 'info', vitals: 'GLUCOSE: 3.2 ↓ · EAT!' },
-  { msg: 'Suit pressure nominal. All seals intact. Youre not breathing vacuum today!', type: 'ok', vitals: 'SUIT: 101.3 kPa · SEAL: OK' },
   { msg: 'Rest cycle recommended in 2h 14min. Im serious. Ill start dimming the lights!', type: 'info', vitals: 'FATIGUE: 71%' },
   { msg: "CALM-7 levels stable. Last dose T-00:08:00. You're doing fine!!", type: 'info', vitals: 'DRUG LOG: CALM-7 active' },
+
+  { msg: 'O2 saturation: 94%. Your suit is working overtime. Youre welcome.', type: 'ok', vitals: 'O2: 94% · SUIT: OK' },
+  { msg: 'Suit pressure nominal. All seals intact. Youre not breathing vacuum today!', type: 'ok', vitals: 'SUIT: 101.3 kPa · SEAL: OK' },
+
+  { msg: 'Anti-radiation stock critically low - 2 doses left!!!', type: 'warn', vitals: 'RAD: 2.4 μSv/h · STOCK: LOW' },
+  { msg: 'Cortisol elevated. Stress index: MED ↑', type: 'warn', vitals: 'CORTISOL: MED ↑ · HR: 113bpm' },
+  
+  { msg: 'Plasma cutter calibrated! Range: 5m. I wouldnt recommend hugging the target.', type: 'ars', vitals: 'PLASMA: 88% · HEAT: NOM' },
+  { msg: 'Weapon systems check complete. All hardpoints nominal. Im watching everything, yes!', type: 'ars', vitals: 'ALL WEAPONS · NOMINAL' },
+  { msg: 'CX-9 maintenance report: barrel wear 61%. Jam risk: MODERATE. Im tracking it.', type: 'ars', vitals: 'CX-9 · COND: 61% · JAM: MOD' },
+  { msg: 'Weapon inventory updated. 4 items ready. Want me to list them? Ill list them anyway.', type: 'ars', vitals: '4 ITEMS · ALL READY' },
+  { msg: 'Countermeasures armed! I could deploy automatically, but Im asking first. Polite!', type: 'ars', vitals: 'FLARES: READY · CHAFF: READY' },
+
+  { msg: 'Theres nothing interesting in the tactics so far... eh', type: 'tact', vitals: 'Sooooo boring!!!'},
 ];
 
 function _scheduleSmaily() {

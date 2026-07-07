@@ -4483,7 +4483,10 @@ if (pilotId === 'pilot02' || pilotId === 'pilot03') {
     { from: 'koko', time: 'PD-04 // 13:11', text: 'Why do you think Pandemonium still hasnt exploded?' },
     { from: 'koko', time: 'PD-04 // 13:12', text: 'You really think so???' },
     { from: 'koko', time: 'PD-04 // 13:14', text: 'Youre so cool' },
-    { from: 'alpha', time: 'PD-04 // 13:59', text: '👍' },
+    { from: 'alpha', time: 'PD-04 // 13:59', text: '👍' }, 
+  ]},
+  { date: 'PD-04 // DAY ████ // 5 NOV 1973', msgs: [
+    { from: 'alpha', time: 'PD-04 // 21:37', text: '<div onclick="openGames();launchGame(\'battleship\')" style="border:1px solid rgba(0,180,255,0.6);background:rgba(0,20,10,0.6);padding:10px 12px;cursor:pointer;min-width:170px;transition:all .25s" onmouseover="this.style.background=\'rgba(0, 19, 40, 0.7)\';this.style.borderColor=\'rgba(0,180,255,0.6)\'" onmouseout="this.style.background=\'rgba(0, 15, 55, 0.6)\';this.style.borderColor=\'rgba(0,180,255,0.6)\'"><div style="font-size:8px;color:var(--dimmer);letter-spacing:0.16em;margin-bottom:5px">▶ INCOMING GAME INVITE</div><div style="font-family:\'VT323\',monospace;font-size:18px;color:var(--g);letter-spacing:0.1em;text-shadow:0 0 8px rgba(0,180,255,0.6)">COSMIC BATTLESHIP</div><div style="font-size:8px;color:var(--dim);letter-spacing:0.1em;margin-top:5px">// tap to accept</div></div>' },
   ]},
 ];
               alphaLog.forEach(day => {
@@ -4506,6 +4509,20 @@ if (pilotId === 'pilot02' || pilotId === 'pilot03') {
                 });
               });
               chatBody.scrollTop = chatBody.scrollHeight;
+            }
+            if (pilotId === 'pilot02') {
+              chatBody.innerHTML = `
+                <div style="
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  height:100%;min-height:180px;gap:8px;
+                  font-family:'Share Tech Mono',monospace;text-align:center;">
+                  <div style="
+                    font-size:26px;letter-spacing:0.22em;color:var(--red);
+                    text-shadow:0 0 10px rgba(255,60,60,0.5);
+                    animation:glitch1 2.5s infinite;">NO SIGNAL</div>
+                  <div style="font-size:9px;letter-spacing:0.14em;color:var(--dimmer);">// Ян еще не придумал им диалог :(</div>
+                </div>
+              `;
             }
           }
           return;

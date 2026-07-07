@@ -3091,9 +3091,9 @@ const PILOTS = [
 ];
 
 const pilotRecords = {
-  koko:   { asteroids:789653, snake:544, pong:65, breaker:16544, checkers:8, chess:31, minesweeper:76, heartbeat:304944, memory:3410, battleship:54 },
-  Claudia: { asteroids:4322, snake:656, pong:5, breaker:17665, checkers:12, chess:35, minesweeper:80, heartbeat:540054, memory:5440, battleship:13 },
-  Alpha: { asteroids:789965, snake:119, pong:77, breaker:4933, checkers:10, chess:3, minesweeper:4, heartbeat:11494, memory:540, battleship:79 },
+  koko:   { asteroids:789653, snake:544, pong:145, breaker:16544, checkers:8, chess:31, minesweeper:76, heartbeat:304944, memory:3410, battleship:54 },
+  Claudia: { asteroids:789965, snake:390, pong:4, breaker:450, checkers:13, chess:45, minesweeper:22, heartbeat:65840, memory:4500, battleship:19 },
+  Alpha: { asteroids:9876, snake:113, pong:35, breaker:17764, checkers:3, chess:1, minesweeper:112, heartbeat:5445, memory:634, battleship:109 },
 };
 
 // Current active pilot (Koko is always playing)
