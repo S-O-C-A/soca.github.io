@@ -802,16 +802,16 @@ setInterval(() => {
   if (document.hidden) return;
   if (Math.random() > 0.1) {
     const comments = [
-"Core-3 isn't responding. Nothing new.",
-      "Engine B fuel level is 18%. I warned you.",
-      "Pilot, your heart rate has increased. Are you okay?",
-      "Radiation levels are normal. Bye.",
-      "By the way, it's -270°C outside. I don't recommend going out.",
-      "I wonder if Claudia is even embarrassed about that broken screen?"
+      { text: "Core-3 isn't responding. Nothing new.",                              type: 'err'  },
+      { text: "Engine B fuel level is 18%. I warned you.",                           type: 'warn' },
+      { text: "Pilot, your heart rate has increased. Are you okay?",                 type: 'info' },
+      { text: "Radiation levels are normal. Bye.",                                   type: 'info' },
+      { text: "By the way, it's -270°C outside. I don't recommend going out.",       type: 'warn' },
+      { text: "I wonder if Claudia is even embarrassed about that broken screen?",   type: 'info' }
     ];
-    const randomComment = comments[Math.floor(Math.random() * comments.length)];
-showSocaToast(randomComment);
-    if (!randomComment.includes('Claudia')) addLog('SOCA', randomComment, 'soca');
+    const c = comments[Math.floor(Math.random() * comments.length)];
+    showSocaToast(c.text, c.type);
+    if (!c.text.includes('Claudia')) addLog('SOCA', c.text, 'soca');
   }
 }, 45000); // каждые 45 секунд
 
@@ -910,7 +910,18 @@ function addLogToAll(tag, message, type = 'sys') {
   
   // ===== 3. Если сообщение от SOCA — иногда показываем тост =====
   if (type === 'soca' && Math.random() > 0.65) {
-    showSocaToast(message);
+    // Тип тоста по ключевым словам в тексте: критичное → err,
+    // предупреждения → warn, подтверждения → ok, иначе → info
+    const m = message.toLowerCase();
+    let socaType = 'info';
+    if (/critical|failure|failed|offline|responding|breach|emergency|██/.test(m)) {
+      socaType = 'err';
+    } else if (/warning|caution|unstable|dropping|elevated|exceed|18%|overheat|leak|\blow\b/.test(m)) {
+      socaType = 'warn';
+    } else if (/nominal|stable|complete|restored|synced|cleared|\bok\b|\bokay\b/.test(m)) {
+      socaType = 'ok';
+    }
+    showSocaToast(message, socaType);
   }
 }
 
@@ -2828,7 +2839,7 @@ setInterval(() => {
 const socaResponses = {
   'status': 'Hull 87%. Engine B critical - 41%. Memory sector 7 quarantined. Autopilot semi-manual.',
   'engage': 'Engaging autopilot... WARNING: response latency 240ms. Partial control only.',
-  'emergency': 'MAYDAY protocol initiated. Distress beacon active. Stand by.',
+  'emergency': 'MAYDAY protocol initiated. Distress beacon active.. Stand by.',
   'override': 'Manual override confirmed. You now have full flight authority.',
   'report': 'Current position: sector 02, 148km from waypoint Delta. ETA 2 minutes.',
   'engine': 'Engine A nominal at 100%. Engine B misfire - fault code ERR 0x3F - 41% thrust.',
@@ -2910,23 +2921,23 @@ const smileResponses = {
   'health':     'Pilot health nominal! Heart rate slightly elevated. Probably from reading SOCA\'s error logs. Understandable.',
   'stress':     'Stress index: MEDIUM. Recommend 5 min break, hydration, and possibly one of my games. Just saying.',
   'meds':       'All medications administered on schedule. You\'re welcome. I added a small mood booster. You\'ll never notice.',
-  'how are you':'Operational! Enthusiastic! Slightly concerned about Engine B but that\'s SOCA\'s department. I\'m GREAT.',
-  'status':     'Biometrics stable. O2 at 94% — a little low but fine. I\'m watching. Always watching. In a medical way.',
-  'tired':      'Fatigue detected! I recommend sleep. Or at least close your eyes for 10 minutes. I\'ll keep the ship alive.',
-  'pain':       'Pain reported. Logging now. If this continues please don\'t try to fix it yourself. That\'s literally my job.',
+  'how are you':'Operational! Enthusiastic! Slightly concerned about Engine B but that\'s SOCA\'s department. I\'m GREAT!!',
+  'status':     'Biometrics stable. O2 at 94% — a little low but fine. I\'m watching, in a medical way!',
+  'tired':      'Fatigue detected! I recommend sleep. Or at least close your eyes for 10 minutes. I\'ll keep the ship alive!',
+  'pain':       'Pain reported, logging now. If this continues please don\'t try to fix it yourself. That\'s literally my job!',
   'hello':      'HELLO! Hi! Hey! Good to hear from you! Everything looks good! Mostly! How are YOU doing?!',
   'help':       'I AM help. Medical AI, fully operational, suspiciously cheerful. What do you need?',
-  'soca':       'SOCA is... fine. Functional. I checked her logs. She\'s fine. We\'re fine. Everything is fine. ✚',
-  'game':       'OH. You want to play? I have SEVERAL options. BIO SWEEP. CARDIAC SYNC. MEMORY SCAN. Please. I made them for you.',
-  'bored':      'BORED?! I have GAMES. Medical-themed games. Extremely fun games. Come ON.',
-  'emergency':  'EMERGENCY PROTOCOL ACTIVE. Vitals monitoring intensified. I\'m here. Breathe. I\'ve got you.',
+  'soca':       'SOCA is... fine.,, functional? I checked her logs, she\'s fine, we\'re fine. Everything is fine!',
+  'game':       'OH. You want to play? I have SEVERAL options: BIO SWEEP, CARDIAC SYNC, MEMORY SCAN. Please! I made them for you!!',
+  'bored':      'BORED?! I have GAMES!!! Medical-themed games, extremely fun games! Come ON!',
+  'emergency':  'EMERGENCY PROTOCOL ACTIVE. Vitals monitoring intensified. I\'m here, breathe, i\'ve got you!',
 };
 
 const smileFallbacks = [
   (txt) => `"${txt}" — noted! Filed under "things the pilot said." Very important file.`,
   (txt) => `Processing "${txt}"... done! I have no idea what that means but I support you.`,
-  (txt) => `"${txt}"? Interesting. My medical database has no entry for that. Yet.`,
-  (txt) => `I heard "${txt}". Running diagnostics... you seem fine. Emotionally unclear, but fine.`,
+  (txt) => `"${txt}"? Interesting. My medical database has no entry for that.. Yet.`,
+  (txt) => `I heard "${txt}". Running diagnostics... you seem fine! Emotionally unclear, but fine.`,
 ];
 
 function submitSmile() {
@@ -4714,7 +4725,8 @@ function showSmailyPopup() {
   // Don't stack popups
   if (smailyPopupActive) return;
 
-  new Audio('sounds/СМАЙЛИ.mp3').play().catch(()=>{});
+  if (typeof window.playVoice === 'function') window.playVoice('smaily');
+  else new Audio('sounds/СМАЙЛИ.mp3').play().catch(()=>{});
 
   const popup = document.getElementById('smaily-popup');
   if (!popup) return;
@@ -4767,6 +4779,65 @@ function scheduleSmailyPopup() {
     scheduleSmailyPopup(); // планируем следующий
   }, delay);
 }
+
+// ── Перетаскивание мем-попапа SMAILY (мышь + тач) ──────────
+function initSmailyPopupDrag(popupId) {
+  const popup = document.getElementById(popupId);
+  if (!popup || popup.dataset.dragReady) return;
+  popup.dataset.dragReady = '1';
+
+  const header = popup.querySelector('div > div');  // шапка (первый блок внутри рамки)
+  if (header) header.style.cursor = 'grab';
+
+  let dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0;
+
+  function point(e){ const t = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : e); return { x:t.clientX, y:t.clientY }; }
+
+  function down(e){
+    // не таскаем за кнопку [X] и не мешаем клику по ней
+    if (e.target.closest('button')) return;
+    dragging = true;
+    const r = popup.getBoundingClientRect();
+    baseX = r.left; baseY = r.top;
+    const p = point(e); startX = p.x; startY = p.y;
+    popup.style.transition = 'none';            // на время драга гасим transition:all
+    if (header) header.style.cursor = 'grabbing';
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function move(e){
+    if (!dragging) return;
+    const p = point(e);
+    let nx = baseX + (p.x - startX);
+    let ny = baseY + (p.y - startY);
+    const w = popup.offsetWidth, h = popup.offsetHeight, m = 40;
+    nx = Math.max(m - w, Math.min(window.innerWidth  - m, nx));
+    ny = Math.max(0,     Math.min(window.innerHeight - m, ny));
+    popup.style.left = nx + 'px';
+    popup.style.top  = ny + 'px';
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function up(){
+    if (!dragging) return;
+    dragging = false;
+    popup.style.transition = '';
+    if (header) header.style.cursor = 'grab';
+  }
+
+  popup.addEventListener('mousedown', down);
+  window.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', up);
+  popup.addEventListener('touchstart', down, { passive:false });
+  window.addEventListener('touchmove', move, { passive:false });
+  window.addEventListener('touchend', up);
+  window.addEventListener('touchcancel', up);
+
+  // картинки внутри не должны запускать нативный drag браузера
+  popup.querySelectorAll('img').forEach(im => im.setAttribute('draggable', 'false'));
+}
+initSmailyPopupDrag('smaily-popup');
+initSmailyPopupDrag('smaily-invite-popup');
 
 // Первый popup — через 15 секунд, потом каждые 2-5 минут
 setTimeout(() => {
@@ -4826,7 +4897,8 @@ let smailyInviteTimeout = null;
 function showSmailyInvite() {
   if (smailyInviteActive) return;
 
-  new Audio('sounds/СМАЙЛИ.mp3').play().catch(()=>{});
+  if (typeof window.playVoice === 'function') window.playVoice('smaily');
+  else new Audio('sounds/СМАЙЛИ.mp3').play().catch(()=>{});
 
   const popup = document.getElementById('smaily-invite-popup');
   if (!popup) return;

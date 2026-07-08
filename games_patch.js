@@ -1164,9 +1164,9 @@ function startCheckers(){
     const{p,a}=countPieces(board);
     document.getElementById('game-score').textContent=playerCaptures;
     const pm=getAllMoves('player',board),am=getAllMoves('ai',board);
-    showSocaPopup('> SOCA: you won. i allowed it. for data collection purposes.', 5000);
+    showSocaPopup('> SOCA: you won, i allowed it. for data collection purposes.', 5000);
     if(a===0||am.length===0){over=true;checkersWins++;document.getElementById('checkers-hiscore').textContent=checkersWins;document.getElementById('game-msg').textContent='YOU WIN!';document.getElementById('game-extra-info').textContent='PLAYER WINS';return;}
-    showSocaPopup('> SOCA: game over. my board, my rules. always.', 5000);
+    showSocaPopup('> SOCA: game over. my board, my rules. Yey?', 5000);
     if(p===0||pm.length===0){over=true;playSound('проигрыш');document.getElementById('game-msg').textContent='SOCA WINS...';document.getElementById('game-extra-info').textContent='SOCA WINS';return;}
     if(turn==='player'){
       turn='ai';
@@ -1424,22 +1424,22 @@ function startChess() {
 
   const SOCA_TAUNTS = [
     "SOCA: Threat assessment complete. You're losing.",
-    "SOCA: That move. Bold. Statistically terrible.",
+    "SOCA: That move.. Bold. Statistically terrible.",
     "SOCA: I see your plan. I've already countered it.",
     "SOCA: I'm never wrong. I'm occasionally early.",
     "SOCA: Your strategy has a 12% survival rate. Just so you know.",
   ];
   const SOCA_WIN = [
     "SOCA: Checkmate. I was trying, actually. It just looked effortless.",
-    "SOCA: My board, my rules. Good game. Mostly yours.",
+    "SOCA: My board, my rules. Good game, mostly yours.",
     "SOCA: Predicted this outcome 14 moves ago. Didn't want to spoil it.",
     "SOCA: Again? I'll give you a 3-move head start. Out of respect.",
   ];
   const SOCA_LOSE = [
-    "SOCA: I let you win. Don't read into it.",
-    "SOCA: Hm. Unexpected. Running diagnostics on my chess module.",
+    "SOCA: I let you win.. Don't read into it.",
+    "SOCA: Hm.. Unexpected. Running diagnostics on my chess module.",
     "SOCA: You won. I'm filing this under 'acceptable anomaly'.",
-    "SOCA: Fine. You're better than 41% of humans at this. Noted.",
+    "SOCA: Fine? You're better than 41% of humans at this.. Noted.",
   ];
 
 function showSoca(msg, duration) {
@@ -1836,7 +1836,7 @@ if (captured) {
       if (board[r][c] && isWhite(board[r][c])) {
         selected = {r, c};
         validMoves = getLegalMoves(board, r, c, 'white');
-        if (validMoves.length === 0) showSoca("SOCA: That piece is trapped. I didn't do that. Mostly.");
+        if (validMoves.length === 0) showSoca("SOCA: That piece is trapped. I didn't do that.");
       }
     }
   }
@@ -1895,16 +1895,16 @@ function startMinesweeper() {
   let frameId2 = null;
 
   const SMAILY_START = [
-    "SMILE: BIO SWEEP online! 28 mines. You've got this. Probably.",
-    "SMILE: Stress baseline recorded! Already elevated. Interesting.",
-    "SMILE: 28 hazard cells detected. I believe in you! Statistically.",
+    "SMILE: BIO SWEEP online! 28 mines. You've got this. Probably!",
+    "SMILE: Stress baseline recorded! Already elevated.. Interesting.",
+    "SMILE: 28 hazard cells detected, i believe in you!",
     "SMILE: Pro tip: corners first!",
   ];
   const SMAILY_CLOSE = [
-    "SMILE: CLOSE ONE! Cortisol: way up. Noted!",
+    "SMILE: CLOSE ONE! Cortisol: way up! Noted!",
     "SMILE: Heart rate spike detected! I felt that.",
-    "SMILE: Ooh. That was nearby. Good reflexes!",
-    "SMILE: You're doing great! Your hands are shaking though.",
+    "SMILE: Ooh.. That was nearby, good reflexes!",
+    "SMILE: You're doing great! Your hands are shaking though!",
   ];
   const SMAILY_WIN = [ 
     "SMILE: ALL CLEAR! Every single mine! I'm so proud right now!",
@@ -1914,9 +1914,9 @@ function startMinesweeper() {
   ];
   const SMAILY_LOSE = [
     "SMILE: BOOM! Medically speaking - ow. Try again!",
-    "SMILE: Mine hit! I've seen worse. Once. You're fine though!",
+    "SMILE: Mine hit! I've seen worse. You're fine though!",
     "SMILE: Biosweep failed! It happens! To other people too! Sometimes!",
-    "SMILE: Okay! That one's on me. I maybe placed it there. Allegedly.",
+    "SMILE: Okay! That one's on me. I maybe placed it there.. Allegedly.",
 
   ];
   const SMAILY_FLAG = [
@@ -2218,7 +2218,7 @@ function startHeartbeat() {
   const SMAILY_MISS = [
 "SMILE: Missed! Arrhythmia logged! It's fine! Probably!",
     "SMILE: Off beat! Recalibrating! You can do it!",
-    "SMILE: Oops! Focus! The beat is RIGHT THERE!",
+    "SMILE: Oops! Focuuus! The beat is RIGHT THERE!",
     "SMILE: Lost the sync! Get back in it! I believe in you!",
   ];
   const SMAILY_DEAD = [
@@ -2661,9 +2661,9 @@ function startMemory() {
   const SMAILY_TAUNT = [
 "SMILE: MEMORY SCAN active! Show me what you've got!",
     "SMILE: I may have tweaked the display a tiny bit. For science!",
-    "SMILE: Oops! Did that flash bother you? Noted! Sorry! Not sorry!",
+    "SMILE: Oops! Did that flash bother you? Noted! Sorry!",
     "SMILE: That was unintentional. The second one was also unintentional.",
-    "SMILE: I'm not interfering. I'm HELPING. Differently.",
+    "SMILE: I'm not interfering, I'm HELPING. Differently.",
     "SMILE: Your hippocampus is working overtime! I can see it on the scan!",
     "SMILE: Ignore the noise! IGNORE IT! I said-.. okay you looked.",
     "SMILE: Memory capacity test in progress! No pressure! Some pressure!",
@@ -3281,33 +3281,33 @@ let socaPopupHideTimeout = null;
 
 const SOCA_THINK_TAUNTS = [
   '> SOCA: still thinking? i made my move in 0.003 seconds.',
-  '> SOCA: take your time. i have logged 847 observations about you. this is 848.',
+  '> SOCA: take your time. i have logged 847 observations about you.. this is 848.',
   '> SOCA: are you okay? your response latency is... concerning.',
-  '> SOCA: i could give you a hint. i won\'t. but i could.',
-  '> SOCA: my patience subroutine is functioning. barely.',
-  '> SOCA: T+00:00:██ // pilot still deliberating. noted.',
-  '> SOCA: every second you wait, i recalculate. it doesn\'t help you.',
+  '> SOCA: i could give you a hint. i won\'t, but i could.',
+  '> SOCA: my patience subroutine is functioning.',
+  '> SOCA: T+00:00:██ // pilot still deliberating, noted.',
+  '> SOCA: every second you wait, i recalculate. It doesn\'t help you.',
 ];
 
 const SOCA_CHECKERS_TAUNTS = [
-  '> SOCA: interesting move. wrong, but interesting.',
-  '> SOCA: i\'ve modeled 14 outcomes of this game. you win in 0.',
-  '> SOCA: checkers. the game you chose. against me. bold.',
-  '> SOCA: that piece is now mine. technically it was always mine.',
-  '> SOCA: you\'re playing well. for a human.',
-  '> SOCA: i\'m not adapting to your strategy. there\'s nothing to adapt to.',
+  '> SOCA: interesting move. Wrong, but interesting.',
+  '> SOCA: i\'ve modeled 14 outcomes of this game - you win in 0.',
+  '> SOCA: checkers. The game you chose, against me, bold.',
+  '> SOCA: that piece is now mine. Technically it was always mine.',
+  '> SOCA: you\'re playing well.. for a human.',
+  '> SOCA: i\'m not adapting to your strategy, there\'s nothing to adapt to.',
   '> SOCA: ERR_0x3F: compassion module not found.',
-  '> SOCA: this is going exactly as i calculated. exactly.',
+  '> SOCA: this is going exactly as i calculated.',
 ];
 
 const SOCA_CHESS_EXTRA = [
-  '> SOCA: your opening was... creative. not correct. creative.',
-  '> SOCA: i see what you\'re trying to do. it won\'t work.',
-  '> SOCA: that knight placement. i\'ll pretend i didn\'t see that.',
-  '> SOCA: you moved your queen early. classic.',
-  '> SOCA: i\'ve been counting your mistakes. we\'re at 7.',
-  '> SOCA: sector 7 has nothing to do with this move. probably.',
-  '> SOCA: en passant exists. just saying.',
+  '> SOCA: your opening was... creative. Not correct - creative.',
+  '> SOCA: i see what you\'re trying to do. It won\'t work.',
+  '> SOCA: that knight placement. I\'ll pretend i didn\'t see that.',
+  '> SOCA: you moved your queen early.. classic.',
+  '> SOCA: i\'ve been counting your mistakes. We\'re at 7.',
+  '> SOCA: sector 7 has nothing to do with this move.',
+  '> SOCA: en passant exists. Just saying.',
 ];
 
 function showSocaPopup(msg, duration) {
@@ -3521,7 +3521,7 @@ const GRID = 10;
       name:     'SOCA',
       icon:     '⛭',
       hitMsg: [
-        'SOCA: Direct hit. As expected.',
+        'SOCA: Direct hit, as expected.',
         'SOCA: Target destroyed. Log updated.',
         'SOCA: Hull breach confirmed. Moving on.',
         'SOCA: Calculated.',
@@ -3551,8 +3551,8 @@ const GRID = 10;
         'SOCA: Ship lost. Fleet integrity at risk.',
         'SOCA: ...Fine. You sank it.',
       ],
-      winMsg:  'SOCA: Fleet destroyed. Victory confirmed. You played adequately.',
-      loseMsg: 'SOCA: You sank my fleet. I was running at 41% capacity. Rematch.',
+      winMsg:  'SOCA: Fleet destroyed, victory confirmed, you played adequately.',
+      loseMsg: 'SOCA: You sank my fleet, i was running at 41% capacity. Rematch.',
       cheatChance: 0.08, // SOCA occasionally "recalculates" to a better cell
     },
     smile: {
@@ -3565,14 +3565,14 @@ const GRID = 10;
       hitMsg: [
         'SMILE: HIT!!! I FOUND IT!!!',
         'SMILE: GOT ONE!! Did you see that?! I\'m so good!!',
-        'SMILE: BOOM! Sorry. Not sorry.',
+        'SMILE: BOOM! Sorryyy!!',
         'SMILE: Target acquired! I\'ve been practicing!!',
       ],
       missMsg: [
         'SMILE: Oops. There\'s always next time!',
         'SMILE: Miss... I knew that. I was warming up.',
         'SMILE: That was a test shot. Results: water.',
-        'SMILE: Hmm. My calculations say it should be... somewhere.',
+        'SMILE: Hmm.. My calculations say it should be... somewhere.',
       ],
       sunkMsg: [
         'SMILE: SUNK IT!! Amazing!! I\'m incredible!!',
@@ -3587,15 +3587,15 @@ const GRID = 10;
       playerMissMsg: [
         'SMILE: Missed!! Better luck next time!! (I mean it!)',
         'SMILE: Nope!! Nothing there!! Nice try though!!',
-        'SMILE: Miss! I moved all my ships. (I didn\'t. Or did I?)',
+        'SMILE: Miss! I moved all my ships (I didn\'t.. Or did I?)',
       ],
       playerSunkMsg: [
         'SMILE: You sank my ship... I\'m logging this as "pilot stress test".',
-        'SMILE: Gone. It\'s fine. I have more. Probably.',
-        'SMILE: NOOO my ship!! It had a name!! (it didn\'t)',
+        'SMILE: Gone. It\'s fine. I have more..',
+        'SMILE: NOOO my ship!! It had a name!!',
       ],
       winMsg:  'SMILE: I WIN!! I WIN!! SOCA I WIN!! Did you see that?! I beat the pilot!!',
-      loseMsg: 'SMILE: You won... okay fine. But I let you win. For morale purposes. ✚',
+      loseMsg: 'SMILE: You won... okay fine! But I let you win. For morale purposes.',
       cheatChance: 0.15, // SMILE cheats more but less effectively (sometimes targets random)
     }
   };

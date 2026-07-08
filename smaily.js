@@ -398,7 +398,7 @@ function showSmailyToast(message, type, vitals, force = false) {
 
 const kwReplies = {
   'hurt|pain|боль':          'Pain reported? Where? Ill queue analgesic right away. Just breathe :)',
-  'stress|стресс|anxi':      'Stress confirmed: MED ↑. CALM-7 5mg via suit port queued. Youll feel better in ~90 seconds. Trust me.',
+  'stress|стресс|anxi':      'Stress confirmed: MED ↑. CALM-7 5mg via suit port queued. Youll feel better in ~90 seconds, trust me!',
   'oxygen|o2|breath':        'O2: 94%. Your suit is working perfectly. Youre breathing fine, i checked!',
   'heart|pulse|hr|пульс':    'HR: 113bpm. Sinus rhythm, normal. Thats your new normal, ive accepted it. Have you? :D',
   'radiation|радиация|rad':  'Radiation: 2.4 μSv/h - slightly elevated. Anti-rad stock: LOW - 2 doses. Ive noted it!',
@@ -407,12 +407,12 @@ const kwReplies = {
   'drug|dose|medicine|meds': 'Active: STIM-A2 5mg · CALM-7 10mg · G-BLOCK 2mg (low stock). Im tracking everything. Dont worry!',
   'smaily|who are you|кто':  "Im SMILE Ship Medical & Integrated Life-support. I keep you alive. That's my job, and I'm good at it!",
   'temp|temperature|жар':    'Temperature: 36.7°C. Nominal. Suit cooling active. Youre comfortable.',
-  'suit|скафандр':           'Suit integrity: 100%. Pressure 101.3 kPa. Seals LOCKED. O2 supply 72h. You\'re safe. I made sure.',
+  'suit|скафандр':           'Suit integrity: 100%. Pressure 101.3 kPa. Seals LOCKED. O2 supply 72h. You\'re safe, i made sure!',
   'soca|сока|soсa':           'SOCA? Shes... thinking. Or frozen. 50/50. Want me to poke her?',
-  'engine|engine b|мотор':   'Engine B is at 41%. Im monitoring your stress levels. Youre handling it well.',
+  'engine|engine b|мотор':   'Engine B is at 41%. Im monitoring your stress levels. Youre handling it well!',
   'memory|mem|sector|сектор':'Memory sector 7? Corrupted. Not your problem. Ill keep an eye on it.',
   'joke|шутка|смеш|funny':   'You want a joke? Why did the pilot stare at the panel? Because SOCA froze again. ...Okay, that one needs work',
-  'hello|hi|привет|hey':     'Hello, Pilot! Im here, always. Watching your vitals. Youre doing great. Keep going! :)',
+  'hello|hi|привет|hey':     'Hello, Pilot! Im here!! Watching your vitals, youre doing great! Keep going! :)',
   'thanks|спасибо|thank':    'Youre welcome, Pilot! Thats what Im here for. To keep you alive and smiling!',
   'hungry|eat|есть|food':    'Glucose: 3.2 mmol/L. Thats low. Eat something, Pilot. Ill remind you every 10 minutes until you do. BEEP.',
 
@@ -480,7 +480,7 @@ const _smMsgs = [
   { msg: 'Rest cycle recommended in 2h 14min. Im serious. Ill start dimming the lights!', type: 'info', vitals: 'FATIGUE: 71%' },
   { msg: "CALM-7 levels stable. Last dose T-00:08:00. You're doing fine!!", type: 'info', vitals: 'DRUG LOG: CALM-7 active' },
 
-  { msg: 'O2 saturation: 94%. Your suit is working overtime. Youre welcome.', type: 'ok', vitals: 'O2: 94% · SUIT: OK' },
+  { msg: 'O2 saturation: 94%. Your suit is working overtime. Youre welcome!', type: 'ok', vitals: 'O2: 94% · SUIT: OK' },
   { msg: 'Suit pressure nominal. All seals intact. Youre not breathing vacuum today!', type: 'ok', vitals: 'SUIT: 101.3 kPa · SEAL: OK' },
 
   { msg: 'Anti-radiation stock critically low - 2 doses left!!!', type: 'warn', vitals: 'RAD: 2.4 μSv/h · STOCK: LOW' },
@@ -498,7 +498,7 @@ const _smMsgs = [
 function _scheduleSmaily() {
   const delay = 40000 + Math.random() * 20000;
   const timeoutId = setTimeout(() => {
-    if (!window.smDialogueActive) {
+    if (!window.smDialogueActive && (typeof window.smailyAllowScheduled !== 'function' || window.smailyAllowScheduled())) {
       const item = _smMsgs[Math.floor(Math.random() * _smMsgs.length)];
       showSmailyToast(item.msg, item.type, item.vitals);
       addSmailyLog(item.msg, item.type === 'ok' ? 'info' : item.type);
@@ -540,7 +540,7 @@ function _scheduleSmaily() {
 function _scheduleSmailyMischief() {
   const delay = 50000 + Math.random() * 30000;
   const timeoutId = setTimeout(() => {
-    if (!window.smDialogueActive) {
+    if (!window.smDialogueActive && (typeof window.smailyAllowScheduled !== 'function' || window.smailyAllowScheduled())) {
       const mischiefMessages = [
       { msg: "Just checking. You're still alive. Good. :)", type: 'ok', vitals: null },
       { msg: "BEEP. That was a test. All systems nominal!", type: 'info', vitals: null },

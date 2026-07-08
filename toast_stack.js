@@ -102,12 +102,16 @@ function getStack() {
 // Добавляем в стек снизу (flex-direction: column-reverse)
     stack.prepend(toast);
 
-    // Звук появления
-    try {
-      const snd = new Audio(source === 'smaily' ? 'sounds/СМАЙЛИ.mp3' : 'sounds/СОКА.mp3');
-      snd.volume = 0.45;
-      snd.play().catch(()=>{});
-    } catch(e) {}
+    // Звук появления — громкость голоса через настройки (settings.js)
+    if (typeof window.playVoice === 'function') {
+      window.playVoice(source === 'smaily' ? 'smaily' : 'soca');
+    } else {
+      try {
+        const snd = new Audio(source === 'smaily' ? 'sounds/СМАЙЛИ.mp3' : 'sounds/СОКА.mp3');
+        snd.volume = 0.45;
+        snd.play().catch(()=>{});
+      } catch(e) {}
+    }
 
     // Авто-закрытие
     toast._autoTimer = setTimeout(() => dismissToast(toast), duration);
@@ -120,12 +124,14 @@ function getStack() {
   // ══════════════════════════════════════════════════════════
 
   // ── SMILE toast ────────────────────────────────────────────
-  const SMAILY_FACES  = { info: ':)', warn: ':/', ok: ':D', err: ':(' };
+  const SMAILY_FACES  = { info: ':)', warn: ':/', ok: ':D', err: ':(', ars: ';P', tact: ':*' };
   const SMAILY_LABELS = {
     info: 'SMILE // MEDICAL',
     warn: 'SMILE // WARNING',
     ok:   'SMILE // OK',
     err:  'SMILE // ALERT',
+    ars:  'SMILE // ARSENAL',
+    tact: 'SMILE // TACTICAL',
   };
 
   window.showSmailyToast = function(message, type, vitals) {
@@ -201,7 +207,10 @@ function getStack() {
           const msg    = body   ? body.textContent.trim()   : node.textContent.trim();
           const vit    = vitals ? vitals.textContent.trim() : null;
           const type   = node.classList.contains('warn') ? 'warn'
-                       : node.classList.contains('ok')   ? 'ok' : 'info';
+                       : node.classList.contains('ok')   ? 'ok'
+                       : node.classList.contains('err')  ? 'err'
+                       : node.classList.contains('ars')  ? 'ars'
+                       : node.classList.contains('tact') ? 'tact' : 'info';
           node.remove();
           window.showSmailyToast(msg, type, vit);
         }
@@ -785,7 +794,7 @@ function appendToStack() {
 const _surveyDelay = (8 + Math.random() * 7) * 60 * 1000;
 setTimeout(showSocaSurveyToast, _surveyDelay);
 setTimeout(() => {
-  if (window.showSmailyToast) window.showSmailyToast("PILOT. Beat Alpha's record in VOID ASSAULT. This is a medical recommendation. Urgently!!!", 'warn');
+  if (window.showSmailyToast) window.showSmailyToast("PILOT. Beat Claudia's record in VOID ASSAULT. This is a medical recommendation. Urgently!!!", 'warn');
 }, 40000);
 
 // Для теста
