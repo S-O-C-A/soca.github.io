@@ -365,7 +365,7 @@
 
       <div class="ss-sec">AUDIO</div>
       ${sliderRow('SOCA VOICE',   'soca',   pct(window.socaVolume))}
-      ${sliderRow('SMAILY VOICE', 'smaily', pct(window.smailyVolume))}
+      ${sliderRow('SMILE VOICE', 'smaily', pct(window.smailyVolume))}
       ${sliderRow('SYS BEEPS',    'beep',   pct(window.beepVolume))}
       ${sliderRow('BACKGROUND',   'bg',     pct(window.bgLevel))}
 
@@ -375,10 +375,10 @@
       ${switchRow('HEAVY GRAPHICS', 'heavy', window.heavyRenders, 'gauges · starmap · vitals')}
       ${switchRow('TOASTS', 'toasts', window.toastsEnabled, 'system alerts stay on')}
 
-      <div class="ss-sec amber">SMAILY</div>
+      <div class="ss-sec amber">SMILE</div>
       <div class="ss-row">
         <span class="ss-lab">POPUP FREQ</span>
-        <div class="ss-seg" role="group" aria-label="SMAILY popup frequency">
+        <div class="ss-seg" role="group" aria-label="SMILE popup frequency">
           <button type="button" data-freq="often">OFTEN</button>
           <button type="button" data-freq="rare">RARE</button>
           <button type="button" data-freq="off">OFF</button>

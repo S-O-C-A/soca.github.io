@@ -38,7 +38,7 @@ body{
   min-height:100vh;
 }
 
-/* ── SCANLINES overlay ── */
+/* === SCANLINES overlay === */
 body::before{
   content:'';
   position:fixed;inset:0;z-index:9999;
@@ -58,7 +58,7 @@ body::after{
   background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%);
 }
 
-/* ── NOISE texture ── */
+/* === NOISE texture === */
 .noise{
   position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:0.03;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -66,7 +66,7 @@ body::after{
 }
 @keyframes noiseAnim{0%{transform:translate(0,0)}20%{transform:translate(-2px,1px)}40%{transform:translate(1px,-1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(2px,-2px)}100%{transform:translate(0,0)}}
 
-/* ── GLITCH keyframes ── */
+/* === GLITCH keyframes === */
 @keyframes glitch1{
   0%,94%,100%{transform:none;clip-path:none;opacity:1}
   95%{transform:translate(-3px,0) skewX(-2deg);clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%);opacity:0.8;color:var(--b)}
@@ -99,7 +99,7 @@ body::after{
 @keyframes borderPulse{0%,100%{border-color:var(--border)}50%{border-color:var(--g)}}
 @keyframes floatNum{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 
-/* ── GLOW helpers ── */
+/* === GLOW helpers === */
 .glow{text-shadow:0 0 6px var(--g),0 0 12px var(--g2);animation:glitch2 6s infinite}
 .glow-b{color:var(--b);text-shadow:0 0 6px var(--b),0 0 12px var(--b2)}
 .glow-r{color:var(--red);text-shadow:0 0 6px var(--red)}
@@ -107,7 +107,7 @@ body::after{
 .dim{color:var(--dim)}
 .flicker{animation:flicker 4s infinite}
 
-/* ── LAYOUT ── */
+/* === LAYOUT === */
 .terminal{
   max-width:1400px;margin:0 auto;padding:8px;
   min-height:100vh;
@@ -115,7 +115,7 @@ body::after{
   animation:boot 0.4s ease both;
 }
 
-/* ── TOP BAR ── */
+/* === TOP BAR === */
 .topbar{
   display:flex;align-items:center;gap:0;
   border:1px solid var(--border);
@@ -136,7 +136,7 @@ body::after{
 .tb-time{padding:0 14px;font-size:11px;color:var(--b);letter-spacing:0.1em;border-left:1px solid var(--border);white-space:nowrap}
 .tb-status{padding:0 10px;font-size:10px;background:rgba(0,255,136,0.12);color:var(--g);border-left:1px solid var(--border);height:100%;display:flex;align-items:center;letter-spacing:0.08em}
 
-/* ── MAIN GRID ── */
+/* === MAIN GRID === */
 .main-grid{
   display:grid;
   grid-template-columns:220px 1fr 240px;
@@ -145,7 +145,7 @@ body::after{
   flex:1;
 }
 
-/* ── PANELS ── */
+/* === PANELS === */
 .panel{
   border:1px solid var(--border);
   background:var(--panel);
@@ -167,7 +167,7 @@ body::after{
 .panel-header .title{color:var(--g);font-size:11px;letter-spacing:0.12em}
 .panel-body{padding:10px 12px}
 
-/* ── LEFT SIDEBAR ── */
+/* === LEFT SIDEBAR === */
 .sidebar-left{grid-column:1;display:flex;flex-direction:column;gap:6px}
 
 .nav-panel .panel-body{padding:0}
@@ -211,7 +211,7 @@ body::after{
 .pilot-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
 .badge{font-size:8px;padding:2px 6px;border:1px solid var(--border2);color:var(--b);letter-spacing:0.1em}
 
-/* ── CENTER ── */
+/* === CENTER === */
 .center-col{grid-column:2;display:flex;flex-direction:column;gap:6px}
 
 /* HERO panel */
@@ -241,7 +241,7 @@ body::after{
   background-clip: text;
   color: transparent;
   
-  /* 🔥 УТОЛЩЕНИЕ */
+  /* УТОЛЩЕНИЕ */
   font-weight: 800;
   -webkit-text-stroke: 1.5px rgba(0, 255, 136, 0.3);
   
@@ -263,7 +263,7 @@ body::after{
   justify-content: center;
 }
 
-/* 🏁 ГОСТИННЫЙ ФЛАГ ЗА ТЕКСТОМ SOCA */
+/* ГОСТИННЫЙ ФЛАГ ЗА ТЕКСТОМ SOCA */
 .racing-flag-behind-soca {
   position: absolute;
   top: 50%;
@@ -430,7 +430,7 @@ body::after{
 .alert-item.warn{border-color:var(--yellow);background:rgba(255,204,0,0.04);animation:glitch3 6s 1s infinite;color:var(--yellow)}
 .alert-item.info{border-color:var(--b);background:rgba(0,136,255,0.04);color:var(--b);animation:none}
 .alert-time{font-size:9px;color:var(--dimmer);margin-top:2px}
-/* КНОПКА CHAT — теперь в едином стиле */
+/* КНОПКА CHAT - теперь в едином стиле */
 .chat-toggle-button {
   position: fixed;
   right: 26px;
@@ -445,11 +445,8 @@ body::after{
   letter-spacing: 0.1em;
   box-shadow: 0 0 25px rgba(0, 255, 136, 0.15);
   transition: all 0.2s;
-  
-  /* Убираем скругление — делаем квадратной */
   border-radius: 0;
-  
-  /* Добавляем глитч-эффекты как у других кнопок */
+
   text-transform: uppercase;
   font-family: 'Share Tech Mono', monospace;
 }
@@ -487,7 +484,7 @@ body::after{
 .chat-send{border:1px solid var(--border);background:rgba(0,255,136,0.08);color:var(--g);padding:8px 12px;border-radius:4px;cursor:pointer;transition:background .2s}
 .chat-send:hover{background:rgba(0,255,136,0.18)}
 
-/* ── RIGHT SIDEBAR ── */
+/* === RIGHT SIDEBAR === */
 .sidebar-right{grid-column:3;display:flex;flex-direction:column;gap:6px}
 
 /* Telemetry numbers */
@@ -532,7 +529,7 @@ body::after{
 .radar-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--b);box-shadow:0 0 6px var(--b)}
 .radar-label{font-size:9px;color:var(--dim);letter-spacing:0.12em;text-align:center;margin-top:4px}
 
-/* ── BOTTOM BAR ── */
+/* === BOTTOM BAR === */
 .bottombar{
   display:flex;align-items:center;gap:0;
   border:1px solid var(--border);
@@ -549,7 +546,7 @@ body::after{
 .bb-spacer{flex:1}
 .bb-version{padding:0 14px;color:var(--dimmer);font-size:9px;letter-spacing:0.08em;border-left:1px solid var(--border)}
 
-/* ── CORRUPT text utility ── */
+/* === CORRUPT text utility === */
 .c1{animation:glitch1 5s 0.2s infinite}
 .c2{animation:glitch2 6s 1s infinite}
 .c3{animation:glitch3 4s 0.5s infinite}
@@ -560,12 +557,12 @@ body::after{
   opacity:0.6;
 }
 
-/* ── scrollbar ── */
+/* === scrollbar === */
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--dimmer)}
 
-/* ── corner decorations ── */
+/* === corner decorations === */
 .corner{position:absolute;width:12px;height:12px}
 .corner.tl{top:4px;left:4px;border-top:1px solid var(--g);border-left:1px solid var(--g)}
 .corner.tr{top:4px;right:4px;border-top:1px solid var(--g);border-right:1px solid var(--g)}
@@ -593,9 +590,6 @@ body::after{
   font-size:11px;animation:glitch1 2s infinite;
 }
 
-      /* ╔══════════════════════════════════════════════════════╗ */
-      /* ║  SECTION: ABOUT  ║ */
-      /* ╚══════════════════════════════════════════════════════╝ */
 .log-entry{
   padding:6px 0;border-bottom:1px solid rgba(0,255,136,0.06);
   font-size:11px;letter-spacing:0.06em;line-height:1.5;
@@ -641,7 +635,7 @@ body::after{
     }
 }
 
-/* Дополнительный слой для усиления эффекта (с глитчем) */
+/* Дополнительный слой для усиления эффекта */
 .racing-flag-glitch {
     position: fixed;
     inset: 0;
@@ -1762,7 +1756,7 @@ body::after{
   50% { box-shadow: 0 0 30px 5px var(--red); }
 }
 
-/* VESSEL SCHEMATIC — интерактивный */
+/* VESSEL SCHEMATIC - интерактивный */
 .schema-container {
   position: relative;
   overflow: hidden;
@@ -2170,7 +2164,7 @@ body::after{
 .nc-btn:hover{color:var(--g);border-color:rgba(0,255,136,0.3)}
 
 /* ═══════════════════════════════════════════════════════════════════ */
-/*  LOGO — GEAR (ШЕСТЕРЁНКА) — градиент + свечение + ржавые рывки     */
+/*  LOGO - GEAR (ШЕСТЕРЁНКА) - градиент + свечение + ржавые рывки     */
 /* ═══════════════════════════════════════════════════════════════════ */
 
 .gear-logo {
@@ -2210,7 +2204,7 @@ body::after{
   animation: rustyGearSpin 8s infinite cubic-bezier(0.8, 0.2, 0.2, 0.8);
 }
 
-/* Эффект "ржавчины" — лёгкое затемнение поверх градиента */
+/* Эффект "ржавчины" - лёгкое затемнение поверх градиента */
 .gear-logo::before {
   content: '⛭';
   position: absolute;
@@ -2263,7 +2257,7 @@ body::after{
 
 /* ========== АНИМАЦИИ ========== */
 
-/* РЖАВАЯ ШЕСТЕРЁНКА — рывки, остановки, заедания */
+/* РЖАВАЯ ШЕСТЕРЁНКА - рывки, остановки, заедания */
 @keyframes rustyGearSpin {
   /* Долгая пауза в начале */
   0%, 10% { transform: rotate(0deg); }
@@ -2338,7 +2332,7 @@ body::after{
   93% { opacity: 0; transform: translateX(2px); }
 }
 
-/* Мгновенный глитч (дерганье) — через JS */
+/* Мгновенный глитч (дерганье) - через JS */
 .gear-logo.glitch-instant {
   animation: gearInstantGlitch 0.2s steps(3);
 }
@@ -2627,7 +2621,7 @@ body {
   opacity: 0.7;
 }
 
-/* Имя контакта — ОБРЕЗАЕМ, ЧТОБЫ НЕ ВЫЛЕЗАЛО */
+/* Имя контакта - ОБРЕЗАЕМ, ЧТОБЫ НЕ ВЫЛЕЗАЛО */
 .chat-contact-info {
   text-align: center;
   width: 100%;
@@ -2670,7 +2664,7 @@ body {
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* Поле ввода — ПРИЖИМАЕМ К НИЗУ, УБИРАЕМ ПУСТОТУ */
+/* Поле ввода - ПРИЖИМАЕМ К НИЗУ, УБИРАЕМ ПУСТОТУ */
 .chat-input-row {
   display: flex;
   gap: 8px;
@@ -2773,7 +2767,7 @@ body {
   background: rgba(0, 0, 0, 0.3);
 }
 
-/* АВАТАР В СООБЩЕНИЯХ — УБИРАЕМ ЗЕЛЁНОЕ СВЕЧЕНИЕ */
+/* АВАТАР В СООБЩЕНИЯХ */
 .chat-overlay.smaily-mode .chat-message.bot .chat-avatar {
   border-color: rgba(255, 170, 0, 0.5);
   color: #ffaa00;
@@ -2782,25 +2776,25 @@ body {
   text-shadow: 0 0 5px #ffaa00;
 }
 
-/* ПУЗЫРЬ СООБЩЕНИЯ BOT — ПОЛНОСТЬЮ ОРАНЖЕВЫЙ */
+/* ПУЗЫРЬ СООБЩЕНИЯПОЛНОСТЬЮ ОРАНЖЕВЫЙ */
 .chat-overlay.smaily-mode .chat-message.bot .chat-bubble {
   border-left-color: #ffaa00;
   background: rgba(255, 170, 0, 0.1);
   box-shadow: none;
 }
 
-/* ПУЗЫРЬ СООБЩЕНИЯ USER — ОРАНЖЕВАЯ РАМКА */
+/* ПУЗЫРЬ СООБЩЕНИЯ USER - ОРАНЖЕВАЯ РАМКА */
 .chat-overlay.smaily-mode .chat-message.user .chat-bubble {
   border-right-color: #ffaa00;
   background: rgba(255, 170, 0, 0.05);
 }
 
-/* ЛЕЙБЛ — ОРАНЖЕВЫЙ */
+/* ЛЕЙБЛ */
 .chat-overlay.smaily-mode .chat-label {
   color: #ffaa00;
 }
 
-/* ТЕКСТ СООБЩЕНИЙ — НЕ ЗЕЛЁНЫЙ */
+/* ТЕКСТ СООБЩЕНИЙ */
 .chat-overlay.smaily-mode .chat-text {
   color: #ffcc66;
 }
@@ -2813,7 +2807,7 @@ body {
   color: #ffaa33;
 }
 
-/* ПОЛОСКА ВНИЗУ (border-top у .chat-input-row) — УБИРАЕМ ЗЕЛЁНУЮ */
+/* ПОЛОСКА ВНИЗУ (border-top у .chat-input-row) */
 .chat-overlay.smaily-mode .chat-input-row {
   border-top-color: rgba(255, 170, 0, 0.4);
   background: rgba(0, 0, 0, 0.5);
@@ -2874,7 +2868,7 @@ body {
   text-shadow: 0 0 3px rgba(255, 170, 0, 0.5);
 }
 
-/* ЕСЛИ ГДЕ-ТО ОСТАЛСЯ GLOW — ПЕРЕОПРЕДЕЛЯЕМ */
+/* ЕСЛИ ГДЕ-ТО ОСТАЛСЯ GLOW - ПЕРЕОПРЕДЕЛЯЕМ */
 .chat-overlay.smaily-mode .glow,
 .chat-overlay.smaily-mode .glow-b,
 .chat-overlay.smaily-mode .glow-r,
@@ -2946,7 +2940,7 @@ body {
   pointer-events: none;
 }
 
-/* HOVER: инверсия — :D тёмным на жёлтом фоне */
+/* HOVER: инверсия - :D тёмным на жёлтом фоне */
 .smaily-toggle-wrap:hover {
   background: #ffcc00 !important;
   border-color: #ffaa00 !important;
@@ -2968,7 +2962,7 @@ body {
   100% { transform: translateX(0); }
 }
 
-/* Когда чат открыт — иконка активна */
+/* Когда чат открыт - иконка активна */
 .smaily-toggle-wrap.is-open {
   background: rgba(255, 200, 0, 0.12) !important;
   border-color: #ffcc00 !important;
@@ -2976,7 +2970,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   LOG TAG  —  тег SMILE в логах
+   LOG TAG  -  тег SMILE в логах
    ═══════════════════════════════════════════════════════════ */
 
 .log-tag.smaily {
@@ -3006,7 +3000,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SMILE TOAST  —  всплывающее уведомление от SMILE
+   SMILE TOAST  -  всплывающее уведомление от SMILE
    ═══════════════════════════════════════════════════════════ */
 
 .smaily-toast {
@@ -3066,7 +3060,7 @@ body {
   letter-spacing: 0.06em;
 }
 
-/* Тип WARN — красная левая полоска */
+/* Тип WARN - красная левая полоска */
 .smaily-toast.warn {
   border-left-color: #ff6600;
   box-shadow: 0 0 24px rgba(255, 100, 0, 0.3);
@@ -3076,7 +3070,7 @@ body {
   color: #ff8800;
 }
 
-/* Тип OK — зеленоватая */
+/* Тип OK  */
 .smaily-toast.ok {
   border-left-color: #88cc00;
   box-shadow: 0 0 20px rgba(136, 204, 0, 0.18);
@@ -3087,7 +3081,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   RECENT LOG  —  пометка SMILE-записей в боковом логе
+   RECENT LOG  -  пометка SMILE-записей в боковом логе
    ═══════════════════════════════════════════════════════════ */
 
 .log-entry.smaily-entry {
@@ -3096,8 +3090,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SMILE CONTACT ICON  — иконка в боковой панели чата
-   Уже покрыта смайли-аватаром, но добавляем :) символ
+   SMILE CONTACT ICON 
    ═══════════════════════════════════════════════════════════ */
 
 .chat-avatar-small.smaily-smiley {
@@ -3135,7 +3128,7 @@ body {
   border-color: #ffcc00 !important;
 }
 
-/* ── :) / :D аватар в области сообщений ────────────────────── */
+/* === :) / :D аватар в области сообщений === */
 
 .smaily-msg-avatar {
   display: flex;
@@ -3154,18 +3147,18 @@ body {
   transition: color 0.18s, background 0.18s, text-shadow 0.18s;
 }
 
-/* ── ПОЛНОЕ УНИЧТОЖЕНИЕ зелёного в smaily-mode ──────────────
+/* === ПОЛНОЕ УНИЧТОЖЕНИЕ зелёного в smaily-mode
    Используем максимальную специфичность чтобы перебить ВСЕ
    базовые стили (включая строки 477-479 и 805-848)
-   ─────────────────────────────────────────────────────────── */
+   =============================*/
 
-/* Общий контейнер сообщения — убираем зелёный border */
+/* Общий контейнер сообщения - убираем зелёный border */
 .chat-overlay.smaily-mode .chat-body .chat-message {
   border-color: rgba(255, 170, 0, 0.12) !important;
   background: rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Сообщение бота — фон и левая полоска */
+/* Сообщение бота - фон и левая полоска */
 .chat-overlay.smaily-mode .chat-body .chat-message.bot {
   border-color: rgba(255, 170, 0, 0.15) !important;
   background: rgba(255, 170, 0, 0.03) !important;
@@ -3197,7 +3190,7 @@ body {
   color: rgba(255, 170, 0, 0.6) !important;
 }
 
-/* Текст — убираем зелёный цвет И зелёную glitch-анимацию */
+/* Текст - убираем зелёный цвет И зелёную glitch-анимацию */
 .chat-overlay.smaily-mode .chat-body .chat-text {
   color: #ffcc66 !important;
   animation: none !important;
@@ -3344,10 +3337,10 @@ body {
 .smaily-toast.ok .smaily-toast-header { color: #aadd44; }
 
 /* ════════════════════════════════════════════════════════════
-   TOAST STACK SYSTEM — добавить в конец style.css
+   TOAST STACK SYSTEM
    ════════════════════════════════════════════════════════════ */
  
-/* ── Контейнер-стек (фиксированный, правый нижний угол) ───── */
+/* === Контейнер-стек (фиксированный, правый нижний угол) === */
 #toast-stack {
   position: fixed;
   bottom: 20px;
@@ -3361,7 +3354,7 @@ body {
   width: 300px;
 }
  
-/* ── Базовый тост ─────────────────────────────────────────── */
+/* === Базовый тост === */
 .ts-toast {
   width: 100%;
   font-family: 'Share Tech Mono', monospace;
@@ -3398,7 +3391,7 @@ body {
               margin 0.4s ease;
 }
  
-/* ── Кнопка закрытия ─────────────────────────────────────── */
+/* === Кнопка закрытия === */
 .ts-close {
   position: absolute;
   top: 6px;
@@ -3421,7 +3414,7 @@ body {
 }
 .ts-close:hover { opacity: 1; }
  
-/* ── Заголовок тоста ─────────────────────────────────────── */
+/* === Заголовок тоста === */
 .ts-header {
   display: flex;
   align-items: center;
@@ -3438,7 +3431,7 @@ body {
   letter-spacing: -0.03em;
 }
  
-/* ── Тело ────────────────────────────────────────────────── */
+/* === Тело === */
 .ts-body {
   line-height: 1.55;
   padding-right: 4px;
@@ -3515,7 +3508,7 @@ body {
   background: var(--panel);
   border: 1px solid var(--border);
 }
-/* Стек тостов — ниже чата */
+/* Стек тостов - ниже чата */
 #toast-stack {
   z-index: 10005 !important;
 }
@@ -3524,7 +3517,7 @@ body {
   z-index: 10005 !important;
 }
 
-/* SMILE — весь интерфейс с её шрифтом */
+/* SMILE - весь интерфейс с её шрифтом */
 #page-smaily,
 .smaily-toast,
 .smaily-toast *,
@@ -3537,7 +3530,7 @@ body {
   font-family: 'SMILE', 'Share Tech Mono', monospace !important;
 }
 
-/* Аватар :) и :D — тоже её шрифт */
+/* Аватар :) и :D - тоже её шрифт */
 .chat-avatar-small.smaily-face,
 .smaily-msg-avatar,
 .smaily-toast-face {
@@ -3545,7 +3538,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ШРИФТ SMILE — вся вкладка F7, чат, тосты
+   ШРИФТ SMILE - вся вкладка F7, чат, тосты
    ═══════════════════════════════════════════════════════════════ */
 
 /* Вся страница SMILE (вкладка F7) */
@@ -3596,7 +3589,7 @@ body {
   font-family: 'SMILE', 'VT323', monospace !important;
 }
 
-/* ── LOG STREAM scrollbar ── */
+/* === LOG STREAM scrollbar === */
 #logStream::-webkit-scrollbar {
   width: 3px;
 }

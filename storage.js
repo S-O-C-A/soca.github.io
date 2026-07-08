@@ -1,36 +1,18 @@
-// ══════════════════════════════════════════════════════════════════════════
-// SOCA — CREW STORAGE MODULE (storage.js)
-//
-// Оверлей общего хранилища экипажа. Открывается по клику на пункт
-// навигации STORAGE, работает как оверлей игр (поверх сайта, свой z-index).
-// Отдельный самодостаточный файл — как games_patch.js.
-//
-// Подключить в soca.html ПОСЛЕ остальных скриптов:
-//   <script src="storage.js"></script>
-//
-// Открытие из навигации:  onclick="openStorage()"
-//
-// ── НАПОЛНЕНИЕ: всё содержимое лежит в объекте STORAGE_DATA ниже.
-//    Чтобы добавить/изменить папки и файлы — редактируй только его,
-//    трогать логику рендера не нужно. Пути к медиа: storage/имя.ext
-//    (onerror сам покажет CRT-заглушку, пока файла физически нет).
-// ══════════════════════════════════════════════════════════════════════════
-
 (function(){
 
   // ════════════════════════════════════════════════════════════════════
-  //  ДАННЫЕ ХРАНИЛИЩА  — редактируй здесь
+  //  ДАННЫЕ ХРАНИЛИЩА (быстрый туториал по заполнению данных:)
   // ════════════════════════════════════════════════════════════════════
   // Категории: photos | video | audio | files | notes
   // Папка: { name, owner, locked?, items:[...] }
-  //   owner   — 'KOKO' | 'ALPHA' | 'CLAUDIA'
-  //   items   — файлы внутри папки
+  //   owner   - 'KOKO' | 'ALPHA' | 'CLAUDIA'
+  //   items   - файлы внутри папки
   // Файл: { title, src?, date, size, locked?, text?, poster? }
   //   locked:true  → материал заперт: в ленте/папке показывается замок,
   //                  клик открывает поле ввода пароля (4444)
   //   text         → для заметок (NOTES) вместо src
   //   poster       → (только video, опционально) путь к кадру-превью
-  //                  для окошка в ленте ALL; без него — иконка ▷
+  //                  для окошка в ленте ALL; без него - иконка ▷
   //   comment      → (опционально) короткая заметка Коко о файле;
   //                  показывается в списке FILES и в панели свойств
   // ────────────────────────────────────────────────────────────────────
@@ -279,7 +261,7 @@
   .st-pass.shake{ animation:stShake 0.35s; }
   @keyframes stShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
 
-  /* Заметки — карточки текста */
+  /* Заметки - карточки текста */
   .st-note-body{ padding:9px; font-size:10px; color:var(--dim,#4a9d7a); line-height:1.5; height:120px; overflow:hidden; border-bottom:1px solid rgba(0,255,136,0.12); }
 
   /* Лента ALL */
@@ -296,7 +278,7 @@
   .st-feed-sub{ font-size:8px; color:var(--dimmer,#0a3d24); letter-spacing:0.1em; margin-top:2px; }
   .st-feed-date{ font-size:8px; color:var(--dim,#4a9d7a); letter-spacing:0.08em; flex-shrink:0; }
 
-  /* ── МЕДИА-карточки (фото/видео): вытянутые, с превью-окном слева ── */
+  /* === МЕДИА-карточки (фото/видео): вытянутые, с превью-окном слева === */
   .st-feed-item.media{ padding:0; align-items:stretch; min-height:74px; }
   .st-feed-thumb{
     width:104px; flex-shrink:0; background:rgba(0,0,0,0.5);
@@ -314,26 +296,26 @@
   .st-feed-item.media.is-video .st-feed-badge{ color:var(--yellow,#ffcc00); border-color:rgba(255,200,0,0.4); }
   .st-feed-thumb .play-tri{ position:absolute; font-size:22px; color:rgba(255,255,255,0.85); text-shadow:0 0 8px rgba(0,0,0,0.8); }
 
-  /* ── ЗАМЕТКА: карточка с «загнутым углом» и цитатой текста ── */
+  /*===ЗАМЕТКА: карточка с «загнутым углом» и цитатой текста === */
   .st-feed-item.note{ border-left:2px solid var(--g,#00ff88); background:rgba(0,20,10,0.35); }
   .st-feed-note-quote{
     font-size:9px; color:var(--dim,#4a9d7a); font-style:italic; margin-top:3px;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:340px; opacity:0.8;
   }
 
-  /* ── Запертый элемент в ленте ── */
+  /* === Запертый элемент в ленте === */
   .st-feed-item.locked .st-feed-title{ color:var(--dim,#4a9d7a); }
   .st-feed-item.locked .st-feed-thumb img{ filter:grayscale(1) brightness(0.35); }
   .st-feed-lock{ color:var(--red,#ff3c3c); text-shadow:0 0 6px rgba(255,60,60,0.6); }
 
-  /* ══ Лента ALL: две колонки — список + панель свойств ══ */
+  /* === Лента ALL: две колонки - список + панель свойств === */
   .st-all-wrap{ display:flex; gap:28px; align-items:flex-start; }
   .st-all-wrap .st-feed{ width:640px; flex-shrink:0; min-width:0; max-width:640px; }
   /* правая зона занимает всё оставшееся место и центрирует панель */
   .st-props-zone{ flex:1; display:flex; align-items:flex-start; justify-content:center; position:sticky; top:0; min-height:0; }
   .st-feed-item.selected{ border-color:var(--g,#00ff88); background:rgba(0,40,20,0.55); box-shadow:0 0 0 1px rgba(0,255,136,0.3) inset; }
 
-  /* Панель свойств справа — крупная */
+  /* Панель свойств справа - крупная */
   .st-props{
     width:100%; max-width:460px;
     border:1px solid rgba(0,255,136,0.22); background:rgba(0,14,8,0.6);
@@ -506,7 +488,7 @@
     });
   }
 
-  // ── Плитка одного файла (фото/видео/аудио/файл)
+  // === Плитка одного файла (фото/видео/аудио/файл)
   function fileCard(f, cat){
     const card = document.createElement('div');
     card.className = 'st-file' + (f.locked ? ' locked' : '') + (cat === 'notes' ? ' st-note' : '');
@@ -537,7 +519,7 @@
     return card;
   }
 
-  // ── Содержимое открытой папки
+  // === Содержимое открытой папки
   function renderFolderContents(cat, folder){
     contentEl.innerHTML = '';
     contentEl.appendChild(crumbs([
@@ -553,14 +535,14 @@
       contentEl.appendChild(e);
       return;
     }
-    // ── FILES: особый вид — список строк слева + панель свойств справа ──
+    // === FILES: особый вид - список строк слева + панель свойств справа ===
     if(cat === 'files'){
       renderFilesList(cat, folder);
       return;
     }
 
     const grid = document.createElement('div');
-    // фото и видео — крупная квадратная сетка 4 в ряд; остальное — компактная 3 в ряд
+    // фото и видео - крупная квадратная сетка 4 в ряд; остальное - компактная 3 в ряд
     grid.className = (cat === 'photos' || cat === 'video') ? 'st-files-media' : 'st-files';
     folder.items
       .filter(f => !searchTerm || f.title.toLowerCase().includes(searchTerm))
@@ -619,7 +601,7 @@
   }
 
   // Панель свойств для файла: превью-иконка, метаданные, комментарий,
-  // одна кнопка СКАЧАТЬ. Для запертого — ввод пароля прямо в панели.
+  // одна кнопка СКАЧАТЬ. Для запертого - ввод пароля прямо в панели.
   function renderFileProps(panel, f, folder){
     const isLocked = f.locked && !f._unlocked;
     const col = OWNER_COLOR[folder.owner] || 'var(--dim)';
@@ -727,7 +709,7 @@
     const isLocked = f.locked && !f._unlocked;
     const col = OWNER_COLOR[x.owner] || 'var(--dim)';
 
-    // ── превью ──
+    // === превью ===
     let preview;
     if(isLocked){
       preview = `<div class="st-props-preview locked"><span class="pv-lock">🔒</span></div>`;
@@ -743,11 +725,11 @@
       preview = `<div class="st-props-preview"><span class="pv-ic">${ic}</span></div>`;
     }
 
-    // ── кнопки ──
+    // === кнопки===
     const openBtn = isLocked
       ? `<div class="st-props-btn locked" data-act="goto">🔒 UNLOCK</div>`
       : `<div class="st-props-btn" data-act="open">▷ OPEN</div>`;
-    // ── метаданные ──
+    // === метаданные ===
     const catLabel = { photos:'IMAGE', video:'VIDEO', audio:'AUDIO', files:'FILE', notes:'NOTE' }[cat] || cat.toUpperCase();
     panel.innerHTML = `
       ${preview}
@@ -773,14 +755,14 @@
         const act = btn.getAttribute('data-act');
         if(act === 'open'){
           openViewer(f, cat);
-        } else { // goto — перейти в папку материала (там же ввод пароля если заперт)
+        } else { // goto - перейти в папку материала (там же ввод пароля если заперт)
           activeTab = cat; openFolder = { cat, index:x.folderIndex }; selectedKey = null; render();
         }
       };
     });
   }
 
-  // ── Лента ALL: все файлы всех категорий, вперемешку по дате
+  // === Лента ALL: все файлы всех категорий, вперемешку по дате
   function renderAll(){
     contentEl.innerHTML = '';
     contentEl.appendChild(crumbs([{ label:'STORAGE' }, { label:'ALL — RECENT' }]));
@@ -793,7 +775,7 @@
         });
       });
     });
-    // сорт по дате (свежие сверху); '—' и '???' в конец
+    // сорт по дате (свежие сверху); '-' и '???' в конец
     feed.sort((a,b) => dateKey(b.f.date) - dateKey(a.f.date));
 
     const filtered = feed.filter(x => !searchTerm || x.f.title.toLowerCase().includes(searchTerm));
@@ -819,7 +801,7 @@
       const sub = `${cat.toUpperCase()} · ${escapeHtml(x.folder)} · <span style="color:${col}">${x.owner}</span>`;
 
       if(cat === 'photos' || cat === 'video'){
-        // ── ВЫТЯНУТАЯ медиа-карточка с превью-окном слева ──
+        // === ВЫТЯНУТАЯ медиа-карточка с превью-окном слева ===
         item.className = 'st-feed-item media' + (cat === 'video' ? ' is-video' : '') + (isLocked ? ' locked' : '');
         let thumbInner;
         if(isLocked){
@@ -855,7 +837,7 @@
           <div class="st-feed-date">${shortDate(f.date)}</div>`;
 
       } else {
-        // ── AUDIO / FILES: компактная строка как раньше ──
+        // === AUDIO / FILES: компактная строка как раньше ===
         item.className = 'st-feed-item' + (isLocked ? ' locked' : '');
         item.innerHTML = `
           <div class="st-feed-ic" style="color:${col}">${isLocked ? '<span class="st-feed-lock">🔒</span>' : iconFor(cat)}</div>
@@ -886,7 +868,7 @@
     allWrap.appendChild(zone);
     contentEl.appendChild(allWrap);
 
-    // восстановить панель для ранее выбранного, иначе — заглушка
+    // восстановить панель для ранее выбранного, иначе - заглушка
     const sel = filtered.find(x => feedKey(x) === selectedKey);
     if(sel) renderProps(props, sel);
     else renderProps(props, null);
@@ -1010,7 +992,7 @@
   }
 
   // Короткая дата для списков: "DD MON YYYY" из полного формата.
-  // Если формат нестандартный (— или ?? ??? 1974) — вернём как есть.
+  // Если формат нестандартный (- или ?? ??? 1974) - вернём как есть.
   function shortDate(d){
     const m = String(d||'').match(/\d{1,2}\s+[A-Z]{3}\s+\d{4}/);
     return m ? m[0] : String(d||'');

@@ -196,7 +196,7 @@ function setupExpiredCerts() {
   });
 }
 
-// 5. Диагностика — неверный ввод Y/N
+// 5. Диагностика - неверный ввод Y/N
 function setupDiagError() {
   document.addEventListener('keydown', (e) => {
     const diagPage = document.getElementById('page-diag');
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ========== ОСОБЫЕ ЗВУКИ ДЛЯ КОНКРЕТНЫХ КНОПОК ==========
 
-// 1. FORCE RESET — звук глитча + сбой
+// 1. FORCE RESET - звук глитча + сбой
 function setupForceReset() {
   const resetBtn = document.getElementById('apForceResetBtn');
   if (resetBtn) {
@@ -266,7 +266,7 @@ function setupForceReset() {
   }
 }
 
-// 2. EJECT HOLD — долгий глитч / тревога
+// 2. EJECT HOLD - долгий глитч / тревога
 function setupEjectHold() {
   const ejectBtn = document.getElementById('eject-hold-btn');
   if (ejectBtn) {
@@ -279,7 +279,7 @@ function setupEjectHold() {
   }
 }
 
-// 3. ABORT EJECT — звук отмены (короткий клик)
+// 3. ABORT EJECT - звук отмены (короткий клик)
 function setupAbortEject() {
   const abortBtn = document.getElementById('abort-btn');
   if (abortBtn) {
@@ -289,7 +289,7 @@ function setupAbortEject() {
   }
 }
 
-// 4. RUN FULL SCAN (NAV CORE) — звук диагностики
+// 4. RUN FULL SCAN (NAV CORE) - звук диагностики
 function setupRunFullScan() {
   const scanBtn = document.querySelector('[onclick*="runDeepScan"]');
   if (scanBtn) {
@@ -299,7 +299,7 @@ function setupRunFullScan() {
   }
 }
 
-// 5. CALCULATE ALT. ROUTE (NAV CORE) — звук клика + короткий глитч
+// 5. CALCULATE ALT. ROUTE (NAV CORE) - звук клика + короткий глитч
 function setupCalcAltRoute() {
   const calcBtn = document.querySelector('[onclick*="calcAltRoute"]');
   if (calcBtn) {
@@ -310,7 +310,7 @@ function setupCalcAltRoute() {
   }
 }
 
-// 6. EMERGENCY PROTOCOLS (MAYDAY, PURGE, LOCKDOWN) — тревожный звук
+// 6. EMERGENCY PROTOCOLS (MAYDAY, PURGE, LOCKDOWN) - тревожный звук
 function setupEmergencyProtocols() {
   const emergencyBtns = document.querySelectorAll('[onclick*="emergencyAction"]');
   emergencyBtns.forEach(btn => {
@@ -321,7 +321,7 @@ function setupEmergencyProtocols() {
   });
 }
 
-// 7. PROTOCOL ITEMS (PROTO-01, PROTO-02) — звук диагностики
+// 7. PROTOCOL ITEMS (PROTO-01, PROTO-02) - звук диагностики
 function setupProtocolItems() {
   const protoBtns = document.querySelectorAll('[onclick*="toggleProto"]');
   protoBtns.forEach(btn => {
@@ -331,7 +331,7 @@ function setupProtocolItems() {
   });
 }
 
-// 8. CHAT SEND — короткий "отправка"
+// 8. CHAT SEND - короткий "отправка"
 function setupChatSend() {
   const chatSend = document.querySelector('.chat-send');
   const chatInput = document.getElementById('chat-input');
@@ -351,7 +351,7 @@ function setupChatSend() {
   }
 }
 
-// 9. RUN DIAGNOSTIC (F4) — звук диагностики
+// 9. RUN DIAGNOSTIC (F4) - звук диагностики
 function setupDiagnosticRun() {
   const diagRun = document.querySelector('#diagResetBtn button, [onclick*="resetDiagnostic"]');
   if (diagRun) {

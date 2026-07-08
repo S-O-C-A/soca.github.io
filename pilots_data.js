@@ -1,17 +1,11 @@
-// ══════════════════════════════════════════════════════════════════════════════
-// ── PILOTS DATA SYSTEM ────────────────────────────────────────────────────────
-// ── Все данные пилотов. pilot.html — чистый шаблон, данные живут здесь.
-// ── URL: pilot.html?pilot=1 / pilot.html?pilot=2 / pilot.html?pilot=3
-// ══════════════════════════════════════════════════════════════════════════════
- 
 const PILOTS = {
  
   // ══════════════════════════════════════════════════════════════════════════
-  // PILOT 01 — KOKO
+  // PILOT 01 - KOKO
   // ══════════════════════════════════════════════════════════════════════════
   1: {
  
-    // ── ШАПКА ────────────────────────────────────────────────────────────────
+    // --- ШАПКА ---------------------------------
     header: {
       title:    'pilot 01 // Koko // captain',
       subtitle: 'DOSSIER // ACTIVE // CLASS-A CERTIFIED',
@@ -20,14 +14,14 @@ const PILOTS = {
       statusClass: 'glow',
     },
  
-    // ── ФОТО ─────────────────────────────────────────────────────────────────
+    // --- ФОТО ---------------------------------
     photo: {
       src:        'картинк/PILOT_01.png',
       modalTitle: '// PILOT_01 — KOKO',
       modalRecordId: 'PN-04-KK-01',
     },
  
-    // ── DATA PAGE — BASE RECORD ───────────────────────────────────────────────
+    // --- DATA PAGE - BASE RECORD ---------------------------------
     data: {
       callsign:    { text: 'pilot 01 // Koko // captain', cls: 'rv glow' },
       fullname:    { text: 'Riversoyer Kokoro',           cls: 'rv' },
@@ -39,10 +33,10 @@ const PILOTS = {
       flighthours: { text: '3,847 h',                     cls: 'rv glow' },
       missions:    { text: '[UNREADABLE]',                 cls: 'rv heavy-corrupt' },
       incidents:   { text: '13 (minor) // 3 (serious)',   cls: 'rv glow-y' },
-      status:      { text: 'ACTIVE — ON MISSION',         cls: 'rv glow' },
+      status:      { text: 'ACTIVE - ON MISSION',         cls: 'rv glow' },
     },
  
-    // ── CLEARANCE + MISSION SCORE + FLAGS ────────────────────────────────────
+    // --- CLEARANCE + MISSION SCORE + FLAGS ---------------------------------
     clearance:     'Ω',
     clearanceNote: 'MAXIMUM // GLITCHED',
     clearanceCls:  'c3',
@@ -54,10 +48,10 @@ const PILOTS = {
     },
     flags: 'Stress index: MED↑<br>Engine_B event<br>Mem leak exposure',
  
-    // ── SOCA NOTE (правая колонка) ────────────────────────────────────────────
+    // --- SOCA NOTE (правая колонка) ---------------------------------
     socaNote: 'Monitoring Pilot_01 continuously. Current assessment: <span class="glow">RELIABLE</span>. Stress elevated but manageable. Neural link stable. I am... watching over you, Pilot.',
  
-    // ── SOCA COMMENTS (карусель на DATA) ─────────────────────────────────────
+    // --- SOCA COMMENTS (карусель на DATA) ---------------------------------
     socaComments: [
       { text: `I hope we don't fail our mission, right, Koko?`, type: 'short', glitch: true },
       { text: `Koko, if you're reading this: WHEN WILL YOU FIX CORE-3?`, type: 'short', glitch: false },
@@ -109,7 +103,7 @@ const PILOTS = {
     ],
     
  
-    // ── BASIC PAGE ────────────────────────────────────────────────────────────
+    // --- BASIC PAGE ---------------------------------
     basic: {
       pilotLabel: 'PILOT_01',
       personal: {
@@ -141,7 +135,7 @@ const PILOTS = {
         contactB:  { text: '[REDACTED]',       cls: 'rv' },
         nextOfKin: { text: 'DATA ██RRUPTED',   cls: 'rv heavy-corrupt' },
       },
-      // SKILLS — массивы баров
+      // SKILLS - массивы баров
       skillsFlight: [
         { label: 'Manual Piloting',   value: 68,  color: 'var(--g)',      labelCls: 'glow'   },
         { label: 'Navigation',        value: 90,  color: 'var(--g)',      labelCls: 'glow'   },
@@ -158,7 +152,7 @@ const PILOTS = {
       ],
     },
  
-    // ── BIOMETRY PAGE ─────────────────────────────────────────────────────────
+    // --- BIOMETRY PAGE ---------------------------------
     biometry: {
       pageTitle: '// BIOMETRIC SCAN — PILOT_01',
       vitals: {
@@ -221,7 +215,7 @@ const PILOTS = {
       },
     },
  
-    // ── PSYCHE PAGE ───────────────────────────────────────────────────────────
+    // --- PSYCHE PAGE---------------------------------
     psyche: {
       pageTitle: '// PSYCHOLOGICAL EVALUATION — PILOT_01',
       // Personality bars
@@ -262,7 +256,7 @@ const PILOTS = {
       ],
     },
  
-    // ── MED LOG PAGE ──────────────────────────────────────────────────────────
+    // --- MED LOG PAGE ---------------------------------
     medlog: {
       pageTitle: '// MEDICAL LOG — PILOT_01',
       count: '14 ENTRIES // 3 FLAGGED',
@@ -283,7 +277,7 @@ const PILOTS = {
       ],
     },
  
-    // ── CERTIFICATIONS PAGE ───────────────────────────────────────────────────
+    // --- CERTIFICATIONS PAGE ---------------------------------
     certific: {
       summary: '3 VALID // 1 EXPIRED // 2 CLASSIFIED',
       list: [
@@ -298,7 +292,7 @@ const PILOTS = {
       ],
     },
  
-    // ── QUICK STATS (правая колонка) ─────────────────────────────────────────
+    // --- QUICK STATS (правая колонка)---------------------------------
     quickStats: {
       hr:     { text: '113 bpm', cls: 'rv glow'    },
       o2:     { text: '94%',     cls: 'rv glow'    },
@@ -308,7 +302,7 @@ const PILOTS = {
       suitO2: { text: '96%',     cls: 'rv glow'    },
     },
  
-    // ── LIVE VITALS (нижняя панель) ───────────────────────────────────────────
+    // --- LIVE VITALS (нижняя панель) ---------------------------------
     liveVitals: {
       hrBase:      113,
       o2:          '94',
@@ -318,7 +312,7 @@ const PILOTS = {
       gforce:      '1.3',
     },
  
-    // ── BOTTOMBAR ─────────────────────────────────────────────────────────────
+    // --- BOTTOMBAR---------------------------------
     bottombar: {
       pilot: 'PILOT_01 // ACTIVE',
       alert: '■ STRESS ELEVATED',
@@ -327,7 +321,7 @@ const PILOTS = {
   },
  
   // ══════════════════════════════════════════════════════════════════════════
-  // PILOT 02 — VEX
+  // PILOT 02 - КЛАВДИЯ
   // ══════════════════════════════════════════════════════════════════════════
   2: {
     header: {
@@ -555,7 +549,7 @@ const PILOTS = {
   },
  
   // ══════════════════════════════════════════════════════════════════════════
-  // PILOT 03 — ALPHA
+  // PILOT 03 - АЛЬФА
   // ══════════════════════════════════════════════════════════════════════════
   3: {
     header: {
@@ -802,7 +796,7 @@ const PILOTS = {
 };
  
 // ══════════════════════════════════════════════════════════════════════════════
-// ── HELPER FUNCTIONS ──────────────────────────────────────────────────────────
+// --- HELPER FUNCTIONS ---------------------------------
 // ══════════════════════════════════════════════════════════════════════════════
  
 function setText(id, text, cls) {
@@ -849,19 +843,19 @@ function renderTimeline(item) {
 }
  
 // ══════════════════════════════════════════════════════════════════════════════
-// ── APPLY PILOT DATA ──────────────────────────────────────────────────────────
+// --- APPLY PILOT DATA ---------------------------------
 // ══════════════════════════════════════════════════════════════════════════════
  
 function applyPilotData(p) {
  
-  // ── HEADER ────────────────────────────────────────────────────────────────
+  // --- HEADER ---------------------------------
   setText('hdr-title',    p.header.title);
   setText('hdr-subtitle', p.header.subtitle);
   setText('hdr-recordid', p.header.recordId);
   const hdrStatus = document.getElementById('hdr-status');
   if (hdrStatus) { hdrStatus.textContent = p.header.status; hdrStatus.className = p.header.statusClass; }
  
-  // ── PHOTO ─────────────────────────────────────────────────────────────────
+  // ---PHOTO ---------------------------------
   const photoEl = document.getElementById('pilot-photo');
   if (photoEl) { photoEl.src = p.photo.src; photoEl.alt = p.photo.modalTitle; }
   const modalImg = document.getElementById('modalPhotoImg');
@@ -869,7 +863,7 @@ function applyPilotData(p) {
   setText('modal-title',    p.photo.modalTitle);
   setText('modal-recordid', '// RECORD ID: ' + p.photo.modalRecordId);
  
-  // ── DATA PAGE ─────────────────────────────────────────────────────────────
+  // --- DATA PAGE ---------------------------------
   const D = p.data;
   Object.entries(D).forEach(([key, val]) => {
     const el = document.getElementById('d-' + key);
@@ -887,12 +881,12 @@ function applyPilotData(p) {
   setHTML('d-flags', p.flags);
   setHTML('soca-note-text', p.socaNote);
  
-  // ── SOCA COMMENTS ─────────────────────────────────────────────────────────
+  // --- SOCA COMMENTS ---------------------------------
   currentPilotComments = p.socaComments;
   lastCommentIndex = -1;
   updateSocaComment();
  
-  // ── BASIC PAGE ────────────────────────────────────────────────────────────
+  // --- BASIC PAGE ---------------------------------
   const B = p.basic;
   setText('basic-pilot-label', B.pilotLabel);
   const personalMap = { callsign:'b-callsign', fullname:'b-fullname', dob:'b-dob', gender:'b-gender', height:'b-height', weight:'b-weight', blood:'b-blood', eyes:'b-eyes', hair:'b-hair', nationality:'b-nationality' };
@@ -914,7 +908,7 @@ function applyPilotData(p) {
   setHTML('skills-flight', B.skillsFlight.map(renderBar).join(''));
   setHTML('skills-tech',   B.skillsTech.map(renderBar).join(''));
  
-  // ── BIOMETRY PAGE ─────────────────────────────────────────────────────────
+  // --- BIOMETRY PAGE ---------------------------------
   const BIO = p.biometry;
   setText('bio-page-title', BIO.pageTitle);
   const vitalsMap = { hr:'bio-hr', o2:'bio-o2', bp:'bio-bp', temp:'bio-temp', resp:'bio-resp', cortisol:'bio-cortisol', adrenaline:'bio-adrenaline', glucose:'bio-glucose' };
@@ -946,7 +940,7 @@ function applyPilotData(p) {
   });
   setHTML('bio-dna-pairs', DNA.pairs.map(pair => `<span style="color:${pair.color}">${pair.label}</span>`).join(''));
  
-  // ── PSYCHE PAGE ───────────────────────────────────────────────────────────
+  // --- PSYCHE PAGE ---------------------------------
   const PS = p.psyche;
   setText('psyche-page-title', PS.pageTitle);
   setHTML('psyche-bars', PS.bars.map(renderBar).join(''));
@@ -959,7 +953,7 @@ function applyPilotData(p) {
   setHTML('ps-alerts', PS.alerts.map(a => `<div class="${a.cls}">${a.text}</div>`).join(''));
   setHTML('psyche-history', PS.history.map(renderTimeline).join(''));
  
-  // ── MED LOG PAGE ──────────────────────────────────────────────────────────
+  // --- MED LOG PAGE ---------------------------------
   const MED = p.medlog;
   setText('medlog-page-title', MED.pageTitle);
   setText('medlog-count', MED.count);
@@ -972,7 +966,7 @@ function applyPilotData(p) {
       <div class="rr"><span class="rk">STATUS</span>     <span class="${med.status.cls}">${med.status.text}</span></div>
     </div>`).join(''));
  
-  // ── CERTIFICATIONS PAGE ───────────────────────────────────────────────────
+  // --- CERTIFICATIONS PAGE ---------------------------------
   const CERT = p.certific;
   setText('certific-summary', CERT.summary);
   setHTML('certific-list', CERT.list.map(c => `
@@ -985,7 +979,7 @@ function applyPilotData(p) {
       </div>
     </div>`).join(''));
  
-  // ── QUICK STATS ───────────────────────────────────────────────────────────
+  // --- QUICK STATS ---------------------------------
   const QS = p.quickStats;
   ['hr','o2','stress','gforce','temp','suitO2'].forEach(k => {
     const idMap = { hr:'hr-right', o2:'qs-o2', stress:'qs-stress', gforce:'gf-right', temp:'qs-temp', suitO2:'qs-suito2' };
@@ -993,7 +987,7 @@ function applyPilotData(p) {
     if (el && QS[k]) { el.textContent = QS[k].text; el.className = QS[k].cls; }
   });
  
-  // ── LIVE VITALS ───────────────────────────────────────────────────────────
+  // --- LIVE VITALS ---------------------------------
   const LV = p.liveVitals;
   currentHRBase = LV.hrBase;
   const o2El = document.getElementById('live-o2');
@@ -1004,12 +998,12 @@ function applyPilotData(p) {
   const gfEl = document.getElementById('live-gforce');
   if (gfEl) gfEl.innerHTML = LV.gforce + '<span style="font-size:16px">g</span>';
  
-  // ── BOTTOMBAR ─────────────────────────────────────────────────────────────
+  // --- BOTTOMBAR ---------------------------------
   setText('bb-pilot', p.bottombar.pilot);
   setText('bb-alert', p.bottombar.alert);
   setText('bb-warn',  p.bottombar.warn);
  
-  // ── АКТИВНЫЙ ТАБ ─────────────────────────────────────────────────────────
+  // --- АКТИВНЫЙ ТАБ ---------------------------------
   document.querySelectorAll('.pilot-tab').forEach(t => t.classList.remove('active'));
   const activeTab = document.querySelector(`.pilot-tab[data-pilot="${currentPilotNum}"]`);
   if (activeTab) activeTab.classList.add('active');
@@ -1023,12 +1017,12 @@ function applyPilotData(p) {
 }
  
 // ══════════════════════════════════════════════════════════════════════════════
-// ── SOCA COMMENTS ENGINE (per-pilot) ─────────────────────────────────────────
+// --- SOCA COMMENTS ENGINE (per-pilot) ---------------------------------
 // ══════════════════════════════════════════════════════════════════════════════
  
 let currentPilotComments = [];
-// lastCommentIndex уже объявлен в pilot.js — просто используем его
-// glitchChars уже объявлен в pilot.js — используем его напрямую
+// lastCommentIndex уже объявлен в pilot.js - просто используем его
+// glitchChars уже объявлен в pilot.js - используем его напрямую
  
 function applyGlitchToText(text, intensity = 0.2) {
   return text.split('').map(char => {
@@ -1109,7 +1103,7 @@ textSpan.textContent = finalText;
 }
  
 // ══════════════════════════════════════════════════════════════════════════════
-// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+// --- TAB SWITCHING ---------------------------------
 // ══════════════════════════════════════════════════════════════════════════════
  
 let currentPilotNum = 1;
@@ -1134,10 +1128,8 @@ window.selectPilot = function(n, el) {
 };
  
 // ══════════════════════════════════════════════════════════════════════════════
-// ── INIT ON LOAD ──────────────────────────────────────────────────────────────
+// --- INIT ON LOAD ---------------------------------
 // ══════════════════════════════════════════════════════════════════════════════
-// pilots_data.js подключён с defer — DOM уже готов когда скрипт выполняется.
-// DOMContentLoaded к этому моменту уже сработал, поэтому вызываем напрямую.
  
 function initPilotsData() {
   const params = new URLSearchParams(window.location.search);
@@ -1156,7 +1148,7 @@ function initPilotsData() {
   if (window._socaCommentInterval) clearInterval(window._socaCommentInterval);
   window._socaCommentInterval = setInterval(updateSocaComment, 14000);
 
-  // HR — обновляем каждую секунду с правильным базовым пульсом пилота
+  // HR - обновляем каждую секунду с правильным базовым пульсом пилота
   if (window._hrInterval) clearInterval(window._hrInterval);
   window._hrInterval = setInterval(() => {
     if (currentPilotNum === 1) return; // Коко — пусть pilot.js рулит
@@ -1168,15 +1160,9 @@ function initPilotsData() {
   }, 1000);
 }
 
-// Запускаем — скрипт в конце <body>, DOM гарантированно готов
+// Запускаем - скрипт в конце <body>, DOM гарантированно готов
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPilotsData);
 } else {
   initPilotsData();
 }
- 
-// ── HR OVERRIDE ───────────────────────────────────────────────────────────────
-// pilot.js в animLoop жёстко пишет 113 в hr-mini/hr-bio/hr-right каждый кадр.
-// У Коко (пилот 1) это правильно — оставляем как есть.
-// У остальных пилотов перезаписываем своим базовым значением каждые ~1сек.
-// Интервал создаётся один раз в initPilotsData(), поэтому здесь дублирования нет.

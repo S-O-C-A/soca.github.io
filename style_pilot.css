@@ -46,7 +46,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .heavy-corrupt{animation:glitch2 1.5s infinite;filter:blur(.7px);opacity:.65}
 .cursor{display:inline-block;width:8px;height:12px;background:var(--g);vertical-align:middle;animation:blink 1s infinite}
 
-/* ── LAYOUT ── */
+/*=== LAYOUT === */
 .wrapper{max-width:1500px;margin:0 auto;padding:6px;display:flex;flex-direction:column;gap:5px;animation:boot .4s ease both;}
 
 /* TOPBAR */
@@ -191,7 +191,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .terminal-input:focus{border-color:var(--g)}
 textarea.terminal-input{resize:vertical;min-height:60px}
 
-/* VITAL PANEL — всегда внизу (не прилипает) */
+/* VITAL PANEL - всегда внизу (не прилипает) */
 .vital-panel-bottom {
   margin-top: 5px;
 }
@@ -252,7 +252,7 @@ textarea.terminal-input{resize:vertical;min-height:60px}
   50% { background: rgba(0, 204, 255, 0.1); box-shadow: inset 0 0 30px rgba(0, 204, 255, 0.2); }
 }
 
-/* 🏁 ШАХМАТНЫЙ ФОН (ГОНОЧНЫЙ ФЛАГ) */
+/* ШАХМАТНЫЙ ФОН (ГОНОЧНЫЙ ФЛАГ) */
 .racing-flag-bg {
   position: fixed;
   inset: 0;
@@ -386,7 +386,7 @@ textarea.terminal-input{resize:vertical;min-height:60px}
   animation: modalGlitch 0.25s;
 }
 
-/* скользящая линия — как у .panel::before */
+/* скользящая линия - как у .panel::before */
 .photo-modal-content::before {
   content: '';
   position: absolute;
@@ -477,7 +477,7 @@ textarea.terminal-input{resize:vertical;min-height:60px}
 }
 
 /* ═══════════════════════════════════════════════════════════════════ */
-/*  LOGO — GEAR (ШЕСТЕРЁНКА) — градиент + свечение + ржавые рывки     */
+/*  LOGO - GEAR (ШЕСТЕРЁНКА) - градиент + свечение + ржавые рывки     */
 /* ═══════════════════════════════════════════════════════════════════ */
 
 .gear-logo {
@@ -517,7 +517,7 @@ textarea.terminal-input{resize:vertical;min-height:60px}
   animation: rustyGearSpin 8s infinite cubic-bezier(0.8, 0.2, 0.2, 0.8);
 }
 
-/* Эффект "ржавчины" — лёгкое затемнение поверх градиента */
+/* Эффект "ржавчины" - лёгкое затемнение поверх градиента */
 .gear-logo::before {
   content: '⛭';
   position: absolute;
@@ -570,7 +570,7 @@ textarea.terminal-input{resize:vertical;min-height:60px}
 
 /* ========== АНИМАЦИИ ========== */
 
-/* РЖАВАЯ ШЕСТЕРЁНКА — рывки, остановки, заедания */
+/* РЖАВАЯ ШЕСТЕРЁНКА - рывки, остановки, заедания */
 @keyframes rustyGearSpin {
   /* Долгая пауза в начале */
   0%, 10% { transform: rotate(0deg); }
@@ -645,7 +645,7 @@ textarea.terminal-input{resize:vertical;min-height:60px}
   93% { opacity: 0; transform: translateX(2px); }
 }
 
-/* Мгновенный глитч (дерганье) — через JS */
+/* Мгновенный глитч (дерганье) - через JS */
 .gear-logo.glitch-instant {
   animation: gearInstantGlitch 0.2s steps(3);
 }

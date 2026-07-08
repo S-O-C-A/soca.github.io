@@ -633,11 +633,11 @@ window.sendChat = function() {
       "That's restricted. 🗝️",
     ];
     // Счётчик упоминаний Sector 7: до 11-й попытки ключ может
-    // выпасть случайно (шанс ~1/8), на 11-й — выпадает гарантированно.
+    // выпасть случайно (шанс ~1/8), на 11-й - выпадает гарантированно.
     window.s7AskCount = (window.s7AskCount || 0) + 1;
     let reply;
     if (window.s7KeyGiven) {
-      // ключ уже выдан — только отговорки, второй ключ не даём
+      // ключ уже выдан - только отговорки, второй ключ не даём
       reply = s7replies[Math.floor(Math.random() * (s7replies.length - 1))];
     } else if (window.s7AskCount >= 11 || Math.random() < 0.125) {
       reply = s7replies[s7replies.length - 1]; // "That's restricted. 🗝️"
@@ -908,7 +908,7 @@ function addLogToAll(tag, message, type = 'sys') {
     }
   }
   
-  // ===== 3. Если сообщение от SOCA — иногда показываем тост =====
+  // ===== 3. Если сообщение от SOCA - иногда показываем тост =====
   if (type === 'soca' && Math.random() > 0.65) {
     // Тип тоста по ключевым словам в тексте: критичное → err,
     // предупреждения → warn, подтверждения → ok, иначе → info
@@ -988,7 +988,7 @@ setTimeout(() => {
   scheduleNextLog();
 }, 2000);
 
-// ========== ДИАГНОСТИКА (F4) — С ГЛИТЧАМИ ==========
+// ========== ДИАГНОСТИКА (F4) - С ГЛИТЧАМИ ==========
 let diagnosticRunning = false;
 let diagnosticTests = [
   { name: 'HULL INTEGRITY CHECK', status: 'pass', value: '87%', threshold: '>80%', message: 'Hull integrity nominal. Minor surface abrasion detected.' },
@@ -1839,7 +1839,7 @@ function drawTacMap() {
   const ctx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
 
-  // Фон — тёмный с апельсиновым оттенком
+  // Фон - тёмный с апельсиновым оттенком
   ctx.fillStyle = '#0d0600';
   ctx.fillRect(0, 0, W, H);
 
@@ -1991,7 +1991,7 @@ function drawTacMap() {
       ctx.globalAlpha = 1;
     });
   } else {
-    // Потеря сигнала — затемнение и шум
+    // Потеря сигнала - затемнение и шум
     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
     ctx.fillRect(0, 0, W, H);
     for (let i = 0; i < 800; i++) {
@@ -2955,7 +2955,7 @@ function submitSmile() {
   log.appendChild(pl);
   log.scrollTop = log.scrollHeight;
 
-  // SMILE replies — faster than SOCA, more enthusiastic
+  // SMILE replies - faster than SOCA, more enthusiastic
   setTimeout(() => {
     smileWaveActive = true;
     let resp = null;
@@ -3509,7 +3509,7 @@ function startEjectCountdown(){
   const ov=document.getElementById('alert-overlay');
   const msg=document.getElementById('alert-overlay-msg');
   if(ov&&msg){ msg.textContent='EJECTION SEQUENCE ARMED'; msg.style.color='var(--red)'; ov.style.display='block'; setTimeout(()=>ov.style.display='none',2000); }
-  // Сирена — запускается сразу при отсчёте
+  // Сирена - запускается сразу при отсчёте
   try {
     window._ejectSiren = new Audio('sounds/сирена.mp3');
     window._ejectSiren.loop = true;
@@ -3517,7 +3517,7 @@ function startEjectCountdown(){
     window._ejectSiren.play().catch(()=>{});
   } catch(e) {}
 
-  // Мигание в стиле SOCA — тёмно-красное, ненавязчивое
+  // Мигание
   const flash = document.createElement('div');
   flash.id = 'eject-flash';
   flash.style.cssText = 'position:fixed;inset:0;z-index:99998;pointer-events:none;background:rgba(255,34,68,0);transition:background 0.4s';
@@ -4035,7 +4035,7 @@ function smDrawSuit(){
   ctx.fillStyle='#020100';ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='rgba(255,150,0,0.6)';ctx.lineWidth=1.2;
   ctx.shadowColor='rgba(255,100,0,0.3)';ctx.shadowBlur=5;
-  // Suit silhouette (bulkier than body — space suit)
+  // Suit silhouette (bulkier than body - space suit)
   // Head/helmet
   ctx.beginPath();ctx.arc(cx,38,32,0,Math.PI*2);ctx.stroke();
   // Visor
@@ -4375,17 +4375,17 @@ function glitchFavicon() {
     setFavicon('⛭');
   }
   else if (effect < 0.85) {
-    // Лёгкий глитч — другая шестерёнка
+    // Лёгкий глитч - другая шестерёнка
     setFavicon('⚙');
   }
   else if (effect < 0.95) {
-    // Средний глитч — искажённый символ + поворот
+    // Средний глитч - искажённый символ + поворот
     const glitchSymbols = ['⛭', '⚙', '⛭', '⛭'];
     const randomSymbol = glitchSymbols[Math.floor(Math.random() * glitchSymbols.length)];
     setFavicon(randomSymbol, Math.random() * 10 - 5);
   }
   else {
-    // Сильный глитч — быстрая смена символов
+    // Сильный глитч - быстрая смена символов
     setFavicon('█');
     setTimeout(() => setFavicon('⛭'), 80);
     setTimeout(() => setFavicon('⚙'), 160);
@@ -4771,7 +4771,7 @@ function closeSmailyPopup() {
   if (smailyPopupTimeout) { clearTimeout(smailyPopupTimeout); smailyPopupTimeout = null; }
 }
 
-// Schedule random popups — появляется раз в 2-5 минут
+// Schedule random popups - появляется раз в 2-5 минут
 function scheduleSmailyPopup() {
   const delay = (120 + Math.random() * 180) * 1000; // 2-5 минут
   setTimeout(() => {
@@ -4780,7 +4780,7 @@ function scheduleSmailyPopup() {
   }, delay);
 }
 
-// ── Перетаскивание мем-попапа SMAILY (мышь + тач) ──────────
+// Перетаскивание мем-попапа SMAILY (мышь + тач)
 function initSmailyPopupDrag(popupId) {
   const popup = document.getElementById(popupId);
   if (!popup || popup.dataset.dragReady) return;
@@ -4839,13 +4839,13 @@ function initSmailyPopupDrag(popupId) {
 initSmailyPopupDrag('smaily-popup');
 initSmailyPopupDrag('smaily-invite-popup');
 
-// Первый popup — через 15 секунд, потом каждые 2-5 минут
+// Первый popup - через 15 секунд, потом каждые 2-5 минут
 setTimeout(() => {
   showSmailyPopup();
   scheduleSmailyPopup();
 }, 90000);
 
-// Для теста — раскомментируй чтобы увидеть сразу:
+// Для теста - раскомментируй чтобы увидеть сразу:
 // setTimeout(showSmailyPopup, 3000);
 
 const SMAILY_GAME_INVITES = [
@@ -4905,7 +4905,7 @@ function showSmailyInvite() {
 
   const meme = SMAILY_GAME_INVITES[Math.floor(Math.random() * SMAILY_GAME_INVITES.length)];
 
-  // Позиция — противоположная сторона от мем-попапа чтобы не перекрывались
+  // Позиция - противоположная сторона от мем-попапа чтобы не перекрывались
   const maxX = window.innerWidth  - 300;
   const maxY = window.innerHeight - 360;
   const x = Math.max(20, Math.floor(Math.random() * maxX));
@@ -4951,7 +4951,7 @@ function closeSmailyInvite() {
   if (smailyInviteTimeout) { clearTimeout(smailyInviteTimeout); smailyInviteTimeout = null; }
 }
 
-// Расписание инвайтов — раз в 3-6 минут, вперемешку с мемами
+// Расписание инвайтов - раз в 3-6 минут, вперемешку с мемами
 function scheduleSmailyInvite() {
   const delay = (180 + Math.random() * 180) * 1000; // 3-6 минут
   setTimeout(() => {
@@ -5011,7 +5011,7 @@ function closeSmailyInviteWithReaction() {
   }, 5000);
 }
 
-// Первый инвайт — через 30 секунд, потом каждые 3-6 минут
+// Первый инвайт - через 30 секунд, потом каждые 3-6 минут
 setTimeout(() => {
   showSmailyInvite();
   scheduleSmailyInvite();

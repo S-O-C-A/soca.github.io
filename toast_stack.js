@@ -1,18 +1,7 @@
-// ════════════════════════════════════════════════════════════
-//  TOAST STACK SYSTEM — toast_stack.js
-//
-//  Подключить в soca.html ПОСЛЕ style.css и script.js:
-//    <link rel="stylesheet" href="toast_stack.css">   ← в <head>
-//    <script src="toast_stack.js"></script>            ← перед </body>
-//
-//  Заменяет showSmailyToast и showSocaToast / showToast
-//  на единую систему стека с крестиком и анимацией.
-// ════════════════════════════════════════════════════════════
-
 (function() {
   'use strict';
 
-  // ── Создаём контейнер-стек один раз ────────────────────────
+  // === Создаём контейнер-стек один раз ==========================
 function getStack() {
     let stack = document.getElementById('toast-stack');
     if (!stack) {
@@ -35,10 +24,10 @@ function getStack() {
     return stack;
   }
 
-  // ── Авто-таймер на тост ─────────────────────────────────────
+  // === Авто-таймер на тост==========================
   const TOAST_DURATION = 5500; // мс до авто-скрытия
 
-  // ── Закрыть тост (с анимацией «схлопывания») ────────────────
+  // === Закрыть тост (с анимацией «схлопывания») ==========================
   function dismissToast(toast) {
     if (toast.dataset.dismissed) return;
     toast.dataset.dismissed = '1';
@@ -50,25 +39,25 @@ function getStack() {
     toast.style.maxHeight = toast.offsetHeight + 'px';
     toast.style.overflow  = 'hidden';
 
-    // Следующий кадр — включаем анимацию
+    // Следующий кадр - включаем анимацию
     requestAnimationFrame(() => {
       toast.classList.add('ts-hiding');
-      // После конца анимации — удаляем из DOM
+      // После конца анимации - удаляем из DOM
       setTimeout(() => toast.remove(), 420);
     });
   }
 
-  // ── Создать и показать тост ─────────────────────────────────
+  // === Создать и показать тост ==========================
   /**
    * showToast(options)
    * options = {
-   *   source  : 'soca' | 'smaily'         — тема
+   *   source  : 'soca' | 'smaily'         - тема
    *   type    : 'info' | 'warn' | 'err' | 'ok'
-   *   icon    : string                     — символ/текст иконки
-   *   label   : string                     — заголовок
-   *   message : string                     — основной текст
-   *   vitals  : string | null              — строка с показателями (опц.)
-   *   duration: number                     — мс, дефолт 5500
+   *   icon    : string                     - символ/текст иконки
+   *   label   : string                     - заголовок
+   *   message : string                     - основной текст
+   *   vitals  : string | null              - строка с показателями (опц.)
+   *   duration: number                     - мс, дефолт 5500
    * }
    */
   function showToast(opts) {
@@ -102,7 +91,7 @@ function getStack() {
 // Добавляем в стек снизу (flex-direction: column-reverse)
     stack.prepend(toast);
 
-    // Звук появления — громкость голоса через настройки (settings.js)
+    // Звук появления - громкость голоса через настройки (settings.js)
     if (typeof window.playVoice === 'function') {
       window.playVoice(source === 'smaily' ? 'smaily' : 'soca');
     } else {
@@ -120,10 +109,10 @@ function getStack() {
   }
 
   // ══════════════════════════════════════════════════════════
-  //  ПУБЛИЧНЫЕ ФУНКЦИИ — полностью заменяют старые
+  //  ПУБЛИЧНЫЕ ФУНКЦИИ
   // ══════════════════════════════════════════════════════════
 
-  // ── SMILE toast ────────────────────────────────────────────
+  // === SMILE toast ==========================
   const SMAILY_FACES  = { info: ':)', warn: ':/', ok: ':D', err: ':(', ars: ';P', tact: ':*' };
   const SMAILY_LABELS = {
     info: 'SMILE // MEDICAL',
@@ -146,7 +135,7 @@ function getStack() {
     });
   };
 
-  // ── SOCA toast ──────────────────────────────────────────────
+  // === SOCA toast ==========================
   // Перехватываем старую функцию если она уже объявлена в script.js
   const SOCA_ICONS  = { info: '■', warn: '⚠', err: '✕', ok: '✓' };
   const SOCA_LABELS = {
@@ -176,10 +165,10 @@ function getStack() {
   window.showToast = window.showSocaToast;
 
   // ══════════════════════════════════════════════════════════
-  //  ПЕРЕХВАТ старых тостов — на случай если в script.js или
+  //  ПЕРЕХВАТ старых тостов = на случай если в script.js или
   //  в другом месте ещё создаются .soca-toast или .smaily-toast
-  //  через innerHTML/appendChild напрямую.
-  //  MutationObserver следит за body и переносит их в стек.
+  //  через innerHTML/appendChild напрямую
+  //  MutationObserver следит за body и переносит их в стек
   // ══════════════════════════════════════════════════════════
   new MutationObserver(function(mutations) {
     mutations.forEach(function(m) {
@@ -222,7 +211,7 @@ function getStack() {
 })();
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── SOCA SURVEY ──────────────────────────────────────────────────────────
+// === SOCA SURVEY ==========================
 // ══════════════════════════════════════════════════════════════════════════
 
 const SOCA_SURVEY_ALL = [
@@ -409,7 +398,7 @@ overlay.style.cssText = `
     animation:borderPulse 4s ease-in-out infinite;
   }
 
-  /* Scan line — точно как .panel::before */
+  /* Scan line - точно как .panel::before */
   #soca-survey-box .sv-scan {
     position:absolute;left:0;top:0;right:0;height:1px;
     background:linear-gradient(90deg,transparent,var(--g2),transparent);
@@ -731,7 +720,7 @@ function getSocaVerdict(answers) {
 function checkSmileVote(answers) {
   if (answers.includes('SMILE')) {
     setTimeout(() => {
-      // Пробуем через toast систему, если не работает — напрямую showSmilePopup
+      // Пробуем через toast систему, если не работает - напрямую showSmilePopup
       if (typeof window.showSmailyToast === 'function') {
         window.showSmailyToast('I SAW THAT. THANK YOU!! ✚', 'ok');
       } else if (typeof window.showSmilePopup === 'function') {
@@ -741,7 +730,7 @@ function checkSmileVote(answers) {
   }
 }
 
-// ── ТОСТ С ПРИГЛАШЕНИЕМ ───────────────────────────────────────────────────
+// === ТОСТ С ПРИГЛАШЕНИЕМ ==========================
 
 function showSocaSurveyToast() {
   const toast = document.createElement('div');
@@ -790,7 +779,7 @@ function appendToStack() {
   }, 15000);
 }
 
-// Показываем один раз — через случайное время от 8 до 15 минут
+// Показываем один раз - через случайное время от 8 до 15 минут
 const _surveyDelay = (8 + Math.random() * 7) * 60 * 1000;
 setTimeout(showSocaSurveyToast, _surveyDelay);
 setTimeout(() => {

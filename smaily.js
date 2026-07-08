@@ -1,13 +1,7 @@
-// ════════════════════════════════════════════════════════════
-//  SMILE — smaily.js
-//  Подключить в soca.html одной строкой перед </body>:
-//    <script src="smaily.js"></script>
-// ════════════════════════════════════════════════════════════
-
 (function () {
   'use strict';
 
-  // ── 1. Инжектируем CSS ──────────────────────────────────────
+  // === 1. Инжектируем CSS ===========================================
   const css = `
 /* ── SMILE: аватар :) / :D в боковой панели ── */
 .chat-avatar-small.smaily-face {
@@ -29,7 +23,7 @@
   border-color: #ffcc00 !important;
 }
 
-/* ── Аватар :) в области сообщений ── */
+/* Аватар :) в области сообщений */
 .smaily-msg-avatar {
   display: flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; flex-shrink: 0;
@@ -42,7 +36,7 @@
   cursor: default;
 }
 
-/* ── Полное уничтожение зелёного в smaily-mode ── */
+/*  Полное уничтожение зелёного в smaily-mode */
 .chat-overlay.smaily-mode .chat-body .chat-message {
   border-color: rgba(255,170,0,0.12) !important;
   background: rgba(0,0,0,0.2) !important;
@@ -107,7 +101,7 @@
   50%     { box-shadow: 0 0 0 2px rgba(255,170,0,0.4); }
 }
 
-/* ── LOG тег SMILE ── */
+/* === LOG тег SMILE === */
 .log-tag.smaily {
   border: 1px solid #ffaa00 !important;
   color: #ffcc00 !important;
@@ -131,7 +125,7 @@
   background: rgba(255,170,0,0.02);
 }
 
-/* ── SMILE TOAST ── */
+/* === SMILE TOAST === */
 .smaily-toast {
   position: fixed; bottom: 148px; right: 20px; z-index: 10002;
   background: rgba(12,9,0,0.97);
@@ -204,7 +198,7 @@
     dialogTimeoutIds = [];
   }
 
-  // ── 2. Аватар :) в боковой панели ──────────────────────────
+  // === 2. Аватар :) в боковой панели ===========================================
   function patchSidebarAvatar() {
     const contact =
       document.getElementById('chatContactSmaily') ||
@@ -217,7 +211,7 @@
     av.classList.add('smaily-face');
     av.classList.remove('smaily-avatar');
 
-    // При клике на контакт — патчим welcome-сообщение
+    // При клике на контакт - патчим welcome-сообщение
     contact.addEventListener('click', () => {
       setTimeout(() => {
         const body = document.getElementById('chat-body');
@@ -259,7 +253,7 @@
     });
   }
 
-  // ── 3. Перехватываем appendChat ─────────────────────────────
+  // === 3. Перехватываем appendChat ===========================================
   function patchAppendChat() {
     const _orig = window.appendChat;
     if (typeof _orig !== 'function') return;
@@ -294,7 +288,7 @@
     };
   }
 
-  // ── 4. showSmailyToast ──────────────────────────────────────
+  // === 4. showSmailyToast ===========================================
 function showSmailyToast(message, type, vitals, force = false) {
   // Если НЕ force И диалог активен — блокируем
   if (!force && window.smDialogueActive) {
@@ -334,7 +328,7 @@ function showSmailyToast(message, type, vitals, force = false) {
     }, 5500);
   }
 
-  // ── 5. addSmailyLog ─────────────────────────────────────────
+  // === 5. addSmailyLog ===========================================
   function addSmailyLog(message, type) {
     type = type || 'info';
     const now = new Date();
@@ -367,7 +361,7 @@ function showSmailyToast(message, type, vitals, force = false) {
     }
   }
 
-  // ── 6. Расширенный чат SMILE ────────────────────────────────
+  // === 6. Расширенный чат SMILE ===========================================
   function patchSendChat() {
     const smReplies = [
   // ═══════════════════════════════════════════════════════════════════
@@ -473,7 +467,7 @@ const kwReplies = {
     };
   }
 
-  // ── 7. Периодические тосты ──────────────────────────────────
+  // === 7. Периодические тосты ===========================================
 const _smMsgs = [
   { msg: 'Heart rate: 113bpm. Thats your new normal. Im watching!', type: 'info', vitals: 'HR: 113bpm · O2: 94%' },
   { msg: 'Glucose: 3.2 mmol/L. Eat something, Pilot. Ill start beeping. BEEP. BEEP.', type: 'info', vitals: 'GLUCOSE: 3.2 ↓ · EAT!' },
@@ -508,7 +502,7 @@ function _scheduleSmaily() {
   smailyTimeoutIds.push(timeoutId);
 }
 
-  // ── 8. Реакция на события SOCA ──────────────────────────────
+  // === 8. Реакция на события SOCA ===========================================
   function smailyWatchLogs() {
     const stream = document.getElementById('logStream');
     if (!stream) return;
@@ -561,7 +555,7 @@ function _scheduleSmailyMischief() {
   //  ДИАЛОГИ SOCA + SMILE (тосты, без логов, с блокировкой других тостов)
   // ═══════════════════════════════════════════════════════════════
 
-  // ГЛОБАЛЬНЫЙ ФЛАГ — диалог активен, обычные тосты НЕ идут
+  // ГЛОБАЛЬНЫЙ ФЛАГ = диалог активен, обычные тосты НЕ идут
   window.smDialogueActive = false;
 
 const DIALOGS = [
@@ -682,7 +676,7 @@ function startDialog(dialog) {
     smailyTimeoutIds.push(dialogScheduleId);
   }
 
-  // ── ЗАПУСК ───────────────────────────────────────────────────
+  // === ЗАПУСК ===
   // Ждём DOMContentLoaded если документ ещё не готов
 function init() {
   clearSmailyTimers();
@@ -710,7 +704,7 @@ function init() {
     init();
   }
 
-  // ── Экспорт ──────────────────────────────────────────────────
+  // === Экспорт ===
   window.showSmailyToast = showSmailyToast;
   window.addSmailyLog    = addSmailyLog;
 

@@ -1,11 +1,5 @@
 // ══════════════════════════════════════════════════════════════════════════
-// games_patch.js — NEURAL CHESS (vs SOCA) + BIO SWEEP (SMILE Minesweeper)
-// Подключи в soca.html: <script src="games_patch.js"></script>
-// (после <script src="script.js"></script>)
-// ══════════════════════════════════════════════════════════════════════════
-
-// ══════════════════════════════════════════════════════════════════════════
-// ── SOUND SYSTEM ─────────────────────────────────────────────────────────
+// --- SOUND SYSTEM -----------------------------------------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 const SFX = {};
@@ -67,7 +61,7 @@ function clearGameHandles() {
   }
 }
 
-// Воспроизвести звук (прерывает если уже играет)
+// play sound (interrupts if already playing)
 function playSound(key, volume) {
   const snd = getSound(key);
   if (!snd) return;
@@ -79,7 +73,7 @@ function playSound(key, volume) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// ── GAMES SYSTEM ──────────────────────────────────────────────────────────────
+//--- GAMES SYSTEM -----------------------------------------------------
 // ══════════════════════════════════════════════════════════════════════════════
 let astHiScore=0, snakeHiScore=0, pongHiScore=0, breakerHiScore=0, checkersWins=0;
 
@@ -120,7 +114,7 @@ function stopCurrentGame(){
   gameRunning=false;
   currentGame=null;
   clearGameHandles();
-  // Закрываем попапы при выходе из игры
+  // close popups when exiting the game
   const socaPopup = document.getElementById('soca-game-popup');
   if (socaPopup) {
     socaPopup.style.display = 'none';
@@ -140,7 +134,7 @@ function stopCurrentGame(){
   if (typeof thinkTimer !== 'undefined' && thinkTimer) { clearInterval(thinkTimer); thinkTimer = null; }
 }
 
-// ── GAME 1: VOID ASSAULT ──────────────────────────────────────────────────────
+// --- GAME 1: VOID ASSAULT -----------------------------------------------------
 function startAsteroids(){
   stopCurrentGame();
   currentGame='asteroids'; gameRunning=true;
@@ -247,7 +241,7 @@ function startAsteroids(){
           }
         }
       }
-      // ship-asteroid
+      // ship asteroid
       if(!ship.dead&&ship.invincible<=0){
         for(const a of asteroids){
           if(Math.hypot(ship.x-a.x,ship.y-a.y)<a.r+9){
@@ -275,7 +269,7 @@ function startAsteroids(){
       if(ship.thrusting){ctx.strokeStyle='rgba(255,140,0,0.9)';ctx.shadowColor='#ff8800';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,4);ctx.lineTo(-16+(Math.random()-0.5)*4,0);ctx.lineTo(-5,-4);ctx.stroke();}
       ctx.shadowBlur=0;ctx.restore();
     }
-    // Bullets
+    // bullets
     bullets.forEach(b=>{ctx.fillStyle='#00ffcc';ctx.shadowColor='#00ffcc';ctx.shadowBlur=6;ctx.beginPath();ctx.arc(b.x,b.y,2.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;});
     // Asteroids
     asteroids.forEach(a=>{
@@ -285,9 +279,9 @@ function startAsteroids(){
       ctx.beginPath();a.verts.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));
       ctx.closePath();ctx.stroke();ctx.shadowBlur=0;ctx.restore();
     });
-    // Particles
+    // particles
     particles.forEach(p=>{const al=p.life/p.max;ctx.fillStyle=p.col+Math.round(al*255).toString(16).padStart(2,'0');ctx.beginPath();ctx.arc(p.x,p.y,2,0,Math.PI*2);ctx.fill();});
-    // Overlays
+    // overlays
     if(gameOver){
       ctx.fillStyle='rgba(0,0,0,0.65)';ctx.fillRect(0,0,W,H);
       ctx.textAlign='center';
@@ -310,7 +304,7 @@ function startAsteroids(){
   loop();
 }
 
-// ── GAME 2: NEURAL SNAKE ──────────────────────────────────────────────────────
+// --- GAME 2: NEURAL SNAKE -----------------------------------------------------
 function startSnake(){
   stopCurrentGame();
   currentGame='snake'; gameRunning=true;
@@ -408,25 +402,25 @@ function startSnake(){
     }
 
     ctx.fillStyle='#010a04';ctx.fillRect(0,0,W,H);
-    // Grid cells
+    // grid cells
     for(let x=0;x<COLS;x++) for(let y=0;y<ROWS;y++){
       ctx.fillStyle=(x+y)%2===0?'rgba(0,255,136,0.016)':'rgba(0,180,100,0.010)';
       ctx.fillRect(OX+x*CELL,OY+y*CELL,CELL,CELL);
     }
-    // Border
+    // border
     ctx.strokeStyle='rgba(0,255,136,0.22)';ctx.lineWidth=1;
     ctx.strokeRect(OX,OY,COLS*CELL,ROWS*CELL);
     ctx.strokeStyle='rgba(0,255,136,0.06)';ctx.lineWidth=1;
     ctx.strokeRect(OX-3,OY-3,COLS*CELL+6,ROWS*CELL+6);
 
-    // Glow trail
+    // glow trail
     glowTrail=glowTrail.filter(t=>{t.life--;return t.life>0;});
     glowTrail.forEach(t=>{
       ctx.fillStyle=`rgba(${boosted?'255,200,0':'0,255,136'},${t.life/14*0.18})`;
       ctx.beginPath();ctx.arc(t.x,t.y,CELL/2,0,Math.PI*2);ctx.fill();
     });
 
-    // Snake
+    // snake
     snake.forEach((seg,i)=>{
       const ratio=1-i/snake.length;
       const isHead=i===0;
@@ -440,20 +434,20 @@ function startSnake(){
       else ctx.rect(OX+seg.x*CELL+pad,OY+seg.y*CELL+pad,CELL-pad*2,CELL-pad*2);
       ctx.fill();ctx.shadowBlur=0;
       if(isHead){
-        // Eyes
+        // eyes
         const ex=dir.x,ey=dir.y,hx=OX+seg.x*CELL+CELL/2,hy=OY+seg.y*CELL+CELL/2;
         const px=-ey*4,py=ex*4;
         ctx.fillStyle='rgba(0,5,2,0.9)';
         ctx.beginPath();ctx.arc(hx+ex*5+px,hy+ey*5+py,2.5,0,Math.PI*2);ctx.fill();
         ctx.beginPath();ctx.arc(hx+ex*5-px,hy+ey*5-py,2.5,0,Math.PI*2);ctx.fill();
-        // Pupils
+        // pupils
         ctx.fillStyle='rgba(0,255,200,0.7)';
         ctx.beginPath();ctx.arc(hx+ex*5+px,hy+ey*5+py,1,0,Math.PI*2);ctx.fill();
         ctx.beginPath();ctx.arc(hx+ex*5-px,hy+ey*5-py,1,0,Math.PI*2);ctx.fill();
       }
     });
 
-    // Food — pulsing data packet
+    // food - pulsing data packet
     if(food){
       const fx=OX+food.x*CELL+CELL/2,fy=OY+food.y*CELL+CELL/2;
       const pulse=0.82+Math.sin(frameCount*0.14)*0.18;
@@ -464,7 +458,7 @@ function startSnake(){
       ctx.beginPath();ctx.rect(fx-3,fy-3,6,6);ctx.stroke();
     }
 
-    // Powerup
+    // powerup
     if(powerup){
       const px=OX+powerup.x*CELL+CELL/2,py=OY+powerup.y*CELL+CELL/2;
       const t=powerup.timer/220,blink=t<0.25&&frameCount%8<4;
@@ -479,7 +473,7 @@ function startSnake(){
       }
     }
 
-    // Particles
+    // particles
     particles=particles.filter(p=>{
       p.x+=p.vx;p.y+=p.vy;p.vx*=0.91;p.vy*=0.91;p.life--;
       const al=p.life/p.max;
@@ -488,7 +482,7 @@ function startSnake(){
       return p.life>0;
     });
 
-    // Game over
+    // game over
     if(gameOver){
       ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,W,H);
       ctx.textAlign='center';
@@ -500,7 +494,7 @@ function startSnake(){
       ctx.textAlign='left';
     }
 
-    // Pause
+    // pause
     if(paused&&!gameOver){
       ctx.fillStyle='rgba(0,0,0,0.58)';ctx.fillRect(0,0,W,H);
       ctx.fillStyle='#00ffcc';ctx.font='44px VT323,monospace';ctx.textAlign='center';
@@ -520,7 +514,7 @@ function startSnake(){
   };
   loop();
 }
-// ── GAME 3: VOID PONG ─────────────────────────────────────────────────────────
+// --- GAME 3: VOID PONG -----------------------------------------------------
 function startPong(){
   stopCurrentGame(); currentGame='pong'; gameRunning=true;
   const cv=document.getElementById('game-canvas'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
@@ -614,7 +608,7 @@ function startPong(){
   loop();
 }
 
-// ── GAME 4: GRID BREACH ───────────────────────────────────────────────────────
+// --- GAME 4: GRID BREACH -----------------------------------------------------
 function startBreaker(){
   stopCurrentGame(); currentGame='breaker'; gameRunning=true;
   const cv=document.getElementById('game-canvas'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
@@ -628,15 +622,14 @@ function startBreaker(){
   let balls=[mkBall()];
   const COLS=14,ROWS=7,BW=Math.floor((W-80)/COLS)-3,BH=18,OX=40,OY=55;
 
-  // Радужные цвета по строкам — чисто 8-бит, никакой детализации
   const ROW_COLORS=[
-    '#ff2244', // красный
-    '#ff6600', // оранжевый
-    '#ffcc00', // жёлтый
-    '#00ff88', // зелёный
-    '#00ffcc', // циан
-    '#00aaff', // синий
-    '#aa44ff', // фиолетовый
+    '#ff2244',
+    '#ff6600',
+    '#ffcc00',
+    '#00ff88',
+    '#00ffcc',
+    '#00aaff',
+    '#aa44ff',
   ];
 
   let bricks=[];
@@ -681,7 +674,7 @@ function startBreaker(){
     if(document.hidden){requestAnimationFrame(loop);return;}
     frameCount++;
 
-    // Фон — оставляем как есть (тёмный с сеткой)
+    // background
     ctx.fillStyle='rgba(4,0,8,0.9)';ctx.fillRect(0,0,W,H);
     stars.forEach(s=>{ctx.fillStyle=`rgba(200,150,255,${s.b*0.4})`;ctx.beginPath();ctx.arc(s.x,s.y,s.s,0,Math.PI*2);ctx.fill();});
     ctx.strokeStyle='rgba(180,0,255,0.04)';ctx.lineWidth=0.5;
@@ -745,7 +738,7 @@ function startBreaker(){
       parts=parts.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=0.92;p.vy*=0.92;p.life--;return p.life>0;});
     }
 
-    // ── КИРПИЧИ: чистые 8-битные квадраты с одноцветным свечением ──────────
+    // bricks
     bricks.forEach(br=>{
       if(!br) return;
       const bx=br.shaking>0?br.x+(Math.random()-.5)*3:br.x;
@@ -769,24 +762,20 @@ function startBreaker(){
         return;
       }
 
-      // Цвет зависит от hp — темнеет при повреждении
       let fillCol=br.col;
       if(br.hp===2) fillCol=br.col+'bb';
       if(br.hp>=3) fillCol=br.col+'88';
 
-      // Просто заливка + свечение — никакой детализации
       ctx.fillStyle=fillCol;
       ctx.shadowColor=br.col;
       ctx.shadowBlur=8;
       ctx.fillRect(bx+1,br.y+1,BW-2,BH-2);
       ctx.shadowBlur=0;
 
-      // Тонкая рамка того же цвета
       ctx.strokeStyle=br.col+'66';
       ctx.lineWidth=1;
       ctx.strokeRect(bx,br.y,BW,BH);
 
-      // Бонусный блок — мигающая звезда
       if(br.bonus&&frameCount%20<10){
         ctx.fillStyle='rgba(255,255,255,0.9)';
         ctx.font=`${Math.floor(BH*0.6)}px serif`;
@@ -810,7 +799,6 @@ function startBreaker(){
       ctx.textAlign='left'; ctx.textBaseline='alphabetic';
     });
 
-    // Мяч и след
     balls.forEach(b=>{
       b.trail.forEach(t=>{
         ctx.fillStyle=`rgba(0,255,200,${t.life/8*0.4})`;
@@ -822,13 +810,12 @@ function startBreaker(){
       ctx.shadowBlur=0;
     });
 
-    // Платформа — просто яркий прямоугольник
     ctx.fillStyle='#00ffcc';
     ctx.shadowColor='#00ffcc'; ctx.shadowBlur=14;
     ctx.fillRect(PAD.x,PAD.y,PAD.w,PAD.h);
     ctx.shadowBlur=0;
 
-    // Частицы
+    // particles
     parts.forEach(p=>{
       const al=p.life/p.max;
       ctx.fillStyle=(p.col||'#00ffcc')+Math.round(al*220).toString(16).padStart(2,'0');
@@ -873,7 +860,7 @@ function startBreaker(){
   loop();
 }
 
-// ── GAME 5: STELLAR CHECKERS ──────────────────────────────────────────────────
+// --- GAME 5: STELLAR CHECKERS ----------------------------------------------
 function startCheckers(){
   stopCurrentGame(); currentGame='checkers'; gameRunning=true;
   const cv=document.getElementById('game-canvas'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
@@ -890,7 +877,7 @@ function startCheckers(){
   let particles=[], glowTiles=[], frameCount=0;
   let playerCaptures=0, aiCaptures=0,frameId=0;
 
-  // Place pieces
+  // place pieces
   function initBoard(){
     for(let r=0;r<SZ;r++) for(let c=0;c<SZ;c++){
       board[r][c]=0;
@@ -906,7 +893,7 @@ function startCheckers(){
   }
   initBoard();
 
-  // Get all valid moves for a piece (returns [{fr,fc,tr,tc,cap:[]}])
+  // get all valid moves for a piece (returns [{fr,fc,tr,tc,cap:[]}])
   function getMoves(r,c,brd){
     const piece=brd[r][c]; if(!piece) return [];
     const moves=[], caps=[];
@@ -954,7 +941,7 @@ function startCheckers(){
     nb[m.tr][m.tc]=nb[m.fr][m.fc];
     nb[m.fr][m.fc]=0;
     m.cap.forEach(cp=>nb[cp.r][cp.c]=0);
-    // Kinging
+    // kinging
     if(nb[m.tr][m.tc]===1&&m.tr===0) nb[m.tr][m.tc]=3;
     if(nb[m.tr][m.tc]===2&&m.tr===SZ-1) nb[m.tr][m.tc]=4;
     return nb;
@@ -985,9 +972,9 @@ function startCheckers(){
       return best;
     }
   }
-  // ── SOCA CHEAT SYSTEM ──────────────────────────────────────────────────────
-  let cheatCooldown=0;      // turns between cheats
-  let cheatLog=[];          // cheat messages to show
+  // --- SOCA CHEAT SYSTEM -----------------------------------------
+  let cheatCooldown=0;   // turns between cheats
+  let cheatLog=[];  // cheat messages to show
   let cheatMsgTimer=0;
   const CHEAT_MSGS=[
     '> SOCA: rerouting board logic. for efficiency.',
@@ -1014,7 +1001,7 @@ function startCheckers(){
     const cheatType=Math.random();
 
     if(cheatType<0.35){
-      // CHEAT 1: Quietly remove one of the player's pieces that's in a dangerous spot
+      // CHEAT 1: Quietly remove one of the players pieces thats in a dangerous spot
       const playerPieces=[];
       for(let r=0;r<SZ;r++) for(let c=0;c<SZ;c++) if(board[r][c]===1||board[r][c]===3) playerPieces.push({r,c});
       if(!playerPieces.length) return false;
@@ -1034,7 +1021,7 @@ function startCheckers(){
       return true;
 
     } else if(cheatType<0.65){
-      // CHEAT 2: Teleport one of SOCA's pieces forward 1-2 rows
+      // CHEAT 2: Teleport one of SOCA pieces forward 1-2 rows
       const aiPieces=[];
       for(let r=0;r<SZ;r++) for(let c=0;c<SZ;c++) if(board[r][c]===2) aiPieces.push({r,c});
       if(!aiPieces.length) return false;
@@ -1062,7 +1049,7 @@ function startCheckers(){
       return true;
 
     } else {
-      // CHEAT 3: Undo the player's last capture (restore a piece)
+      // CHEAT 3: Undo the players last capture (restore a piece)
       const aiPieces=[];
       for(let r=0;r<SZ;r++) for(let c=0;c<SZ;c++) if(!board[r][c]&&(r+c)%2===1&&r<4) aiPieces.push({r,c});
       if(!aiPieces.length||Math.random()>0.5) return false; // 50% chance of this cheat
@@ -1081,7 +1068,7 @@ function startCheckers(){
     }
   }
 
-  // Cheat visual — brief highlight on tile before manipulation
+  // cheat visual - brief highlight on tile before manipulation
   function showCheatFlash(r,c,col='red'){
     glowTiles.push({r,c,life:25,cheat:true,col});
   }
@@ -1092,7 +1079,7 @@ function startCheckers(){
     if(!el) return;
     el.style.color='#ff4400';
     el.textContent=msg;
-    // Glitch it
+    // glitch it
     let ticks=0;
     const iv=registerGameInterval(()=>{
       if(currentGame!=='checkers'){clearInterval(iv);return;}
@@ -1105,7 +1092,7 @@ function startCheckers(){
         el.textContent=msg.split('').map(c=>Math.random()<0.15?'█':c).join('');
       }
     },120);
-    // Also flash the log
+    // also flash the log
     const logEl=document.getElementById('game-msg');
     if(logEl){
       logEl.textContent='SOCA: ░▒▓ recalibrating... ▓▒░';
@@ -1209,7 +1196,7 @@ function startCheckers(){
   };
   cv.addEventListener('click', onClick);
 
-  // Restart on Space
+  // restart on Space
   const onK=(e)=>{
     if(currentGame!=='checkers') return;
     if(e.code==='Space'){e.preventDefault();if(over){initBoard();document.getElementById('game-lives').innerHTML='∞';}}
@@ -1224,7 +1211,7 @@ function startCheckers(){
     // Stars
     for(let i=0;i<3;i++){const sx=(frameCount*0.3+i*173)%W,sy=(frameCount*0.2+i*97)%H;ctx.fillStyle='rgba(0,255,136,0.08)';ctx.beginPath();ctx.arc(sx,sy,0.8,0,Math.PI*2);ctx.fill();}
 
-    // Board
+    // board
     for(let r=0;r<SZ;r++) for(let c=0;c<SZ;c++){
       const dark=(r+c)%2===1;
       const isSelSrc=sel&&sel.r===r&&sel.c===c;
@@ -1239,7 +1226,7 @@ function startCheckers(){
       else if(dark) bg='rgba(0,40,25,0.95)';
       else bg='rgba(0,80,50,0.25)';
       ctx.fillStyle=bg;ctx.fillRect(OX+c*TILE,OY+r*TILE,TILE,TILE);
-      // Border
+      // border
       ctx.strokeStyle=dark?'rgba(0,255,136,0.12)':'rgba(0,100,60,0.08)';ctx.lineWidth=0.5;
       ctx.strokeRect(OX+c*TILE,OY+r*TILE,TILE,TILE);
       // Coord labels
@@ -1248,13 +1235,13 @@ function startCheckers(){
       // Valid move dot
       if(isValidDst&&!board[r][c]){ctx.fillStyle='rgba(0,200,255,0.5)';ctx.beginPath();ctx.arc(OX+c*TILE+TILE/2,OY+r*TILE+TILE/2,7,0,Math.PI*2);ctx.fill();}
     }
-    // Board border
+    // board border
     ctx.strokeStyle='rgba(0,255,136,0.3)';ctx.lineWidth=1.5;ctx.strokeRect(OX,OY,TILE*SZ,TILE*SZ);
 
-    // Glow tiles decay
+    // glow tiles decay
     glowTiles=glowTiles.filter(t=>{t.life--;return t.life>0;});
 
-    // Pieces
+    // pieces
     for(let r=0;r<SZ;r++) for(let c=0;c<SZ;c++){
       const p=board[r][c];if(!p) continue;
       const cx=OX+c*TILE+TILE/2,cy=OY+r*TILE+TILE/2,rad=TILE*0.38;
@@ -1263,20 +1250,20 @@ function startCheckers(){
       const baseCol=isPlayer?'#00ff88':'#ff6600';
       const darkCol=isPlayer?'#006633':'#993300';
       const glowCol=isPlayer?'#00ffcc':'#ffaa00';
-      // Glow ring for selected
+      // glow ring for selected
       if(isSelected){ctx.strokeStyle='rgba(255,255,255,0.8)';ctx.lineWidth=2;ctx.shadowColor='white';ctx.shadowBlur=12;ctx.beginPath();ctx.arc(cx,cy,rad+4,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;}
       // Shadow
       ctx.fillStyle='rgba(0,0,0,0.35)';ctx.beginPath();ctx.ellipse(cx+2,cy+3,rad*0.9,rad*0.35,0,0,Math.PI*2);ctx.fill();
-      // Body
+      // body
       ctx.shadowColor=glowCol;ctx.shadowBlur=isSelected?18:8;
       const gr=ctx.createRadialGradient(cx-rad*0.3,cy-rad*0.3,rad*0.05,cx,cy,rad);
       gr.addColorStop(0,glowCol);gr.addColorStop(0.5,baseCol);gr.addColorStop(1,darkCol);
       ctx.fillStyle=gr;ctx.beginPath();ctx.arc(cx,cy,rad,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-      // Rim
+      // rim
       ctx.strokeStyle=baseCol+'88';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,rad,0,Math.PI*2);ctx.stroke();
-      // Inner highlight
+      // inner highlight
       ctx.fillStyle='rgba(255,255,255,0.18)';ctx.beginPath();ctx.ellipse(cx-rad*0.28,cy-rad*0.28,rad*0.32,rad*0.22,Math.PI*0.8,0,Math.PI*2);ctx.fill();
-      // King crown
+      // king crown
       if(isKing){
         ctx.fillStyle='rgba(255,220,0,0.95)';ctx.shadowColor='#ffee00';ctx.shadowBlur=8;
         ctx.font=`bold ${Math.round(rad*1.1)}px VT323,monospace`;ctx.textAlign='center';
@@ -1284,7 +1271,7 @@ function startCheckers(){
       }
     }
 
-    // Particles
+    // particles
     particles=particles.filter(p=>{
       p.x+=p.vx;p.y+=p.vy;p.vx*=0.9;p.vy*=0.9;p.life--;
       const al=p.life/p.max;ctx.fillStyle=p.col+Math.round(al*200).toString(16).padStart(2,'0');
@@ -1292,7 +1279,7 @@ function startCheckers(){
       return p.life>0;
     });
 
-    // Score panel
+    // score panel
     const{p:pc,a:ac}=countPieces(board);
     ctx.fillStyle='rgba(0,0,0,0.55)';ctx.fillRect(OX+TILE*SZ+8,OY,120,TILE*SZ);
     ctx.strokeStyle='rgba(0,255,136,0.2)';ctx.lineWidth=1;ctx.strokeRect(OX+TILE*SZ+8,OY,120,TILE*SZ);
@@ -1308,7 +1295,7 @@ function startCheckers(){
     ctx.fillStyle='#00ffcc';ctx.font='22px VT323,monospace';ctx.fillText(playerCaptures,OX+TILE*SZ+68,OY+222);
     // AI thinking indicator
     if(aiThinking){ctx.fillStyle=`rgba(255,150,0,${0.5+Math.sin(frameCount*0.2)*0.5})`;ctx.font='9px "Share Tech Mono",monospace';ctx.fillText('SOCA',OX+TILE*SZ+68,OY+TILE*SZ-50);ctx.fillText('THINKING',OX+TILE*SZ+68,OY+TILE*SZ-38);ctx.fillText('...'+'.'.repeat(Math.floor(frameCount/20)%4),OX+TILE*SZ+68,OY+TILE*SZ-26);}
-    // Turn indicator
+    // turn indicator
     ctx.fillStyle=turn==='player'?'rgba(0,255,136,0.8)':'rgba(255,100,0,0.6)';
     ctx.font='9px "Share Tech Mono",monospace';ctx.fillText(turn==='player'?'▶ YOUR':'  SOCA',OX+TILE*SZ+68,OY+TILE*SZ-8);
     ctx.textAlign='left';
@@ -1382,7 +1369,7 @@ let chessWins = 0, mineWins = 0;
 })();
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── GAME 6: NEURAL CHESS vs SOCA ─────────────────────────────────────────
+// --- GAME 6: NEURAL CHESS vs SOCA ----------------------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 function startChess() {
@@ -1712,7 +1699,7 @@ if (captured) {
     ctx.lineWidth = 1.5;
     ctx.strokeRect(OFF_X-1, OFF_Y-1, SQ*8+2, SQ*8+2);
 
-    // Check highlight
+    // check highlight
     if (!gameOver && isInCheck(board, turn)) {
       const kPos = findKing(board, turn);
       if (kPos) {
@@ -1727,7 +1714,7 @@ if (captured) {
       }
     }
 
-    // Labels
+    // labels
     ctx.fillStyle = 'rgba(0,150,100,0.5)';
     ctx.font = `${Math.max(9, SQ*0.2)}px "Share Tech Mono", monospace`;
     for (let i = 0; i < 8; i++) {
@@ -1735,7 +1722,7 @@ if (captured) {
       ctx.fillText(8-i, OFF_X - 14, OFF_Y + i*SQ + SQ*0.6);
     }
 
-    // Pieces
+    // pieces
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     for (let r = 0; r < 8; r++) {
@@ -1751,7 +1738,7 @@ if (captured) {
       }
     }
 
-    // Animating piece
+    // animating piece
     if (animPiece) {
       animPiece.t = Math.min(animPiece.t + 0.08, 1);
       const t = animPiece.t;
@@ -1767,7 +1754,7 @@ if (captured) {
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
 
 
-    // Turn indicator
+    // turn indicator
     const tx = OFF_X + SQ*8 + 10;
     if (tx + 60 < W) {
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -1867,7 +1854,7 @@ if (captured) {
 
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── GAME 7: BIO SWEEP (SMILE Minesweeper) ────────────────────────
+// --- GAME 7: BIO SWEEP (SMILE Minesweeper) --------------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 function startMinesweeper() {
@@ -2040,7 +2027,7 @@ function showSmaily(msg, dur) {
     ctx.fillRect(0, 0, W, H);
     glitchT++;
 
-    // Header
+    // header
     ctx.fillStyle = 'rgba(20,12,0,0.9)';
     ctx.strokeStyle = 'rgba(255,160,0,0.5)'; ctx.lineWidth = 1;
     ctx.fillRect(OFF_X, OFF_Y-28, COLS*SQ, 22);
@@ -2058,7 +2045,7 @@ function showSmaily(msg, dur) {
     ctx.fillText('⏱ '+timerSec+'s', OFF_X+COLS*SQ-4, OFF_Y-12);
     ctx.textAlign = 'left';
 
-    // Cells
+    // cells
     for (let r=0; r<ROWS; r++) {
       for (let c=0; c<COLS; c++) {
         const cell = cells[r][c];
@@ -2174,7 +2161,7 @@ function showSmaily(msg, dur) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── GAME 8: CARDIAC SYNC (rhythm, SMILE) ──────────────────────────
+// --- GAME 8: CARDIAC SYNC (rhythm, SMILE) ------------------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 let heartbeatHiScore = 0;
@@ -2199,7 +2186,7 @@ function startHeartbeat() {
   let smailyMsg = '', smailyMsgTimer = 0;
   let glitchT = 0;
 
-  // Lanes (horizontal lines across canvas)
+  // lanes (horizontal lines across canvas)
   const LANES = [
     { y: H * 0.3, color: '#ff4466', label: 'ATRIAL' },
     { y: H * 0.5, color: '#ff8844', label: 'VENTRICULAR' },
@@ -2263,7 +2250,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       if (dist < bestDist) { bestDist = dist; best = b; }
     });
     if (!best) {
-      // Phantom hit — miss
+      // phantom hit - miss
       lives--;
       combo = 0;
       flashAlpha = 0.4; flashColor = '#ff2244';
@@ -2273,7 +2260,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       return;
     }
     if (bestDist < 55) {
-      // Good hit
+      // good hit
       best.hit = true;
       playSound('попадание', 0.5);
       combo++;
@@ -2289,7 +2276,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       }
       if (combo > 0 && combo % 5 === 0) showSmaily(SMAILY_COMBO[Math.floor(Math.random() * SMAILY_COMBO.length)]);
     } else {
-      // Too far — miss
+      // Too far - miss
       best.miss = true;
       lives--;
       combo = 0;
@@ -2323,7 +2310,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
     ctx.fillRect(0, 0, W, H);
     glitchT++;
 
-    // Scanlines
+    // scanlines
     for (let y = 0; y < H; y += 4) { ctx.fillStyle = 'rgba(0,0,0,0.07)'; ctx.fillRect(0, y, W, 2); }
 
     // ECG top strip
@@ -2359,7 +2346,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
     ctx.fillStyle = 'rgba(255,68,102,0.06)';
     ctx.fillRect(0, 0, W, H * 0.22);
 
-    // Lanes
+    // lanes
     LANES.forEach((lane, li) => {
       // Lane line
       ctx.strokeStyle = `${lane.color}33`;
@@ -2371,7 +2358,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Hit zone circle
+      // hit zone circle
       const pulse = Math.sin(glitchT * 0.08) * 0.3 + 0.7;
       ctx.strokeStyle = lane.color;
       ctx.lineWidth = 2;
@@ -2381,26 +2368,26 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // Inner dot
+      // inner dot
       ctx.fillStyle = lane.color + '44';
       ctx.beginPath();
       ctx.arc(HIT_ZONE_X, lane.y, 14, 0, Math.PI * 2);
       ctx.fill();
 
-      // Key label
+      // key label
       ctx.fillStyle = lane.color + 'cc';
       ctx.font = '9px "Share Tech Mono", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(['A','S','D'][li], HIT_ZONE_X, lane.y + 4);
       ctx.textAlign = 'left';
 
-      // Lane label left
+      // lane label left
       ctx.fillStyle = lane.color + '55';
       ctx.font = '8px "Share Tech Mono", monospace';
       ctx.fillText(lane.label, 6, lane.y - 8);
     });
 
-    // Beats
+    // beats
     const now = performance.now();
     beats = beats.filter(b => {
       const bx = getBeatX(b);
@@ -2437,7 +2424,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
         return bx > -40;
       }
 
-      // Normal beat
+      // normal beat
       const age = (now - b.born) / TRAVEL_TIME;
       const glow = Math.sin(age * Math.PI * 6) * 0.3 + 0.7;
       ctx.fillStyle = lane.color + '22';
@@ -2447,7 +2434,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       ctx.beginPath(); ctx.arc(bx, lane.y, 18, 0, Math.PI*2);
       ctx.fill(); ctx.stroke();
       ctx.shadowBlur = 0;
-      // Heart symbol
+      // heart symbol
       ctx.fillStyle = lane.color;
       ctx.font = '14px serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -2456,7 +2443,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       return true;
     });
 
-    // Particles
+    // particles
     particles = particles.filter(p => {
       p.x += p.vx; p.y += p.vy; p.vx *= 0.92; p.vy *= 0.92; p.life--;
       const al = p.life / p.max;
@@ -2465,14 +2452,14 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       return p.life > 0;
     });
 
-    // Flash overlay
+    // flash overlay
     if (flashAlpha > 0) {
       ctx.fillStyle = flashColor + Math.round(flashAlpha * 255).toString(16).padStart(2,'0');
       ctx.fillRect(0, 0, W, H);
       flashAlpha -= 0.03;
     }
 
-    // Combo display
+    // combo display
     if (combo >= 3) {
       ctx.fillStyle = `rgba(255,180,0,${0.6 + Math.sin(glitchT*0.15)*0.4})`;
       ctx.font = '28px VT323, monospace';
@@ -2487,7 +2474,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
     ctx.fillText(`BPM: ${bpm + Math.floor(Math.sin(glitchT*0.05)*3)}`, W - 90, H * 0.22 + 18);
 
 
-    // Start prompt
+    // start prompt
     if (!started) {
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.fillRect(0, 0, W, H);
@@ -2510,7 +2497,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
       ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     }
 
-    // Game over overlay
+    // game over overlay
     if (gameOver) {
       ctx.fillStyle = 'rgba(0,0,0,0.75)';
       ctx.fillRect(0, 0, W, H);
@@ -2535,7 +2522,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
     frameId = requestAnimationFrame(drawHeartbeat);
   }
 
-  // Speed up BPM over time
+  // speed up BPM over time
   const bpmInterval = registerGameInterval(() => {
     if (!gameOver && started) {
       bpm = Math.min(160, bpm + 2);
@@ -2612,7 +2599,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3000; s
 
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── GAME 9: MEMORY SCAN (SMILE) ──────────────────────────────────
+// --- GAME 9: MEMORY SCAN (SMILE) --------------------------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 let memoryHiScore = 0;
@@ -2625,7 +2612,7 @@ function startMemory() {
   const ctx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
 
-  // ── SYMBOLS used in the grid ─────────────────────────────────────────
+  // SYMBOLS used in the grid
   const SYMBOLS = ['♥','♦','♠','♣','✚','✦','♟','⛭','◈','▲','◉','✕'];
   const COLS = 4, ROWS = 3;
   const PAD = 18;
@@ -2634,7 +2621,7 @@ function startMemory() {
   const GRID_X = PAD;
   const GRID_Y = Math.floor(H * 0.18);
 
-  // ── STATE ────────────────────────────────────────────────────────────
+  // STATE
   let level = 1;
   let sequence = [];       // indices into cells[] that player must click in order
   let playerInput = [];    // what player has clicked so far
@@ -2688,7 +2675,7 @@ function startMemory() {
 
 function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; showSmilePopup(msg, dur); }
 
-  // ── BUILD GRID ───────────────────────────────────────────────────────
+  //  BUILD GRID
   function buildGrid() {
     cells = [];
     // Shuffle symbols for this level
@@ -2710,7 +2697,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
     }
   }
 
-  // ── GENERATE SEQUENCE ─────────────────────────────────────────────────
+  //  GENERATE SEQUENCE 
   function buildSequence() {
     const len = 2 + level;
     sequence = [];
@@ -2723,7 +2710,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
     }
   }
 
-  // ── INTERFERENCE ─────────────────────────────────────────────────────
+  //  INTERFERENCE
   function triggerInterference() {
     // Pick how nasty SMAILY is this level
     const nastiness = Math.min(level, 5);
@@ -2751,7 +2738,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
     showSmaily(SMAILY_TAUNT[Math.floor(Math.random() * SMAILY_TAUNT.length)]);
   }
 
-  // ── SHOW SEQUENCE ─────────────────────────────────────────────────────
+  // SHOW SEQUENCE
   function startShowing() {
     phase = 'showing';
     showIdx = 0;
@@ -2762,7 +2749,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
     document.getElementById('game-msg').textContent = '';
   }
 
-  // ── INIT LEVEL ────────────────────────────────────────────────────────
+  // INIT LEVEL
   function initLevel() {
     buildGrid();
     buildSequence();
@@ -2784,7 +2771,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
     registerGameTimeout(startShowing, 1200);
   }, 600);
 
-  // ── UPDATE (called each frame) ────────────────────────────────────────
+  //UPDATE (called each frame)
   let lastTime = 0;
   function update(ts) {
     const dt = ts - lastTime; lastTime = ts;
@@ -2803,7 +2790,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
     // Cell shake decay
     cells.forEach(c => { if (c.shake > 0) c.shake--; });
 
-    // ── PHASE: SHOWING ──────────────────────────────────────────────────
+    //PHASE: SHOWING
     if (phase === 'showing') {
       showTimer += dt;
       const totalPerStep = SHOW_DURATION + SHOW_GAP;
@@ -2817,7 +2804,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
         if (stepOffset < SHOW_DURATION) {
           cells[sequence[currentStep]].lit = true;
         }
-        // Trigger interference halfway through showing
+        // trigger interference halfway through showing
         if (currentStep === Math.floor(sequence.length / 2) &&
             stepOffset < 50 && Math.random() < INTERF_CHANCE) {
           triggerInterference();
@@ -2831,7 +2818,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
       }
     }
 
-    // ── PHASE: RESULT ───────────────────────────────────────────────────
+    //PHASE: RESULT
     if (phase === 'result') {
       resultTimer -= dt;
       if (resultTimer <= 0) {
@@ -2843,7 +2830,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
     }
   }
 
-  // ── DRAW ──────────────────────────────────────────────────────────────
+  // DRAW
   function draw() {
     if (window.currentGame !== 'memory') { cancelAnimationFrame(frameId); return; }
     glitchT++;
@@ -2855,7 +2842,7 @@ function showSmaily(msg, dur) { smailyMsg = msg; smailyMsgTimer = dur || 3200; s
 ctx.fillStyle = '#080400';
     ctx.fillRect(0, 0, W, H);
 
-    // Scanlines
+    // scanlines
     for (let y = 0; y < H; y += 4) { ctx.fillStyle = 'rgba(0,0,0,0.07)'; ctx.fillRect(0,y,W,2); }
 
     // BG grid (subtle)
@@ -2867,13 +2854,13 @@ ctx.strokeStyle = 'rgba(180,100,0,0.07)';
     ctx.save();
     if (bgGlitch > 0) ctx.translate(gx, gy);
 
-    // Header bar
+    // header bar
 ctx.fillStyle = 'rgba(20,10,0,0.92)';
     ctx.strokeStyle = 'rgba(255,150,0,0.35)';
     ctx.fillRect(0, 0, W, GRID_Y - 6);
     ctx.strokeRect(0, 0, W, GRID_Y - 6);
 
-    // Header text
+    // header text
     ctx.fillStyle = '#ffcc00';
     ctx.font = '16px SMILE "Share Tech Mono", monospace';
     ctx.fillText('SMILE — MEMORY SCAN', 12, 22);
@@ -2881,7 +2868,7 @@ ctx.fillStyle = 'rgba(20,10,0,0.92)';
     ctx.font = '9px "Share Tech Mono", monospace';
     ctx.fillText('LEVEL ' + level + '  |  SEQ LENGTH: ' + sequence.length + '  |  HI: ' + memoryHiScore, 12, 38);
     
-    // Phase indicator
+    // phase indicator
     const phaseLabel = {
       idle: 'INITIALIZING...',
       showing: 'MEMORIZE ▶',
@@ -2916,7 +2903,7 @@ const phaseColor = phase === 'input' ? '#00ff88' : '#ffaa00';
       }
     }
 
-    // ── CELLS ──────────────────────────────────────────────────────────
+    // CELLS
     cells.forEach((cell, idx) => {
       const isInterf = interferenceActive && interferenceSymbols.includes(idx);
       const isFake   = fakeHighlight === idx;
@@ -2924,7 +2911,7 @@ const phaseColor = phase === 'input' ? '#00ff88' : '#ffaa00';
       const x = cell.x + shakeX, y = cell.y, w = cell.w - 6, h = cell.h - 6;
       const cx = x + w/2, cy = y + h/2;
 
-      // Cell background
+      // cell background
 let bg = 'rgba(18,9,0,0.88)';
       let border = 'rgba(180,100,0,0.3)';
       let symColor = 'rgba(200,140,0,0.55)';
@@ -2965,14 +2952,14 @@ if (cell.lit) {
       ctx.strokeRect(x+1, y+1, w-2, h-2);
       ctx.shadowBlur = 0;
 
-      // Symbol
+      // symbol
       ctx.fillStyle = symColor;
       ctx.font = `${Math.floor(h * 0.42)}px serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(cell.sym, cx, cy);
       ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
 
-      // Tiny index label (debug aid — remove if you want cleaner look)
+      // Tiny index label (debug aid - remove if you want cleaner look)
       // ctx.fillStyle='rgba(255,255,255,0.1)';ctx.font='7px monospace';ctx.fillText(idx,x+3,y+10);
     });
 
@@ -2988,7 +2975,7 @@ if (cell.lit) {
     frameId = requestAnimationFrame(ts => { update(ts); draw(); });
   }
 
-  // ── INPUT ─────────────────────────────────────────────────────────────
+  // INPUT
   function onMemClick(e) {
     if (window.currentGame !== 'memory' || phase !== 'input') return;
     const rect = cv.getBoundingClientRect();
@@ -3014,7 +3001,6 @@ if (cell.lit) {
       flashAlpha = 0.08; flashColor = '#00ff88';
 
       if (playerInput.length === sequence.length) {
-        // Full sequence correct!
         phase = 'result';
         const earned = level * sequence.length * 10;
         const total = (parseInt(document.getElementById('game-score').textContent)||0) + earned;
@@ -3058,7 +3044,7 @@ if (cell.lit) {
 
   function onMemKey(e) {
     if (window.currentGame !== 'memory') return;
-    // No keyboard needed — purely mouse/click game
+    // No keyboard needed - purely mouse/click game
   }
 
   cv.addEventListener('click', onMemClick);
@@ -3080,10 +3066,10 @@ if (cell.lit) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── SIDE PANELS: CONTROLS + PILOT RECORDS ────────────────────────────────
+// --- SIDE PANELS: CONTROLS + PILOT RECORDS -----------------------
 // ══════════════════════════════════════════════════════════════════════════
 
-// Pilot records storage (persists during session)
+// pilot records storage (persists during session)
 const PILOTS = [
   { id: 'koko',   name: 'KOKO',    avatar: '✦', color: '#b96bf0' },
   { id: 'Claudia', name: 'CLAUDIA', avatar: '☾', color: '#50dcff' },
@@ -3096,10 +3082,10 @@ const pilotRecords = {
   Alpha: { asteroids:9876, snake:113, pong:35, breaker:17764, checkers:3, chess:1, minesweeper:112, heartbeat:5445, memory:634, battleship:109 },
 };
 
-// Current active pilot (Koko is always playing)
+// current active pilot (Koko is always playing)
 const ACTIVE_PILOT = 'koko';
 
-// Controls definitions per game
+// controls definitions per game
 const GAME_CONTROLS = {
   asteroids: [
     { key: 'W / ↑',     desc: 'Thrust' },
@@ -3173,7 +3159,7 @@ const GAME_SCORE_LABEL = {
 };
 
 function buildGamePanels(titleStr) {
-  // Detect game key from title string
+  // detect game key from title string
   let gameKey = 'asteroids';
   if (titleStr.includes('SNAKE'))       gameKey = 'snake';
   else if (titleStr.includes('PONG'))   gameKey = 'pong';
@@ -3189,7 +3175,7 @@ function buildGamePanels(titleStr) {
   buildLeftPanel(gameKey);
   buildRightPanel(gameKey);
 
-  // Store current game key for score updates
+  // store current game key for score updates
   window._currentGameKey = gameKey;
 }
 
@@ -3262,7 +3248,7 @@ function updatePilotRecord(gameKey, score) {
   }
 }
 
-// Auto-sync score from HUD to pilot record every second while in game
+// Autosync score from HUD to pilot record every second while in game
 setInterval(() => {
   const key = window._currentGameKey;
   if (!key || !window.currentGame) return;
@@ -3273,7 +3259,7 @@ setInterval(() => {
 }, 1000);
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── SOCA GAME COMMENTARY POPUP ────────────────────────────────────────────
+// ---SOCA GAME COMMENTARY POPUP --------------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 let socaPopupTimeout = null;
@@ -3311,7 +3297,6 @@ const SOCA_CHESS_EXTRA = [
 ];
 
 function showSocaPopup(msg, duration) {
-  // Не перебиваем если popup ещё активен (минимум 2.5 сек между репликами)
   if (socaPopupHideTimeout && Date.now() - (window._socaLastPopup||0) < 2500) return;
   window._socaLastPopup = Date.now();
   const popup = document.getElementById('soca-game-popup');
@@ -3319,17 +3304,17 @@ function showSocaPopup(msg, duration) {
   const tagEl  = document.getElementById('soca-popup-tag');
   if (!popup || !textEl) return;
 
-  // Determine tag
+  // determine tag
   const isCheat = msg.includes('classified') || msg.includes('█') || msg.includes('rerouting') || msg.includes('sector 7');
   const isWin   = msg.includes('dominates') || msg.includes('always') || msg.includes('allowed it');
   tagEl.textContent = isCheat ? 'SYSTEM ANOMALY' : isWin ? 'MATCH RESULT' : 'COMMENTARY';
   tagEl.style.color = isCheat ? 'rgba(255,80,0,0.7)' : isWin ? 'rgba(255,200,0,0.6)' : 'rgba(0,120,180,0.6)';
 
-  // Clear previous timers
+  // clear previous timers
   if (socaPopupTimeout)     clearTimeout(socaPopupTimeout);
   if (socaPopupHideTimeout) clearTimeout(socaPopupHideTimeout);
 
-  // Glitch-type text in
+  // glitch type text in
   textEl.textContent = '';
   popup.style.display = 'block';
   popup.style.animation = 'none';
@@ -3353,7 +3338,7 @@ function showSocaPopup(msg, duration) {
     }
   }, 28);
 
-  // Auto-hide
+  // autohide
   const dur = duration || 4000;
   socaPopupHideTimeout = registerGameTimeout(() => {
     popup.style.opacity = '0';
@@ -3366,7 +3351,7 @@ function showSocaPopup(msg, duration) {
   }, dur);
 }
 
-// ── THINK TIMER — если игрок думает дольше 8 секунд ──────────────────────
+//THINK TIMER
 let thinkTimer = null;
 let lastMoveTime = Date.now();
 
@@ -3383,8 +3368,6 @@ function resetThinkTimer() {
     }
   }, 1000);
 }
-
-// Запускаем таймер думания при загрузке игр
 const _origLaunchGame2 = window.launchGame;
 window.launchGame = function(name) {
   _origLaunchGame2(name);
@@ -3393,7 +3376,6 @@ window.launchGame = function(name) {
   }
 };
 
-// Случайные комментарии во время игры в шашки/шахматы (каждые 25-45 сек)
 setInterval(() => {
   if (window.currentGame === 'checkers' && window.gameRunning) {
     if (Math.random() < 0.08) {
@@ -3407,7 +3389,7 @@ setInterval(() => {
 }, 30000);
 
 // ══════════════════════════════════════════════════════════════════════════
-// ── SMILE GAME POPUP ─────────────────────────────────────────────────────
+// --- SMILE GAME POPUP -------------------------------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 let smilePopupHideTimeout = null;
@@ -3465,7 +3447,7 @@ function startBattleship() {
   const ctx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
 
-  // ── CONSTANTS ────────────────────────────────────────────────────────
+  //CONSTANTS
 const GRID = 10;
   const CELL = Math.floor(Math.min(W * 0.42, H * 0.72) / GRID);
   const TOTAL_W = GRID * CELL * 2 + 40;
@@ -3475,11 +3457,11 @@ const GRID = 10;
   const EG_Y = PG_Y;
   const GAP  = 40;
 
-  // ── OPPONENT CHOICE ──────────────────────────────────────────────────
+  // OPPONENT CHOICE
   let opponent = null; // 'soca' | 'smile'
   let phase = 'choose'; // choose | place | battle | gameover
 
-  // ── SHIPS ────────────────────────────────────────────────────────────
+  // SHIPS
   // sizes: carrier=5, battleship=4, cruiser=3, submarine=3, destroyer=2
   const SHIP_SIZES = [5, 4, 3, 3, 2];
   const SHIP_NAMES = ['CARRIER', 'BATTLESHIP', 'CRUISER', 'SUBMARINE', 'DESTROYER'];
@@ -3494,13 +3476,13 @@ const GRID = 10;
   let enemyShips  = [];
 
   // Placement state
-  let placingIdx = 0;       // which ship we're placing
-  let placingHoriz = true;  // orientation
-  let hoverCell = null;     // {r,c} on player grid during placement
-  let hoverEnemy = null;    // {r,c} on enemy grid during battle
+  let placingIdx = 0; // which ship we're placing
+  let placingHoriz = true;// orientation
+  let hoverCell = null; // {r,c} on player grid during placement
+  let hoverEnemy = null; // {r,c} on enemy grid during battle
 
   // AI state
-  let aiQueue = [];         // cells to target next (hunt mode)
+  let aiQueue = []; // cells to target next (hunt mode)
   let aiLastHit = null;
   let aiTurn = false;
   let aiDelay = 0;
@@ -3511,7 +3493,7 @@ const GRID = 10;
   let glitchT    = 0;
   let frameId;
 
-  // ── OPPONENT DATA ────────────────────────────────────────────────────
+  //OPPONENT DATA
   const OPPONENTS = {
     soca: {
       color:    '#00ccff',
@@ -3600,7 +3582,7 @@ const GRID = 10;
     }
   };
 
-  // ── HELPERS ──────────────────────────────────────────────────────────
+  // HELPERS
   function inGrid(r, c) { return r >= 0 && r < GRID && c >= 0 && c < GRID; }
 
   function canPlace(grid, r, c, size, horiz) {
@@ -3689,7 +3671,7 @@ const GRID = 10;
     }
   }
 
-  // ── AI LOGIC ─────────────────────────────────────────────────────────
+  //AI LOGIC
   function aiPickCell() {
     const op = OPPONENTS[opponent];
 
@@ -3712,7 +3694,7 @@ const GRID = 10;
       }
     }
 
-    // Hunt mode: follow up on hits
+    // hunt mode: follow up on hits
     if (aiQueue.length > 0) {
       return aiQueue.shift();
     }
@@ -3749,15 +3731,14 @@ const GRID = 10;
 const sunkShip = playerShips.find(s => s.sunk && s.cells.some(cl => cl.r===r && cl.c===c));
       if (sunkShip) {
         showMsg(op.sunkMsg[Math.floor(Math.random()*op.sunkMsg.length)]);
-        // Очищаем очередь — корабль потоплен, стрелять вокруг него бессмысленно
-        // Также помечаем все клетки вокруг потопленного корабля как промахи (там точно пусто)
+
         aiQueue = [];
         sunkShip.cells.forEach(({r: sr, c: sc}) => {
           for (let dr = -1; dr <= 1; dr++) {
             for (let dc = -1; dc <= 1; dc++) {
               const nr = sr+dr, nc = sc+dc;
               if (inGrid(nr,nc) && playerShots[nr][nc] === null) {
-                playerShots[nr][nc] = 'miss'; // невидимый "промах" — туда стрелять не нужно
+                playerShots[nr][nc] = 'miss';
               }
             }
           }
@@ -3775,7 +3756,7 @@ if (allSunk(playerShips)) {
         registerGameTimeout(() => { if (window.currentGame === 'battleship') endGame(false); }, 800);
         return;
       }
-      // Hit — AI gets another turn
+      // Hit - AI gets another turn
       aiTurn = true;
       aiDelay = 900 + Math.random() * 600;
       return;
@@ -3787,7 +3768,7 @@ if (allSunk(playerShips)) {
     aiTurn = false;
   }
 
-  // ── PLAYER SHOOT ─────────────────────────────────────────────────────
+  // PLAYER SHOOT
   function playerShoot(r, c) {
     if (enemyShots[r][c] !== null) return;
     const op = OPPONENTS[opponent];
@@ -3810,7 +3791,7 @@ if (allSunk(playerShips)) {
         registerGameTimeout(() => { if (window.currentGame === 'battleship') endGame(true); }, 800);
         return;
       }
-      // Player gets another turn on hit
+      // player gets another turn on hit
     } else {
       enemyShots[r][c] = 'miss';
       const misses = enemyShots.flat().filter(c => c==='miss').length;
@@ -3840,7 +3821,7 @@ if (allSunk(playerShips)) {
     }
   }
 
-  // ── DRAW ─────────────────────────────────────────────────────────────
+  // DRAW
   function drawGrid(gx, gy, grid, shots, showShips, isEnemy) {
     const op = opponent ? OPPONENTS[opponent] : null;
 
@@ -3850,11 +3831,11 @@ if (allSunk(playerShips)) {
         const shot = shots[r][c];
         const isShip = grid[r][c] === 'ship';
 
-        // Base cell
+        // base cell
         ctx.fillStyle = (r + c) % 2 === 0 ? 'rgba(0,15,30,0.8)' : 'rgba(0,10,22,0.8)';
         ctx.fillRect(x, y, CELL-1, CELL-1);
 
-        // Ship (visible if player grid or game over)
+        // ship (visible if player grid or game over)
         if (isShip && (showShips || (phase === 'gameover' && isEnemy))) {
           const shipColor = isEnemy
             ? (op ? op.color + '33' : 'rgba(0,180,255,0.2)')
@@ -3866,7 +3847,7 @@ if (allSunk(playerShips)) {
           ctx.strokeRect(x+1, y+1, CELL-3, CELL-3);
         }
 
-        // Shot results
+        //shot results
         if (shot === 'hit' || shot === 'sunk') {
           ctx.fillStyle = shot === 'sunk' ? 'rgba(255,60,0,0.7)' : 'rgba(255,100,20,0.5)';
           ctx.fillRect(x+1, y+1, CELL-3, CELL-3);
@@ -3884,7 +3865,7 @@ if (allSunk(playerShips)) {
           ctx.fill();
         }
 
-        // Hover on enemy grid
+        // hover on enemy grid
         if (isEnemy && hoverEnemy && hoverEnemy.r === r && hoverEnemy.c === c
             && phase === 'battle' && shots[r][c] === null) {
           ctx.fillStyle = 'rgba(255,50,50,0.2)';
@@ -3894,7 +3875,7 @@ if (allSunk(playerShips)) {
           ctx.strokeRect(x+1, y+1, CELL-3, CELL-3);
         }
 
-        // Hover on player grid during placement
+        // hover on player grid during placement
         if (!isEnemy && phase === 'place' && hoverCell) {
           const size = SHIP_SIZES[placingIdx];
           for (let i = 0; i < size; i++) {
@@ -3911,21 +3892,21 @@ if (allSunk(playerShips)) {
           }
         }
 
-        // Grid border
+        // grid border
         ctx.strokeStyle = 'rgba(0,80,120,0.3)';
         ctx.lineWidth = 0.5;
         ctx.strokeRect(x, y, CELL-1, CELL-1);
       }
     }
 
-    // Grid outer border + corner accents
+    // grid outer border + corner accents
     const gw = GRID * CELL, gh = GRID * CELL;
     const borderCol = op ? op.color : 'rgba(0,180,255,0.4)';
     ctx.strokeStyle = isEnemy ? borderCol : 'rgba(0,200,120,0.4)';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(gx, gy, gw, gh);
 
-    // Labels A-J top, 1-10 left
+    // labels A-J top, 1-10 left
     ctx.fillStyle = isEnemy
       ? (op ? op.color + '88' : 'rgba(0,180,255,0.5)')
       : 'rgba(0,200,120,0.5)';
@@ -3938,7 +3919,7 @@ if (allSunk(playerShips)) {
     }
     ctx.textAlign = 'left';
 
-    // Grid title
+    // grid title
     ctx.fillStyle = isEnemy
       ? (op ? op.color : '#00ccff')
       : 'rgba(0,220,120,0.8)';
@@ -3974,7 +3955,7 @@ if (allSunk(playerShips)) {
         ctx.textAlign = 'left';
       }
     });
-    // Ship names
+    // ship names
     const alive = ships.filter(s=>!s.sunk).length;
     ctx.fillStyle = alive > 0 ? color+'66' : '#ff440066';
     ctx.font = '8px "Share Tech Mono",monospace';
@@ -3987,10 +3968,10 @@ if (allSunk(playerShips)) {
     ctx.fillRect(0, 0, W, H);
     glitchT++;
 
-    // Scanlines
+    // scanlines
     for (let y = 0; y < H; y += 4) { ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(0,y,W,2); }
 
-    // ── CHOOSE SCREEN ──────────────────────────────────────────────────
+    //CHOOSE SCREEN
     if (phase === 'choose') {
       ctx.fillStyle = 'rgba(0,180,255,0.6)';
       ctx.font = '48px VT323,monospace';
@@ -4049,7 +4030,7 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
 
       ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
 
-      // Store card bounds for click detection
+      // store card bounds for click detection
       window._bsCards = { soca: {x:socaX,y:socaY,w:cardW,h:cardH}, smile: {x:smileX,y:smileY,w:cardW,h:cardH} };
 
       frameId = requestAnimationFrame(draw);
@@ -4058,11 +4039,11 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
 
     const op = OPPONENTS[opponent];
 
-    // ── PLACEMENT SCREEN ───────────────────────────────────────────────
+    // PLACEMENT SCREEN
     if (phase === 'place') {
       drawGrid(PG_X, PG_Y, playerGrid, playerShots, true, false);
 
-      // Sidebar instructions
+      // sidebar instructions
       const sx = EG_X, sy = PG_Y;
       ctx.fillStyle = 'rgba(0,10,20,0.8)';
       ctx.strokeStyle = 'rgba(0,180,255,0.2)'; ctx.lineWidth = 1;
@@ -4087,7 +4068,7 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
       ctx.fillStyle = 'rgba(255,200,0,0.7)';
       ctx.fillText(orient, sx + GRID*CELL/2, sy + 160);
 
-      // Ships left
+      // ships left
       SHIP_SIZES.forEach((size, i) => {
         const placed = i < placingIdx;
         const current = i === placingIdx;
@@ -4110,7 +4091,7 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
       return;
     }
 
-    // ── BATTLE / GAMEOVER ──────────────────────────────────────────────
+    //BATTLE / GAMEOVER
     drawGrid(PG_X, PG_Y, playerGrid, playerShots, true, false);
     drawGrid(EG_X, EG_Y, enemyGrid, enemyShots, false, true);
 
@@ -4137,7 +4118,7 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
       ctx.textAlign = 'left';
     }
 
-    // Game over overlay
+    // game over overlay
     if (phase === 'gameover') {
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.fillRect(0, 0, W, H);
@@ -4148,7 +4129,7 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
       ctx.textAlign = 'left';
     }
 
-    // Explosions
+    // explosions
     explosions = explosions.filter(e => {
       e.t++;
       const alpha = 1 - e.t/e.max;
@@ -4160,7 +4141,7 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
       return e.t < e.max;
     });
 
-    // Splashes
+    // splashes
     splashes = splashes.filter(s => {
       s.x += s.vx; s.y += s.vy; s.vx *= 0.88; s.vy *= 0.88; s.t++;
       const al = 1 - s.t/s.max;
@@ -4172,7 +4153,7 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
     frameId = requestAnimationFrame(draw);
   }
 
-  // ── INPUT ─────────────────────────────────────────────────────────────
+  // INPUt
   function getPlayerCell(mx, my) {
     const c = Math.floor((mx - PG_X) / CELL);
     const r = Math.floor((my - PG_Y) / CELL);
@@ -4310,12 +4291,12 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
     };
   })();
 
-// Перенастраиваем HUD под морской бой
+
   document.getElementById('game-score').textContent = '—';
   document.getElementById('game-level').textContent = '—';
   document.getElementById('game-lives').innerHTML = '—';
   document.querySelector('[id="game-score"]').parentElement.firstChild.textContent = 'HITS: ';
-  // Меняем лейблы через родительские span
+ 
   const hudSpans = document.querySelectorAll('#game-arena > div > div[style*="gap:16px"] > span[style*="dimmer"]');
   if (hudSpans[0]) hudSpans[0].childNodes[0].textContent = 'HITS: ';
   if (hudSpans[1]) hudSpans[1].childNodes[0].textContent = 'MISSES: ';
@@ -4325,15 +4306,15 @@ ctx.fillText('HI!!! I\'M SMILE!!!', smileX + cardW/2, smileY + 128);
   draw();
 }
 
-// ── SMILE BACK BUTTON ────────────────────────────────────────────────────
+// SMILE BACK BUTTON
 const SMILE_BACK_MSGS = [
   "don't go :(",
   "nooo wait!!",
   "one more game?? :(",
   "but we were having fun!!",
-  "...okay. bye. ✚",
+  "...okay. bye.",
   "please stay :(",
-  "i'll be here. alone.",
+  "i'll be here, alone.",
 ];
 
 let smileBackShown = false;
@@ -4344,12 +4325,12 @@ function smileBackHover(on) {
   if (!msg || !btn) return;
   if (on && Math.random() < 0.6) {
     msg.textContent = SMILE_BACK_MSGS[Math.floor(Math.random() * SMILE_BACK_MSGS.length)];
-    // Позиционируем относительно кнопки
+
     const rect = btn.getBoundingClientRect();
     msg.style.top  = (rect.bottom + 4) + 'px';
     msg.style.right = (window.innerWidth - rect.right) + 'px';
     msg.style.display = 'block';
-    // Только в играх SMILE
+
     const smileGames = ['minesweeper', 'heartbeat', 'memory'];
     if (!smileGames.includes(window.currentGame)) {
       msg.style.display = 'none';

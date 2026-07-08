@@ -342,10 +342,10 @@
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// EJECT CINEMATIC — standalone
+// EJECT CINEMATIC - standalone
 // ══════════════════════════════════════════════════════════════
 
-// ── ЗВЁЗДНОЕ НЕБО ─────────────────────────────────────────────
+// --- ЗВЁЗДНОЕ НЕБО ----------------------------
 const cv = document.getElementById('eject-space-cv');
 cv.width = window.innerWidth;
 cv.height = window.innerHeight;
@@ -437,7 +437,7 @@ function animSpace() {
 }
 animSpace();
 
-// ── ТАЙМЕР ────────────────────────────────────────────────────
+// --- ТАЙМЕР ----------------------------
 let elapsed = 0;
 const timerEl = document.getElementById('eject-timer');
 setInterval(() => {
@@ -447,7 +447,7 @@ setInterval(() => {
   timerEl.textContent = m + ':' + s;
 }, 1000);
 
-// ── КАПСУЛА ───────────────────────────────────────────────────
+// --- КАПСУЛА ───────────────────────────────────────────────────
 function drawCapsule() {
   const cc = document.getElementById('capsuleCanvas');
   if (!cc) return;
@@ -502,7 +502,7 @@ function drawCapsule() {
 setInterval(drawCapsule, 80);
 drawCapsule();
 
-// ── РАССТОЯНИЕ ────────────────────────────────────────────────
+// --- РАССТОЯНИЕ ----------------------------
 let dist = 0;
 const distEl = document.getElementById('ej-distance');
 const distInterval = setInterval(() => {
@@ -511,7 +511,7 @@ const distInterval = setInterval(() => {
   if (dist > 1200) clearInterval(distInterval);
 }, 800);
 
-// ── СОБЫТИЯ ───────────────────────────────────────────────────
+// --- СОБЫТИЯ ----------------------------
 const events = [
   { t: 400,  title: 'CAPSULE SEPARATION',             line: 'Explosive bolts armed...' },
   { t: 1400, title: 'CAPSULE SEPARATION',             line: 'Hull breach — sector 4 OPEN' },
@@ -533,13 +533,13 @@ events.forEach(e => {
   }, e.t);
 });
 
-// ── РЕПЛИКИ SOCA ──────────────────────────────────────────────
+// --- РЕПЛИКИ СОКА ----------------------------
 const socaLines = [
   { t: 2800,  txt: 'Capsule stable. Beacon acquired on all channels.' },
   { t: 5200,  txt: 'I can still see you on sensors. 487km and increasing.' },
-  { t: 7500,  txt: 'I will keep broadcasting your position. That\'s my job.' },
+  { t: 7500,  txt: 'I will keep broadcasting your position.' },
   { t: 10000, txt: 'Route to Waypoint Delta still holds. When you get back — it\'ll be waiting.' },
-  { t: 13000, txt: '...the ship is quiet without the neural link. Efficient, actually.' },
+  { t: 13000, txt: '...the ship is quiet without the neural link.. Efficient, actually.' },
 ];
 
 const socaEl = document.getElementById('ejc-soca');
@@ -549,13 +549,13 @@ socaLines.forEach(s => {
   }, s.t);
 });
 
-// ── РЕПЛИКИ SMILE ─────────────────────────────────────────────
+// --- РЕПЛИКИ СМАЙЛИ ----------------------------
 const smileLines = [
-  { t: 1800, txt: 'Vitals nominal! Pulse elevated — expected. You just ejected from a spacecraft.' },
-  { t: 4500, txt: 'Pod bay 2, left side — extra meds. I packed them. You\'re welcome.' },
-  { t: 6800, txt: 'O2 supply: 72 hours. That\'s plenty. Probably. CTRL-7 is fast. Usually.' },
-  { t: 9000, txt: 'Stress index is... high. Understandable. Breathing exercises: recommended. Right now ideally.' },
-  { t: 12000,txt: 'I\'ll keep your biometrics on priority channel until recovery. I\'ve got you, Pilot. ✚' },
+  { t: 1800, txt: 'Vitals nominal! Pulse elevated — expected. You just ejected from a spacecraft.. Well?' },
+  { t: 4500, txt: 'Pod bay 2, left side — extra meds. I packed them. You\'re welcome!' },
+  { t: 6800, txt: 'O2 supply: 72 hours. That\'s plenty.. Probably? CTRL-7 is fast.' },
+  { t: 9000, txt: 'Stress index is... high. Understandable. Breathing exercises: recommended - Right now ideally.' },
+  { t: 12000,txt: 'I\'ll keep your biometrics on priority channel until recovery. I\'ve got you, Pilot!!' },
 ];
 
 const smileEl = document.getElementById('ejc-smile');
@@ -565,13 +565,13 @@ smileLines.forEach(s => {
   }, s.t);
 });
 
-// ── КНОПКА ВОЗВРАТА (появляется через 14 сек) ─────────────────
+// --- КНОПКА ВОЗВРАТА (появляется через 14 сек) ----------------------------
 setTimeout(() => {
   document.getElementById('resume-btn').classList.add('visible');
   document.getElementById('ej-note').classList.add('visible');
 }, 14000);
 
-// Для теста — если хочешь видеть кнопку сразу, раскомментируй:
+// Для теста чтобы увидеть сразу возвратую кнопку:
 // document.getElementById('resume-btn').classList.add('visible');
 // document.getElementById('ej-note').classList.add('visible');
 

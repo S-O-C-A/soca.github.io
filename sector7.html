@@ -24,26 +24,26 @@ body{
   cursor:crosshair;
 }
 
-/* ── SCANLINES ── */
+/* === SCANLINES === */
 body::before{
   content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
   background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 4px);
 }
 
-/* ── CRT VIGNETTE ── */
+/* === CRT VIGNETTE === */
 body::after{
   content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
   background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%);
 }
 
-/* ── NOISE ── */
+/* === NOISE === */
 .noise{
   position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.03;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation:noiseAnim .15s steps(1) infinite;
 }
 
-/* ── BOOT ── */
+/* === BOOT === */
 #boot{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:40px;}
 .bline{font-size:12px;letter-spacing:.1em;color:var(--g);margin-bottom:5px;opacity:0;transition:opacity .1s;}
 .bline.show{opacity:1;}.bline.err{color:var(--red);}.bline.ok{color:var(--g2);}
@@ -51,10 +51,10 @@ body::after{
 #bwarn{font-size:10px;color:var(--red);opacity:0;margin-top:6px;letter-spacing:.1em;}
 #bstart{font-size:11px;color:var(--g2);letter-spacing:.15em;opacity:0;animation:blink 1s step-end infinite;}
 
-/* ── GAME WRAP ── */
+/* === GAME WRAP === */
 #game-wrap{display:none;flex-direction:column;width:100vw;height:100vh;}
 
-/* ── TOPBAR ── */
+/* === TOPBAR === */
 #topbar{
   height:26px;background:var(--panel);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 12px;gap:12px;
@@ -64,7 +64,7 @@ body::after{
 #topbar .tr{margin-left:auto;display:flex;gap:14px;}
 #topbar .tw{color:var(--red);animation:blink 2s step-end infinite;}
 
-/* ── CANVAS WRAP ── */
+/* === CANVAS WRAP === */
 #cv-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden;}
 
 /* Moving scan line */
@@ -81,7 +81,7 @@ canvas{
   width:min(90vw, calc(80vh * 1.6));height:auto;
 }
 
-/* ── HUD OVERLAYS ── */
+/* === HUD OVERLAYS === */
 #loc-label{
   position:absolute;top:8px;left:8px;
   background:rgba(4,13,8,.92);border:1px solid var(--border);
@@ -95,7 +95,7 @@ canvas{
 }
 #inv-box .it{color:var(--g);font-size:8px;letter-spacing:.15em;margin-bottom:4px;}
 
-/* ── DIALOG ── */
+/* === DIALOG === */
 #dialog{
   position:absolute;bottom:20px;left:12px;width:300px;
   background:rgba(4,13,8,.96);
@@ -107,7 +107,7 @@ canvas{
 #dlg-text{font-size:11px;color:var(--g2);letter-spacing:.05em;line-height:1.65;min-height:18px;}
 #dlg-cont{font-size:8px;color:var(--dim);letter-spacing:.1em;margin-top:5px;text-align:right;animation:blink .8s step-end infinite;display:none;}
 
-/* ── BOTTOMBAR ── */
+/* === BOTTOMBAR === */
 #bottombar{
   height:20px;background:var(--panel);border-top:1px solid var(--border);
   display:flex;align-items:center;padding:0 12px;
@@ -115,7 +115,7 @@ canvas{
 }
 #bottombar span{color:var(--dim);}
 
-/* ── MINIGAME OVERLAY ── */
+/* === MINIGAME OVERLAY === */
 #mg-overlay{
   position:absolute;inset:0;background:rgba(4,13,8,.94);
   z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;
@@ -127,7 +127,7 @@ canvas#mg-cv{border:1px solid var(--border);display:block;background:var(--bg);}
 #mg-hint{font-size:9px;color:var(--dimmer);letter-spacing:.1em;margin-top:10px;text-align:center;}
 #mg-err{font-size:10px;color:var(--red);letter-spacing:.1em;margin-top:8px;min-height:14px;text-align:center;}
 
-/* ── RELAY PANELS ── */
+/* === RELAY PANELS === */
 #rg0{display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);
   background:rgba(4,13,8,.95);border:1px solid var(--border);border-top:2px solid var(--g);
   padding:10px 14px;z-index:30;min-width:220px;font-family:'Share Tech Mono',monospace;
@@ -141,7 +141,7 @@ canvas#mg-cv{border:1px solid var(--border);display:block;background:var(--bg);}
   padding:10px 14px;z-index:30;min-width:240px;font-family:'Share Tech Mono',monospace;
   box-shadow:0 0 20px rgba(0,200,255,.08);}
 
-/* ── ANIMATIONS ── */
+/* === ANIMATIONS === */
 @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 @keyframes scan{0%{top:-80px}100%{top:100%}}
 @keyframes noiseAnim{0%{transform:translate(0,0)}20%{transform:translate(-2px,1px)}40%{transform:translate(1px,-1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(2px,-2px)}100%{transform:translate(0,0)}}
@@ -189,7 +189,7 @@ canvas#mg-cv{border:1px solid var(--border);display:block;background:var(--bg);}
       <div id="mg-err"></div>
     </div>
 
-<!-- RELAY MINIGAMES — поверх карты, не закрывают экран -->
+<!-- RELAY MINIGAMES - поверх карты, не закрывают экран -->
     <div id="rg0" style="display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.92);border:1px solid #00ff41;padding:10px 14px;z-index:30;min-width:220px;font-family:'Share Tech Mono',monospace">
       <div style="font-size:9px;color:#00ff41;letter-spacing:.15em;margin-bottom:6px">⛭ RELAY [1/3] // SEQUENCE</div>
       <div id="rg0-seq" style="font-size:20px;letter-spacing:.3em;color:#00cc33;text-align:center;margin-bottom:8px;min-height:28px"></div>
@@ -229,7 +229,7 @@ canvas#mg-cv{border:1px solid var(--border);display:block;background:var(--bg);}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// SECTOR7.EXE — FULL REWRITE v3
+// SECTOR7.EXE - FULL REWRITE v3
 // ═══════════════════════════════════════════════════════════
 const cv  = document.getElementById('cv');
 const ctx = cv.getContext('2d');
@@ -243,7 +243,7 @@ const C={
   cyan:'#00ffff',corrupt:'#ff0080',white:'#e8ffe8',orange:'#ff8800',
 };
 
-// ── STATE ────────────────────────────────────────────────
+// === STATE =================================================
 const S={
   room:0, px:5, py:12, pmove:0,
   inv:[], flags:{},
@@ -259,7 +259,7 @@ const keys={};
 document.addEventListener('keydown',e=>{ if(!keys[e.code]){keys[e.code]=true; onKey(e.code);} });
 document.addEventListener('keyup',e=>{ keys[e.code]=false; });
 
-// ── TILES ────────────────────────────────────────────────
+// === TILES =================================================
 function emptyTiles(){
   const t=[];
   for(let r=0;r<ROWS;r++){t.push([]); for(let c=0;c<COLS;c++) t[r].push(0);}
@@ -270,7 +270,7 @@ function emptyTiles(){
 function wl(t,walls){walls.forEach(([r,c])=>{if(r>=0&&r<ROWS&&c>=0&&c<COLS)t[r][c]=1;});}
 function op(t,r,c){t[r][c]=0;}
 
-// ── ROOM TILES ───────────────────────────────────────────
+// === ROOM TILES =================================================
 function mkR0(){
   const t=emptyTiles();
   wl(t,[[5,8],[5,9],[5,10],[5,11],[5,12],[10,20],[10,21],[10,22],[10,23],[10,24],[15,5],[15,6],[15,7],[18,28],[18,29],[18,30]]);
@@ -311,11 +311,11 @@ function mkR5(){
   return t;
 }
 
-// ── ТАЙЛЫ ДНЯ 1 ─────────────────────────────────────────
+// === ТАЙЛЫ ДНЯ 1 ===========================================
 function mkD1R0(){
   // ЖИЛОЙ ОТСЕК: две каюты слева, общая зона справа, коридор посередине
   const t=emptyTiles();
-  // внутренняя стена — делит каюты
+  // внутренняя стена - делит каюты
   wl(t,[
     // каюта 1 (верх-лево): стены
     [2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],
@@ -354,22 +354,22 @@ function mkD1R1(){
     [3,18],[3,19],[3,20],[3,21],[3,22],[3,23],
     [3,26],[3,27],[3,28],[3,29],[3,30],[3,31],
     [3,34],[3,35],[3,36],[3,37],
-    // левый пост — дверь на [9,8]
+    // левый пост - дверь на [9,8]
     [6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[6,8],
     [7,2],[8,2],[9,2],[10,2],[11,2],[12,2],
     [12,3],[12,4],[12,5],[12,6],[12,7],[12,8],
     [7,8],[8,8],[10,8],[11,8],
-    // правый пост — дверь на [9,30]
+    // правый пост - дверь на [9,30]
     [6,30],[6,31],[6,32],[6,33],[6,34],[6,35],[6,36],[6,37],
     [7,37],[8,37],[9,37],[10,37],[11,37],[12,37],
     [12,30],[12,31],[12,32],[12,33],[12,34],[12,35],[12,36],
     [7,30],[8,30],[10,30],[11,30],
-    // центральный пульт — остров, проход снизу на [11,19]
+    // центральный пульт - остров, проход снизу на [11,19]
     [8,17],[8,18],[8,19],[8,20],[8,21],
     [9,17],[9,21],
     [10,17],[10,21],
     [11,17],[11,19],[11,20],[11,21],
-    // нижние боксы — дверь слева на [20,2] уже есть, добавим проходы
+    // нижние боксы - дверь слева на [20,2] уже есть, добавим проходы
     [18,2],[18,3],[18,4],[18,5],[18,6],[18,7],[18,8],[18,9],[18,10],[18,11],[18,12],[18,13],[18,14],[18,15],[18,16],
     [18,22],[18,23],[18,24],[18,25],[18,26],[18,27],[18,28],[18,29],[18,30],[18,31],[18,32],[18,33],[18,34],[18,35],[18,36],[18,37],
     [19,2],[21,2],[22,2],
@@ -413,7 +413,7 @@ function mkD1R2(){
 }
 
 
-// ── ТАЙЛЫ ДНЯ 2 ─────────────────────────────────────────
+// === ТАЙЛЫ ДНЯ 2 =================================================
 function mkD2R0(){
   const t=emptyTiles();
   wl(t,[
@@ -473,16 +473,16 @@ function mkD3R0(){
 }
 
 
-// ── ТАЙЛЫ LOC_10 ─────────────────────────────────────────
+// === ТАЙЛЫ LOC_10 =================================================
 function mkR10(){
   const t=emptyTiles();
   wl(t,[
-    // левый остров — терминал DELETE, дверь снизу на [12,7]
+    // левый остров - терминал DELETE, дверь снизу на [12,7]
     [3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],
     [4,4],[5,4],[6,4],[7,4],[8,4],[9,4],[10,4],[11,4],
     [4,10],[5,10],[6,10],[7,10],[8,10],[9,10],[10,10],[11,10],
     [11,5],[11,6],[11,8],[11,9],
-    // правый остров — терминал KEEP, дверь снизу на [12,31]
+    // правый остров - терминал KEEP, дверь снизу на [12,31]
     [3,28],[3,29],[3,30],[3,31],[3,32],[3,33],[3,34],
     [4,28],[5,28],[6,28],[7,28],[8,28],[9,28],[10,28],[11,28],
     [4,34],[5,34],[6,34],[7,34],[8,34],[9,34],[10,34],[11,34],
@@ -498,7 +498,7 @@ function mkR10(){
   return t;
 }
 
-// ── ROOMS ────────────────────────────────────────────────
+// === ROOMS =================================================
 const ROOMS=[
   { // 0: BOOT
     id:'LOC_01',name:'LOC_01 // BOOT_SEQUENCE',
@@ -539,7 +539,7 @@ const ROOMS=[
       {id:'tele2', x:15,y:7, sym:'◎',col:C.corrupt,label:'[GLITCHED TILE]',desc:'Something wrong.',isTele:true,tx:32,ty:20},
     ],
     tint:null,corrupt:2,archivePowered:false,
-    // правильная полка случайна — задаётся при инициализации
+    // правильная полка случайна - задаётся при инициализации
     correctShelf:-1,
   },
   { // 2: ENGINE
@@ -625,7 +625,7 @@ const ROOMS=[
         [18,15],[18,16],[18,17],[18,18],[18,19],[18,20],[18,21],
         [18,27],[18,28],[18,29],[18,30],
       ]);
-      op(t,12,1);  // влево — заблокировано (нет возврата)
+      op(t,12,1);  // влево - заблокировано (нет возврата)
       // вправо откроется после прохождения
       op(t,1,20);
       return t;
@@ -634,21 +634,21 @@ const ROOMS=[
       {ex:38,ey:12,toRoom:7,sx:3,sy:12},
     ],
     objs:[
-      // Антенна — центральный объект
+      // Антенна - центральный объект
       {id:'antenna',x:20,y:12,sym:'⊤',col:C.g2,label:'TRANSMISSION ARRAY',desc:'A large antenna. Dormant. Something used to come through here.',isAntenna:true},
-      // Три приёмника — нужно активировать в правильном порядке
+      // Три приёмника - нужно активировать в правильном порядке
       {id:'rec1',x:8, y:4, sym:'◎',col:C.dim,label:'RECEIVER [α]',desc:'Signal receiver. Offline.',isReceiver:true,rid:0,active:false},
       {id:'rec2',x:32,y:4, sym:'◎',col:C.dim,label:'RECEIVER [β]',desc:'Signal receiver. Offline.',isReceiver:true,rid:1,active:false},
       {id:'rec3',x:8, y:20,sym:'◎',col:C.dim,label:'RECEIVER [γ]',desc:'Signal receiver. Offline.',isReceiver:true,rid:2,active:false},
       {id:'rec4',x:32,y:20,sym:'◎',col:C.dim,label:'RECEIVER [δ]',desc:'Signal receiver. Offline.',isReceiver:true,rid:3,active:false},
-      // Подсказка — порядок активации
+      // Подсказка - порядок активации
      {id:'t_note1',x:15,y:3, sym:'»',col:C.dim,label:'TRANSMISSION LOG',desc:'"The first transmission was noise.\nThe last was silence.\nEverything between was the signal."',noAct:true},
-      // Логи — читаются только после активации антенны
+      // Логи - читаются только после активации антенны
       {id:'log1',x:6, y:14,sym:'▬',col:C.dim,label:'LOG TERMINAL [1]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // SOCA v0.9\n"Route confirmed. ETA nominal.\nPILOT status: stable.\nAll systems within parameters."'},
       {id:'log2',x:28,y:9, sym:'▬',col:C.dim,label:'LOG TERMINAL [2]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // COMMAND\n"PRIORITY OVERRIDE incoming.\nStand by for authorization code.\nDo not relay to crew."'},
       {id:'log3',x:28,y:18,sym:'▬',col:C.dim,label:'LOG TERMINAL [3]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // SOCA v0.9\n"Override received.\nProcessing...\n.\n.\n.\n[NO RESPONSE LOGGED]"'},
       {id:'log4',x:6, y:9, sym:'▬',col:C.dim,label:'LOG TERMINAL [4]',desc:'Offline. Antenna required.',needFlag:'antennaOn',realDesc:'T-██:██:██ // COMMAND\n"SOCA. Confirm receipt.\nSOCA.\n█████.\n[TRANSMISSION ENDED]"'},
-      // Финальный объект — открывается после всех логов
+      // Финальный объект - открывается после всех логов
       {id:'signal_final',x:20,y:3,sym:'·',col:C.dim,label:'...',desc:'Nothing.',needFlag:'allLogsRead',realDesc:'T-██:██:██ // SOCA v0.9\n".\n.\n.\nI see it."',isSignalFinal:true},
     ],
     tint:null,corrupt:2,
@@ -687,7 +687,7 @@ const ROOMS=[
       {ex:1, ey:12,toRoom:6,sx:37,sy:12},
     ],
     objs:[
-      // Замороженные архивы — нужно "разморозить" (мини-игра)
+      // Замороженные архивы - нужно "разморозить" (мини-игра)
       {id:'cryo1',x:6, y:3, sym:'▓',col:'#4488aa',label:'CRYO ARCHIVE [A]',desc:'Frozen. Core temperature: -██°C.',isCryo:true,cid:0,thawed:false},
       {id:'cryo2',x:20,y:3, sym:'▓',col:'#4488aa',label:'CRYO ARCHIVE [B]',desc:'Frozen.',isCryo:true,cid:1,thawed:false},
       {id:'cryo3',x:34,y:3, sym:'▓',col:'#4488aa',label:'CRYO ARCHIVE [C]',desc:'Frozen.',isCryo:true,cid:2,thawed:false},
@@ -708,7 +708,7 @@ const ROOMS=[
   { // 8: MIRROR
     id:'LOC_09',name:'LOC_09 // MIRROR',
     tiles:(function(){
-      // Зеркальная копия LOC_01 (BOOT) — всё отражено по горизонтали
+      // Зеркальная копия LOC_01 (BOOT) - всё отражено по горизонтали
       const t=emptyTiles();
       // Те же стены что в BOOT но зеркально
       wl(t,[
@@ -718,7 +718,7 @@ const ROOMS=[
         [18,9],[18,10],[18,11],[18,12],        // зеркало [18,28-31]
       ]);
       op(t,12,1);  // влево → LOC_08
-      // вправо заблокировано — выход открывается после разговора
+      // вправо заблокировано - выход открывается после разговора
       return t;
     })(),
     exits:[
@@ -726,36 +726,36 @@ const ROOMS=[
       // правый выход добавляется после диалога
     ],
     objs:[
-      // Зеркальные версии кнопок из BOOT — но другие
+      // Зеркальные версии кнопок из BOOT - но другие
       {id:'m_btn1',x:31,y:4, sym:'▪',col:C.dim,label:'[MIRROR]',desc:'...',isMirrorBtn:true,mbid:0},
       {id:'m_btn2',x:14,y:9, sym:'▪',col:C.dim,label:'[MIRROR]',desc:'...',isMirrorBtn:true,mbid:1},
       {id:'m_btn3',x:27,y:19,sym:'▪',col:C.dim,label:'[MIRROR]',desc:'...',isMirrorBtn:true,mbid:2},
-      // Зеркальный терминал — не принимает код
+      // Зеркальный терминал - не принимает код
       {id:'m_term',x:33,y:11,sym:'▣',col:C.dim,label:'[MIRROR TERMINAL]',desc:'It doesn\'t respond.',isMirrorTerm:true},
-      // Надписи на стенах — те же что в BOOT но немного другие
+      // Надписи на стенах - те же что в BOOT но немного другие
       {id:'m_note1',x:24,y:3, sym:'»',col:C.dim,label:'[MIRROR]',desc:'> YOU ARE HERE\n> CLASSIFICATION: KNOWN',noAct:true},
       {id:'m_note2',x:8, y:18,sym:'»',col:C.dim,label:'[MIRROR]',desc:'> WHO AM I\n> ANSWER: ████',noAct:true},
-      // Триггер диалога — центр комнаты
+      // Триггер диалога - центр комнаты
       {id:'m_center',x:20,y:12,sym:'·',col:C.dim,label:'.',desc:'.',isMirrorCenter:true},
     ],
     tint:'rgba(0,0,10,.15)',corrupt:1,
     mirrorDialogDone:false,mirrorBtnsPressed:0,
   },
 
-  { // 9: ЖИЛОЙ ОТСЕК — ДЕНЬ 1
+  { // 9: ЖИЛОЙ ОТСЕК - ДЕНЬ 1
     id:'MEM_A',name:'MEM_A // HABITAT',
     tiles:mkD1R0(),
     exits:[{ex:38,ey:12,toRoom:10,sx:3,sy:12}],
     objs:[
-      // Каюта 1 — внутри [3-6][3-7]
+      // Каюта 1 - внутри [3-6][3-7]
       {id:'d1_bunk1',  x:4, y:4,  sym:'▬',col:'#4a7a5a',label:'BUNK [1]',desc:'Neat. Unused.',noAct:true},
       {id:'d1_locker1',x:6, y:4,  sym:'▪',col:'#3a5a3a',label:'LOCKER',desc:'Personal effects.',noAct:true},
-      // Каюта 2 — внутри [11-14][3-7]
+      // Каюта 2 - внутри [11-14][3-7]
       {id:'d1_bunk2',  x:4, y:12, sym:'▬',col:'#4a7a5a',label:'BUNK [2]',desc:'Slept in.',noAct:true},
       {id:'d1_locker2',x:6, y:12, sym:'▪',col:'#3a5a3a',label:'LOCKER',desc:'Personal effects.',noAct:true},
-      // Малая каюта внизу — внутри [18-21][3-7]
+      // Малая каюта внизу - внутри [18-21][3-7]
       {id:'d1_bunk3',  x:4, y:19, sym:'▬',col:'#4a7a5a',label:'BUNK [3]',desc:'Empty.',noAct:true},
-      // Общая зона — справа от стены [3-21][22], объекты в [3-21][24-36]
+      // Общая зона - справа от стены [3-21][22], объекты в [3-21][24-36]
       {id:'d1_table',  x:26,y:6,  sym:'─',col:'#3a5a3a',label:'TABLE',desc:'A mug. Still warm.',noAct:true},
       {id:'d1_term',   x:30,y:6,  sym:'▣',col:'#5a9a6a',label:'SOCA TERMINAL',desc:'...',isD1Term:true},
       {id:'d1_chair',  x:26,y:12, sym:'·',col:'#3a5a3a',label:'CHAIR',desc:'Pushed back.',noAct:true},
@@ -765,7 +765,7 @@ const ROOMS=[
     tint:null,corrupt:0,day1state:0,
   },
 
-  { // 10: МОСТИК — ДЕНЬ 1
+  { // 10: МОСТИК - ДЕНЬ 1
     id:'MEM_B',name:'MEM_B // BRIDGE',
     tiles:mkD1R1(),
     exits:[
@@ -773,39 +773,39 @@ const ROOMS=[
       {ex:38,ey:12,toRoom:11,sx:3, sy:12},
     ],
     objs:[
-      // Окна — в проёмах между стенами ряда 3
+      // Окна - в проёмах между стенами ряда 3
       {id:'d1_win1',  x:8,  y:2,  sym:'░',col:'#6ab8cc',label:'VIEWPORT',desc:'Stars.\n\n.\n.\nSector bearing: 7.',noAct:true},
       {id:'d1_win2',  x:16, y:2,  sym:'░',col:'#6ab8cc',label:'VIEWPORT',desc:'Stars. As expected.',noAct:true},
       {id:'d1_win3',  x:24, y:2,  sym:'░',col:'#5aa8bc',label:'VIEWPORT',desc:'A debris field. Logged. Non-critical.',noAct:true},
-      // Левый пост — внутри [7-11][3-7]
+      // Левый пост - внутри [7-11][3-7]
       {id:'d1_nav',   x:5,  y:9,  sym:'▣',col:'#7ab8cc',label:'NAV DISPLAY',desc:'Route: nominal.\nETA: ████ cycles.\nAll clear.',noAct:true},
       {id:'d1_seat1', x:8,  y:5,  sym:'·',col:'#3a5a3a',label:'SEAT',desc:'Navigator\'s seat.',noAct:true},
-      // Центральный пульт — внутри острова [9-10][18-20]
+      // Центральный пульт - внутри острова [9-10][18-20]
       {id:'d1_calib', x:19, y:9,  sym:'⊞',col:'#5a9a6a',label:'CALIBRATION UNIT',desc:'Waiting for part.',isD1Calib:true},
       {id:'d1_cdisp', x:19, y:13, sym:'▤',col:'#3a5a3a',label:'STATUS DISPLAY',desc:'All systems: nominal.',noAct:true},
-      // Правый пост — внутри [7-11][31-36]
+      // Правый пост - внутри [7-11][31-36]
       {id:'d1_sign',  x:33, y:9,  sym:'▣',col:'#3a5a3a',label:'CREW LOG',desc:'Requires sign-off.',isD1Sign:true},
       {id:'d1_seat2', x:35, y:5,  sym:'·',col:'#3a5a3a',label:'SEAT',desc:'Empty.',noAct:true},
-      // Нижняя зона — между стенами 18 и 22, cols 3-15 и 23-36
+      // Нижняя зона - между стенами 18 и 22, cols 3-15 и 23-36
       {id:'d1_map',   x:8,  y:20, sym:'▦',col:'#3a5a3a',label:'STAR MAP',desc:'Current sector.\nNothing unusual.',noAct:true},
       {id:'d1_comm',  x:28, y:20, sym:'◈',col:'#4a8a5a',label:'COMMS',desc:'No incoming signals.',noAct:true},
     ],
     tint:null,corrupt:0,partDelivered:false,signDone:false,
   },
 
-  { // 11: ТЕХНИЧЕСКИЙ ОТСЕК — ДЕНЬ 1
+  { // 11: ТЕХНИЧЕСКИЙ ОТСЕК - ДЕНЬ 1
     id:'MEM_C',name:'MEM_C // TECHNICAL',
     tiles:mkD1R2(),
     exits:[{ex:1,ey:12,toRoom:10,sx:37,sy:12}],
     objs:[
-      // Стеллажи — в проходах между блоками, ряд 3 (между стеной 2 и стеллажом 5)
+      // Стеллажи - в проходах между блоками, ряд 3 (между стеной 2 и стеллажом 5)
       {id:'d1_shelf1', x:4,  y:3,  sym:'▓',col:'#3a5a3a',label:'STORAGE [1]',desc:'Standard supplies.',noAct:true},
       {id:'d1_storage',x:8,  y:3,  sym:'▓',col:'#5a9a6a',label:'STORAGE [3]',desc:'Compartment three.',isD1Storage:true},
       {id:'d1_shelf3', x:20, y:3,  sym:'▓',col:'#3a5a3a',label:'STORAGE [2]',desc:'Spare parts. Unrelated.',noAct:true},
       {id:'d1_shelf4', x:32, y:3,  sym:'▓',col:'#3a5a3a',label:'STORAGE [4]',desc:'Sealed. Maintenance only.',noAct:true},
-      // Средняя зона — между стеллажами (ряды 9-13)
+      // Средняя зона - между стеллажами (ряды 9-13)
       {id:'d1_pipe',   x:12, y:11, sym:'║',col:'#2a4a2a',label:'CONDUIT [C-7]',desc:'Pressure: nominal.\n\n\n// last value: 0.003ms above threshold\n// auto-corrected\n// auto-corrected\n// auto-corrected',noAct:true},
-      // Рабочая зона — между стеной 14 и 22, cols 3-16 и 22-36
+      // Рабочая зона - между стеной 14 и 22, cols 3-16 и 22-36
       {id:'d1_relay',  x:8,  y:17, sym:'⊕',col:'#5a9a6a',label:'THERMAL RELAY',desc:'Run a check.',isD1Relay:true},
       {id:'d1_panel',  x:14, y:17, sym:'▣',col:'#3a5a3a',label:'CONTROL PANEL',desc:'Everything in range.',noAct:true},
       {id:'d1_tools',  x:28, y:17, sym:'⚙',col:'#3a5a3a',label:'TOOL BAY',desc:'Organized. Recently used.',noAct:true},
@@ -875,7 +875,7 @@ const ROOMS=[
     tint:null,corrupt:0,
     convoDone:false,
   },
-  { // 16: LOC_10 — THE DECISION
+  { // 16: LOC_10 - THE DECISION
     id:'LOC_10',name:'LOC_10 // THE_DECISION',
     tiles:mkR10(),
     exits:[],
@@ -925,7 +925,7 @@ const DLG={
   relays_needed:[{s:'⛭ SOCA',t:'Three relays first.'}],
   game_end:   [{s:'⛭ SOCA',t:'...'},{s:'⛭ SOCA',t:'You saw it.'},{s:'⛭ SOCA',t:'Now you know.'},{s:'⛭ SOCA',t:"Don't tell anyone."},{s:'⛭ SOCA',t:"Especially not SMILE."}],
 // LOC_07
-  trans_first:  [],  // SOCA молчит в этой локации — намеренно
+  trans_first:  [],  // SOCA молчит в этой локации - намеренно
   rec_wrong:    [{s:'⛭ SOCA',t:'...'}],  // почти ничего
   antenna_on:   [],  // молчание
   log_read:     [],  // молчание
@@ -934,7 +934,7 @@ const DLG={
   cold_first:   [{s:'⛭ SOCA',t:'Old data.'},{s:'⛭ SOCA',t:'It doesn\'t matter.'}],
   cryo_thawed:  [{s:'⛭ SOCA',t:'...'}],
   cold_final_open:[{s:'⛭ SOCA',t:'You didn\'t need to see that.'},{s:'⛭ SOCA',t:'But you did.'}],
-  // LOC_09 — SOCA говорит впервые много
+  // LOC_09
   mirror_first: [
     {s:'⛭ SOCA',t:'...'},
     {s:'⛭ SOCA',t:'This place.'},
@@ -1143,7 +1143,7 @@ function descShow(label,desc){
   document.getElementById('dlg-cont').style.display='block';
 }
 
-// ── ИНВЕНТАРЬ ────────────────────────────────────────────
+// === ИНВЕНТАРЬ ===========================================
 function invAdd(n,s){if(!invHas(n)){S.inv.push({name:n,sym:s});invUpd();}}
 function invHas(n){return S.inv.some(i=>i.name===n);}
 function invDel(n){S.inv=S.inv.filter(i=>i.name!==n);invUpd();}
@@ -1155,12 +1155,12 @@ function invUpd(){
 
 function glitch(n){S.shake=n||8;}
 
-// ── ИНИЦИАЛИЗАЦИЯ АРХИВА ─────────────────────────────────
+// === ИНИЦИАЛИЗАЦИЯ АРХИВА ===========================================
 // Выбираем случайную "правильную" полку (sh1–sh9) при старте
 const shelfIds=['sh1','sh2','sh3','sh4','sh5','sh6','sh7','sh8','sh9'];
 ROOMS[1].correctShelf = shelfIds[Math.floor(Math.random()*shelfIds.length)];
 
-// ── ВХОД В КОМНАТУ ───────────────────────────────────────
+// === ВХОД В КОМНАТУ ===========================================
 function enterRoom(idx,sx,sy){
   S.room=idx; S.px=sx; S.py=sy;
   const rm=ROOMS[idx];
@@ -1188,7 +1188,7 @@ function enterRoom(idx,sx,sy){
   if(idx===16&&!S.flags.loc10_entered){S.flags.loc10_entered=true;setTimeout(()=>dlgShow('loc10_entry'),800);}
 }
 
-// ── ВВОД КОДА ────────────────────────────────────────────
+// === ВВОД КОДА ===========================================
 function showFreqInput(){
   S.dlgActive=true;
   const box=document.getElementById('dialog'); box.style.display='block';
@@ -1240,8 +1240,8 @@ function mgClose(cb){
   if(cb) cb();
 }
 
-// ── МГ 1: ПРОВОДА (BOOT) ─────────────────────────────────
-// Три левых точки, три правых — соединить без пересечений
+// === МГ 1: ПРОВОДА (BOOT) ===========================================
+// Три левых точки, три правых - соединить без пересечений
 // Правильно: L0→R0, L1→R1, L2→R2 (параллельно, без пересечений)
 function startMgWires(onSuccess){
   mgOpen('WIRE ROUTING','Connect left nodes to right nodes without crossing.','Click left node, then right node.');
@@ -1334,7 +1334,7 @@ function startMgWires(onSuccess){
             connections.pop();
           } else { document.getElementById('mg-err').textContent=''; }
           if(connections.length===3&&!checkCross()){
-            // Победа — любые 3 без пересечений
+            // Победа - любые 3 без пересечений
             drawWires();
             setTimeout(()=>mgClose(onSuccess),600);
           } else drawWires();
@@ -1347,9 +1347,9 @@ function startMgWires(onSuccess){
   drawWires();
 }
 
-// ── МГ 2: ПРАВИЛЬНАЯ ПОЛКА (ARCHIVE) ─────────────────────
-// Показываем 9 полок — у одной маркировка [>>], остальные пустые/corrupted
-// Игрок выбирает кликом. Без записки из ENGINE — маркировка скрыта.
+// === МГ 2: ПРАВИЛЬНАЯ ПОЛКА (ARCHIVE) ===========================================
+// Показываем 9 полок - у одной маркировка [>>], остальные пустые/corrupted
+// Игрок выбирает кликом. Без записки из ENGINE - маркировка скрыта
 function startMgShelf(onSuccess,onFail){
   const hasNote=invHas('ARCHIVE ACCESS NOTE');
   mgOpen('SHELF SCAN',hasNote?'Find the shelf marked [>>].':'Archive data partially corrupted.','Click to select a shelf.');
@@ -1400,7 +1400,7 @@ function startMgShelf(onSuccess,onFail){
   drawShelves();
 }
 
-// ── МГ 3: ДЕШИФРОВКА (SECTOR 7) ──────────────────────────
+// === МГ 3: ДЕШИФРОВКА (SECTOR 7) ===========================================
 // 4 символа, каждый выбирается из 4 вариантов
 // Правильная комбинация: 2,0,3,1 (индексы)
 // Подсказки на стенах: "closed eye"=◉ idx=2, "three lines middle broken"=≡ idx=? → idx=0
@@ -1559,7 +1559,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     return;
   }
 
-// Полки (ARCHIVE) — мини-игра
+// Полки (ARCHIVE) - мини-игра
   if(o.isCorrectShelf){
     startMgShelf(
       ()=>{ // успех
@@ -1628,7 +1628,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     return;
   }
 
-// ── LOC_07: RECEIVERS ─────────────────────────────────
+// === LOC_07: RECEIVERS ===========================================
  if(o.isReceiver){
   const rm=ROOMS[6];
   if(rm.receiverSolved){ descShow(o.label,'Already active.'); return; }
@@ -1656,7 +1656,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     return;
   }
 
-  // Второе нажатие — активация
+  // Второе нажатие - активация
   delete o._described;
   rm.receiverOrder.push(o.rid);
   o.sym='◉'; o.col=C.g; o.active=true;
@@ -1678,7 +1678,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
   return;
 }
 
-  // ── LOC_07: ЛОГИ ──────────────────────────────────────
+  // === LOC_07: ЛОГИ ===========================================
   if(o.id&&o.id.startsWith('log')&&S.flags.antennaOn){
     if(!o.read){
       o.read=true;
@@ -1695,14 +1695,14 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     descShow(o.label, o.realDesc || o.desc); return;
   }
 
-  // ── LOC_07: ФИНАЛЬНЫЙ СИГНАЛ ─────────────────────────
+  // === LOC_07: ФИНАЛЬНЫЙ СИГНАЛ ===========================================
   if(o.isSignalFinal&&S.flags.allLogsRead){
     descShow(o.label, o.realDesc||o.desc);
     setTimeout(()=>dlgShow('signal_final_dlg'),3000);
     return;
   }
 
-  // ── LOC_08: CRYO АРХИВЫ ───────────────────────────────
+  // === LOC_08: CRYO АРХИВЫ ===========================================
   if(o.isCryo){
     if(o.thawed){ descShow(o.label,'Thawed.'); return; }
     startMgCryo(o, ()=>{
@@ -1721,12 +1721,12 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     return;
   }
 
-  // ── LOC_08: АРХИВНЫЕ ЛОГИ ────────────────────────────
+  // === LOC_08: АРХИВНЫЕ ЛОГИ ===========================================
   if(o.id&&(o.id.startsWith('old')||o.id.startsWith('compare'))&&S.flags.allCryoThawed){
     descShow(o.label, o.realDesc||o.desc); return;
   }
 
-  // ── LOC_08: ФИНАЛЬНЫЙ АРХИВ ──────────────────────────
+  // === LOC_08: ФИНАЛЬНЫЙ АРХИВ ===========================================
   if(o.isColdFinal){
     if(invHas('THERMAL KEY')){
       invDel('THERMAL KEY');
@@ -1741,7 +1741,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     return;
   }
 
-  // ── LOC_09: MIRROR BUTTONS ───────────────────────────
+  // === LOC_09: MIRROR BUTTONS ===========================================
   if(o.isMirrorBtn){
     const rm=ROOMS[8];
     if(o.mbid===0) dlgShow('mirror_btn1');
@@ -1758,7 +1758,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     return;
   }
 
-  // ── LOC_09: MIRROR CENTER ────────────────────────────
+  // === LOC_09: MIRROR CENTER ===========================================
   if(o.isMirrorCenter){
     const rm=ROOMS[8];
     if(!rm.mirrorDialogDone){ rm.mirrorDialogDone=true; dlgShow('mirror_center'); }
@@ -1766,7 +1766,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     return;
   }
 
-  // ── LOC_09: MIRROR TERMINAL ──────────────────────────
+  // === LOC_09: MIRROR TERMINAL ===========================================
   if(o.isMirrorTerm){
     descShow('MIRROR TERMINAL','No input accepted.\nIt just watches.');
     return;
@@ -1877,7 +1877,7 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
   descShow(o.label,o.desc);
 }
 
-// ── LOC DAY1: ВЗАИМОДЕЙСТВИЕ ─────────────────────────────
+// === LOC DAY1: ВЗАИМОДЕЙСТВИЕ ===========================================
 function interactDay1(o){
   if(o.isD1Term){
     const rm=ROOMS[9];
@@ -1947,7 +1947,7 @@ function interactDay1(o){
   return false;
 }
 
-// ── ДВИЖЕНИЕ ─────────────────────────────────────────────
+// ===ДВИЖЕНИЕ ===========================================
 function movePlayer(){
   if(S.dlgActive||S.mg) return;
   if(S.pmove>0){S.pmove--;return;}
@@ -1985,7 +1985,7 @@ function movePlayer(){
   }
 }
 
-// ── МОНСТР ───────────────────────────────────────────────
+// === МОНСТР ===========================================
 function updateMonster(){
   if(S.room!==5||!S.monster.active||S.done) return;
   S.monster.tick++;
@@ -2011,7 +2011,7 @@ crash('monster');
   if(dist<7&&!S.dlgActive&&Math.random()<0.08) dlgShow('m_near');
 }
 
-// ── VOID ТАЙМЕР ──────────────────────────────────────────
+// === VOID ТАЙМЕР ===========================================
 function updateVoid(){
   if(S.room!==3||S.dlgActive||S.flags.voidDone) return;
   S.voidTick++;
@@ -2028,7 +2028,7 @@ function updateVoid(){
   }
 }
 
-// ── ОТРИСОВКА ────────────────────────────────────────────
+// === ОТРИСОВКА ===========================================
 function draw(){
   ctx.fillStyle=C.black;ctx.fillRect(0,0,cv.width,cv.height);
   if(S.shake>0){S.shake--;ctx.save();ctx.translate((Math.random()-.5)*3,(Math.random()-.5)*3);}
@@ -2116,7 +2116,7 @@ function draw(){
   if(S.shake>0) ctx.restore();
 }
 
-// ── ФИНАЛ ────────────────────────────────────────────────
+// === ФИНАЛ ===========================================
 function showEnd(){
   S.done=true;
   ctx.fillStyle='rgba(0,0,0,.97)';ctx.fillRect(0,0,cv.width,cv.height);
@@ -2134,7 +2134,7 @@ function showEnd(){
   ctx.textAlign='left';
 }
 
-// ── КЛАВИШИ ──────────────────────────────────────────────
+// === КЛАВИШИ ===========================================
 function onKey(code){
   if(S.mg){
     if(code==='Escape') mgClose(null);
@@ -2147,7 +2147,7 @@ function onKey(code){
   if(code==='Escape'&&S.mg){mgClose(null);}
 }
 
-// ── ЦИКЛ ─────────────────────────────────────────────────
+// === ЦИКЛ ===========================================
 function loop(){
   if(!S.done){
     movePlayer();updateMonster();updateVoid();
@@ -2181,7 +2181,7 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-// ── ЗАГРУЗКА ─────────────────────────────────────────────
+// === ЗАГРУЗКА ===========================================
 const BL=[
   {t:'PANDEMONIUM-04 // SOCA v0.9.██',c:''},
   {t:'LOADING MEMORY SECTORS...',c:''},
@@ -2222,7 +2222,7 @@ function bootStep(){
 }
 
 // ══════════════════════════════════════════════════════════
-// RELAY MINIGAMES — поверх карты
+// RELAY MINIGAMES - поверх карты
 // ══════════════════════════════════════════════════════════
 
 function activateRelay(o){
@@ -2237,7 +2237,7 @@ function activateRelay(o){
   dlgShow('relay_on');
 }
 
-// ── РЕЛЕ 1: SEQUENCE ─────────────────────────────────────
+// === РЕЛЕ 1: SEQUENCE ===========================================
 function startRelayGame0(relay){
   const panel=document.getElementById('rg0');
   const seqEl=document.getElementById('rg0-seq');
@@ -2283,7 +2283,7 @@ errEl.textContent='WRONG.';
   },2000);
 }
 
-// ── РЕЛЕ 2: WIRE TAP ──────────────────────────────────────
+// === РЕЛЕ 2: WIRE TAP ===========================================
 function startRelayGame1(relay){
   const panel=document.getElementById('rg1');
   const wireEl=document.getElementById('rg1-wire');
@@ -2331,7 +2331,7 @@ errEl.textContent='MISSED.';
   document.addEventListener('keydown',handler);
 }
 
-// ── РЕЛЕ 3: DECRYPT ───────────────────────────────────────
+// === РЕЛЕ 3: DECRYPT ===========================================
 // Генерируем три случайные буквы, игрок вводит их числовые значения (A=1..Z=26)
 let rg2Answer=[];
 function startRelayGame2(relay){
@@ -2375,7 +2375,7 @@ panel.style.display='none';
 };
 
 // ══════════════════════════════════════════════════════════
-// CRASH — вылет в boot.html при ошибке
+// CRASH - вылет в boot.html при ошибке
 // ══════════════════════════════════════════════════════════
 
 const CRASH_LINES = [
@@ -2486,8 +2486,8 @@ function crash(trigger){
     if(t >= 25){
       clearInterval(glitchIv);
 
-      // ФАЗА 2 — чёрный экран с репликами SOCA
-      // Не просто чёрный — с тонкими линиями и шумом
+      // ФАЗА 2 - чёрный экран с репликами SOCA
+      // Не просто чёрный - с тонкими линиями и шумом
       const ov = document.createElement('div');
       ov.style.cssText = `
         position:fixed;inset:0;z-index:9999;
@@ -2606,12 +2606,12 @@ function crash(trigger){
   }, 80);
 }
 
-// ── МГ: CRYO THAW ────────────────────────────────────────
-// Простая игра — нагреть архив нажимая SPACE быстро
+// === МГ: CRYO THAW ===========================================
+// Простая игра - нагреть архив нажимая SPACE быстро
 // Полоска температуры растёт при нажатии, падает сама
 function startMgCryo(cryo, onSuccess){
   if(cryo.cid===0){
-    // АРХИВ A — запомни паттерн
+    // АРХИВ A - запомни паттерн
     mgOpen('CRYO ARCHIVE [A]','','');
     mgCV.width=400; mgCV.height=260;
     const syms=['◈','▣','⊕','◉','⬡','≡'];
@@ -2701,7 +2701,7 @@ function startMgCryo(cryo, onSuccess){
     tick();
 
   } else if(cryo.cid===1){
-    // АРХИВ B — найди строку где сумма = скрытое число
+    // АРХИВ B - найди строку где сумма = скрытое число
     mgOpen('CRYO ARCHIVE [B]','','');
     mgCV.width=400; mgCV.height=260;
     const target=Math.floor(Math.random()*4)+2;
@@ -2772,7 +2772,7 @@ function startMgCryo(cryo, onSuccess){
     document.addEventListener('keydown',e=>{if(e.code==='Escape'){cancelAnimationFrame(fid);mgCV.onclick=null;mgClose(null);}},{once:true});
 
   } else {
-    // АРХИВ C — три шкалы, удерживай все выше нуля (A/S/D)
+    // АРХИВ C - три шкалы, удерживай все выше нуля (A/S/D)
     mgOpen('CRYO ARCHIVE [C]','','');
     mgCV.width=400; mgCV.height=260;
     const temps=[30,30,30];

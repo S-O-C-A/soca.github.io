@@ -10,7 +10,7 @@
   css.textContent = `
   /* Селектор игр: скроллится сам, не пропуская скролл на body.
      Трюк с margin:auto сохраняет центрирование, когда контент
-     влезает, и даёт нормальный скролл сверху, когда нет. */
+     влезает, и даёт нормальный скролл сверху, когда нет */
   #game-selector{
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
@@ -48,7 +48,7 @@
     }
   }
 
-  /* ── Виртуальный геймпад ── */
+  /* Виртуальный геймпад */
   #touch-pad{
     display:none;
     position:fixed;
@@ -115,7 +115,7 @@
   if(!isTouch) return;
 
   // Раскладки кнопок для каждой игры.
-  // code — какой e.code шлём; repeat — повторять пока держат
+  // code - какой e.code шлём; repeat - повторять пока держат
   // (нужно играм, где 1 нажатие = 1 шаг, например Grid Breach).
   const LAYOUTS = {
     asteroids: {

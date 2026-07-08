@@ -256,8 +256,8 @@ effectIntervals.push(coordGlitchInterval);
 
 // ===== NOTE SUBMIT =====
 function addNote(){
-  // Секретка: если в заметке написано SOCA (в любом виде —
-  // SOCA, S+O+C+A, s o c a, s.o.c.a) — открываем секретное окно
+  // Секретка: если в заметке написано SOCA (в любом виде -
+  // SOCA, S+O+C+A, s o c a, s.o.c.a) - открываем секретное окно
   const inp = document.getElementById('note-input');
   const val = (inp ? inp.value : '').trim().toLowerCase().replace(/[\s+._-]/g, '');
   if (val === 'soca') {
@@ -406,7 +406,7 @@ startAllEffects();
 
 
 
-// ========== МОДАЛЬНОЕ ОКНО ДЛЯ ФОТО С ГЛИТЧАМИ ==========
+// ========== МОДАЛЬНОЕ ОКНО ДЛЯ ФОТО ==========
 let photoGlitchInterval = null;
 
 function openPhotoModal() {
@@ -505,7 +505,7 @@ function showSecretWindow() {
   overlay.style.display = 'flex';
   content.innerHTML = '';
 
-  // "hi" появляется через 1.2 секунды — плавно, без глитча
+  // "hi" появляется через 1.2 секунды - плавно, без глитча
   secretTimeout = trackTimeout(setTimeout(() => {
     content.innerHTML = `
       <div id="secret-hi" style="
@@ -720,7 +720,7 @@ function startSystemMeltdown() {
     }, i * 150));
   });
   
-  // 4. Через 5 секунд — чёрный экран и перенаправление
+  // 4. Через 5 секунд - чёрный экран и перенаправление
   trackTimeout(setTimeout(() => {
     // Убираем все окна ошибок
     errorWindows.forEach(win => {
@@ -853,17 +853,17 @@ function glitchFavicon() {
     setFavicon('⛭');
   }
   else if (effect < 0.85) {
-    // Лёгкий глитч — другая шестерёнка
+    // Лёгкий глитч - другая шестерёнка
     setFavicon('⚙');
   }
   else if (effect < 0.95) {
-    // Средний глитч — искажённый символ + поворот
+    // Средний глитч - искажённый символ + поворот
     const glitchSymbols = ['⛭', '⚙', '⛭', '⛭'];
     const randomSymbol = glitchSymbols[Math.floor(Math.random() * glitchSymbols.length)];
     setFavicon(randomSymbol, Math.random() * 10 - 5);
   }
   else {
-    // Сильный глитч — быстрая смена символов
+    // Сильный глитч - быстрая смена символов
     setFavicon('█');
     trackTimeout(setTimeout(() => setFavicon('⛭'), 80));
     trackTimeout(setTimeout(() => setFavicon('⚙'), 160));
