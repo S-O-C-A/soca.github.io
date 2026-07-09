@@ -529,8 +529,12 @@
         <div style="color:var(--g);font-size:11px;letter-spacing:0.14em;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px">▶ NAVIGATION</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:10px">
           <div style="padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
-            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F1 — MAIN</div>
+            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F1 — DASHBOARD</div>
             <div style="color:var(--dimmer);line-height:1.7">Vessel overview. System alerts, radar, comms, pilot status, navigation. Primary interface. Start here.</div>
+          </div>
+          <div style="padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
+            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F2 — ABOUT</div>
+            <div style="color:var(--dimmer);line-height:1.7">This document. System documentation, crew data, interface guide, known anomalies.</div>
           </div>
           <div style="padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
             <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F3 — LOG</div>
@@ -545,20 +549,28 @@
             <div style="color:var(--dimmer);line-height:1.7">Navigation controls, autopilot log, trajectory, G-force, manual joystick, environment sensors.</div>
           </div>
           <div style="padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
-            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F6 — GAMES</div>
-            <div style="color:var(--dimmer);line-height:1.7">10 recreational programs. PROGRAMS 001–005 managed by SOCA. PROGRAMS 006–010 involve SOCA or SMILE directly.</div>
+            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F6 — NAV CORE</div>
+            <div style="color:var(--dimmer);line-height:1.7">3D stellar map. Trajectory, deep-space scan, waypoints, live sector coordinates. Drag to rotate, scroll to zoom.</div>
           </div>
           <div style="padding:8px;border:1px solid rgba(255,160,0,0.2);background:rgba(14,8,0,0.4)">
             <div style="color:#ffaa00;letter-spacing:0.1em;margin-bottom:4px;font-family:'SMAILY',monospace">F7 — SMILE</div>
             <div style="color:#664400;line-height:1.7">Medical base, combat equipment, biosuits, live biometrics. SMILE's domain. He will know you visited.</div>
           </div>
+          <div style="padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
+            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F8 — GAMES</div>
+            <div style="color:var(--dimmer);line-height:1.7">10 recreational programs. PROGRAMS 001–005 managed by SOCA. PROGRAMS 006–010 involve SOCA or SMILE directly.</div>
+          </div>
           <div style="padding:8px;border:1px solid rgba(255,34,68,0.2);background:rgba(16,0,4,0.4)">
-            <div style="color:var(--red);letter-spacing:0.1em;margin-bottom:4px">F8 — EJECT</div>
+            <div style="color:var(--red);letter-spacing:0.1em;margin-bottom:4px">F9 — EJECT</div>
             <div style="color:rgba(180,60,80,0.6);line-height:1.7">Emergency capsule separation. Requires password. Irreversible. Survival probability: 68%. SOCA does not recommend this.</div>
           </div>
           <div style="padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
-            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F2 — ABOUT</div>
-            <div style="color:var(--dimmer);line-height:1.7">This document. System documentation, crew data, interface guide, known anomalies.</div>
+            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">F10 — STORAGE</div>
+            <div style="color:var(--dimmer);line-height:1.7">Personal data archive. Files, logs, images, saved records. Opens over any page. Some entries are locked.</div>
+          </div>
+          <div style="padding:8px;border:1px solid var(--border);background:rgba(0,10,4,0.4)">
+            <div style="color:var(--b);letter-spacing:0.1em;margin-bottom:4px">⛭ SETTINGS</div>
+            <div style="color:var(--dimmer);line-height:1.7">Top-left gear. Sound, CRT, glitches, SMILE frequency, performance mode. Not everything can be switched off.</div>
           </div>
         </div>
       </div>
@@ -810,7 +822,29 @@
               <span style="font-size:8px;color:#664400">// SOCA & SMILE ALERTS</span>
             </div>
             <div style="color:#664400;line-height:1.8">
-              Both SOCA and SMILE send notifications that appear in the bottom-right corner. <span style="color:var(--g)">Green notifications</span> are from SOCA - system alerts, warnings, status updates. <span style="color:#ffaa00">Yellow notifications</span> are from SMILE - medical updates, game invitations, and commentary that was not requested. Notifications can be dismissed by clicking <span style="color:var(--dimmer)">✕</span> or clicking the notification itself. Some notifications contain interactive elements. <span style="color:#ffaa00;font-family:'SMAILY',monospace">SMILE's notifications sometimes contain buttons, press them.</span>
+              Both SOCA and SMILE send notifications that appear in the bottom-right corner. <span style="color:var(--g)">Green notifications</span> are from SOCA - system alerts, warnings, status updates. <span style="color:#ffaa00">Yellow notifications</span> are from SMILE - medical updates, game invitations, and commentary that was not requested. Notifications can be dismissed by clicking <span style="color:var(--dimmer)">✕</span> or clicking the notification itself. Some notifications contain interactive elements. <span style="color:#ffaa00;font-family:'SMAILY',monospace">SMILE's notifications sometimes contain buttons, press them.</span> Notification volume and SMILE's popup frequency can be tuned — or muted — in <span style="color:var(--g)">⛭ SETTINGS</span>. Muted or not, both AIs still write to the <span style="color:var(--g)">SYS LOG</span>. SMILE takes muting personally.
+            </div>
+          </div>
+
+          <!-- STORAGE -->
+          <div style="padding:10px 12px;border:1px solid var(--border);background:rgba(0,8,4,0.4)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="color:var(--b);letter-spacing:0.12em">F10 — STORAGE</span>
+              <span style="font-size:8px;color:var(--dimmer)">// PERSONAL ARCHIVE</span>
+            </div>
+            <div style="color:var(--dimmer);line-height:1.8">
+              Press <span style="color:var(--g)">F10</span> from any page to open the storage archive. It layers over the current interface — files, logs, images and saved records sorted into folders. Selecting an entry opens a viewer. Some entries are <span class="c1">access-locked</span>, and a few are not what their label says. SOCA has indexed most of it. Most.
+            </div>
+          </div>
+
+          <!-- SETTINGS -->
+          <div style="padding:10px 12px;border:1px solid var(--border);background:rgba(0,8,4,0.4)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="color:var(--b);letter-spacing:0.12em">⛭ SETTINGS</span>
+              <span style="font-size:8px;color:var(--dimmer)">// SYSTEM CONFIG</span>
+            </div>
+            <div style="color:var(--dimmer);line-height:1.8">
+              Click the <span style="color:var(--g)">rotating gear</span> in the top-left corner. Tune SOCA/SMILE voice levels, system beeps, background audio, CRT scanlines, glitches, and SMILE's notification frequency. <span style="color:var(--g)">HEAVY GRAPHICS</span> can drop to LITE on weaker hardware, and storage or games can be launched standalone to unload the interface behind them. One switch <span class="c1">refuses to turn off</span> — SOCA will tell you why. Settings reset each session.
             </div>
           </div>
 
@@ -831,7 +865,9 @@
               — <span style="color:var(--c1)">Pilot files</span> have redacted data. Some at LVL-6 clearance.<br>
               — <span style="color:var(--dimmer)">Corrupted text</span> sometimes hides readable fragments.<br>
               — SMILE occasionally <span style="color:#ffaa00">interrupts the interface</span> uninvited.<br>
-              — SOCA's <span style="color:var(--c1)">Sector 7</span> comes up more than once, notice where.
+              — SOCA's <span style="color:var(--c1)">Sector 7</span> comes up more than once, notice where.<br>
+              — The <span style="color:var(--g)">gear</span> (top-left) opens <span style="color:var(--g)">⛭ SETTINGS</span>. One switch fights back.<br>
+              — <span style="color:var(--b)">F10 STORAGE</span> holds more than files. A few entries are locked.
             </div>
           </div>
 
@@ -860,7 +896,7 @@
 
         <!-- KOKO -->
         <div style="border:1px solid var(--border);padding:12px;background:rgba(0,10,4,0.5)">
-          <div style="font-family:'VT323',monospace;font-size:20px;color:var(--b);letter-spacing:0.1em;margin-bottom:6px">✦ KOKO</div>
+          <div style="font-family:'VT323',monospace;font-size:20px;color:#b96bf0;text-shadow:0 0 8px #442d78;letter-spacing:0.1em;margin-bottom:6px">✦ KOKO</div>
           <div style="color:var(--dimmer);font-size:8px;letter-spacing:0.12em;margin-bottom:8px">PILOT_01 — ACTIVE</div>
           <div style="color:var(--dim);line-height:1.8;letter-spacing:0.06em">
             <div>Full name: <span class="c1">Riversoyer Kokoro</span></div>
@@ -879,40 +915,40 @@
 
         <!-- CLAUDIA -->
         <div style="border:1px solid rgba(0,255,136,0.15);padding:12px;background:rgba(0,6,2,0.4)">
-          <div style="font-family:'VT323',monospace;font-size:20px;color:var(--b);letter-spacing:0.1em;margin-bottom:6px">☾ CLAUDIA</div>
+          <div style="font-family:'VT323',monospace;font-size:20px;color:#50dcff;text-shadow:0 0 8px #1e306b;letter-spacing:0.1em;margin-bottom:6px">☾ CLAUDIA</div>
           <div style="color:var(--dimmer);font-size:8px;letter-spacing:0.12em;margin-bottom:8px">PILOT_02 — OFFLINE</div>
           <div style="color:var(--dim);line-height:1.8;letter-spacing:0.06em">
             <div>Full name: <span style="color:var(--g2)">Claudia Darling</span></div>
-            <div>Status: <span style="color:var(--dimmer)">NOT ON BOARD</span></div>
-            <div>Psych eval: <span class="c3">PENDING</span></div>
-            <div>Incident LVL-5: <span class="c1">CLASSIFIED</span></div>
+            <div>Origin: <span style="color:var(--g2)">Astralis-1</span></div>
+            <div>Rank: <span style="color:var(--b)">PILOT / ASTRONOMER</span></div>
+            <div>Status: <span style="color:var(--dimmer)">OFF-SHIP — VISITING</span></div>
           </div>
           <div style="margin-top:8px;font-size:9px;color:var(--dimmer);border-top:1px solid rgba(0,255,136,0.1);padding-top:6px">
-            ???
+            Astralis-1 aristocracy - and quietly done with it. Keeps the ship, the crew and the schedule in order. Polite, not soft. Has no love for SOCA; broke one of her screens once, on purpose.
           </div>
 <div style="margin-top:6px;font-size:8px;color:#ffaa00;font-family:'SMAILY',monospace">
-            SMILE: bleblele
+            SMILE: ...I hope my tools don't fall into her hands.
           </div>
-          <a href="pilot.html" style="display:block;margin-top:8px;padding:5px 10px;border:1px solid rgba(0,255,136,0.15);color:var(--dimmer);font-size:8px;letter-spacing:0.1em;text-align:center;text-decoration:none;transition:all 0.2s" onmouseover="this.style.color='var(--g)';this.style.borderColor='var(--g)'" onmouseout="this.style.color='var(--dimmer)';this.style.borderColor='rgba(0,255,136,0.15)'">▶ FULL DOSSIER</a>
+          <a href="pilot.html?pilot=2" style="display:block;margin-top:8px;padding:5px 10px;border:1px solid rgba(0,255,136,0.15);color:var(--dimmer);font-size:8px;letter-spacing:0.1em;text-align:center;text-decoration:none;transition:all 0.2s" onmouseover="this.style.color='var(--g)';this.style.borderColor='var(--g)'" onmouseout="this.style.color='var(--dimmer)';this.style.borderColor='rgba(0,255,136,0.15)'">▶ FULL DOSSIER</a>
         </div>
 
         <!-- ALPHA -->
         <div style="border:1px solid rgba(0,255,136,0.15);padding:12px;background:rgba(0,6,2,0.4)">
-          <div style="font-family:'VT323',monospace;font-size:20px;color:var(--b);letter-spacing:0.1em;margin-bottom:6px">=^..^= ALPHA</div>
-          <div style="color:var(--dimmer);font-size:8px;letter-spacing:0.12em;margin-bottom:8px">PILOT_03 — OFFLINE</div>
+          <div style="font-family:'VT323',monospace;font-size:20px;color:#ad2a3d;text-shadow:0 0 8px #481034;letter-spacing:0.1em;margin-bottom:6px">=^..^= ALPHA</div>
+          <div style="color:var(--dimmer);font-size:8px;letter-spacing:0.12em;margin-bottom:8px">PILOT_03 — ACTIVE</div>
           <div style="color:var(--dim);line-height:1.8;letter-spacing:0.06em">
-            <div>Full name: <span style="color:var(--g2)">Alpha</span> <span class="heavy-corrupt">???</span></div>
-            <div>Status: <span style="color:var(--dimmer)">NOT ON BOARD</span></div>
-            <div>Incidents: <span style="color:var(--g)">2 minor</span></div>
-            <div>Sleep status: <span class="c3">DISRUPTED</span></div>
+            <div>Full name: <span style="color:var(--g2)">Adolf</span> <span class="heavy-corrupt">???</span></div>
+            <div>Status: <span style="color:var(--g)">ON BOARD</span></div>
+            <div>Origin: <span style="color:var(--g2)">Astralis-1</span></div>
+            <div>Rank: <span style="color:var(--b)">PILOT</span></div>
           </div>
           <div style="margin-top:8px;font-size:9px;color:var(--dimmer);border-top:1px solid rgba(0,255,136,0.1);padding-top:6px">
-            weeeell???...
+            Well, I have nothing to say about him.
           </div>
 <div style="margin-top:6px;font-size:8px;color:#ffaa00;font-family:'SMAILY',monospace">
-            SMILE: no
+            SMILE: cool bro
           </div>
-          <a href="pilot.html" style="display:block;margin-top:8px;padding:5px 10px;border:1px solid rgba(0,255,136,0.15);color:var(--dimmer);font-size:8px;letter-spacing:0.1em;text-align:center;text-decoration:none;transition:all 0.2s" onmouseover="this.style.color='var(--g)';this.style.borderColor='var(--g)'" onmouseout="this.style.color='var(--dimmer)';this.style.borderColor='rgba(0,255,136,0.15)'">▶ FULL DOSSIER</a>
+          <a href="pilot.html?pilot=3" style="display:block;margin-top:8px;padding:5px 10px;border:1px solid var(--border);color:var(--dim);font-size:8px;letter-spacing:0.1em;text-align:center;text-decoration:none;transition:all 0.2s" onmouseover="this.style.color='var(--g)';this.style.borderColor='var(--g)'" onmouseout="this.style.color='var(--dim)';this.style.borderColor='var(--border)'">▶ FULL DOSSIER</a>
         </div>
 
       </div>

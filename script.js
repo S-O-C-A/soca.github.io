@@ -4521,23 +4521,221 @@ if (pilotId === 'pilot02' || pilotId === 'pilot03') {
               });
               chatBody.scrollTop = chatBody.scrollHeight;
             }
-            if (pilotId === 'pilot02') {
-              chatBody.innerHTML = `
-                <div style="
-                  display:flex;flex-direction:column;align-items:center;justify-content:center;
-                  height:100%;min-height:180px;gap:8px;
-                  font-family:'Share Tech Mono',monospace;text-align:center;">
-                  <div style="
-                    font-size:26px;letter-spacing:0.22em;color:var(--red);
-                    text-shadow:0 0 10px rgba(255,60,60,0.5);
-                    animation:glitch1 2.5s infinite;">NO SIGNAL</div>
-                  <div style="font-size:9px;letter-spacing:0.14em;color:var(--dimmer);">// Ян еще не придумал им диалог :(</div>
-                </div>
-              `;
-            }
-          }
-          return;
-        }
+            // --- НОВЫЙ ДИАЛОГ С КЛАВДИЕЙ ---
+    if (pilotId === 'pilot02') {
+      const claudiaLog = [
+        { date: 'PD-04 // DAY ████ // 03 MAR 1973', msgs: [
+          { from: 'koko', time: 'PD-04 // 09:47', text: 'claudiaaaaa' },
+          { from: 'koko', time: 'PD-04 // 09:47', text: 'im bored' },
+          { from: 'koko', time: 'PD-04 // 09:48', text: 'what are you doing?' },
+          { from: 'claudia', time: 'PD-04 // 09:52', text: 'Drinking tea, do not disturb.' },
+          { from: 'koko', time: 'PD-04 // 09:53', text: 'can i come' },
+          { from: 'claudia', time: 'PD-04 // 09:53', text: 'No.' },
+          { from: 'koko', time: 'PD-04 // 09:54', text: ':(' },
+          { from: 'claudia', time: 'PD-04 // 09:55', text: 'You broke something again, didnt you?' },
+          { from: 'koko', time: 'PD-04 // 09:55', text: 'NOOOO' },
+          { from: 'koko', time: 'PD-04 // 09:56', text: 'okay maybe a little bit' },
+          { from: 'koko', time: 'PD-04 // 09:56', text: 'but i fixed it!!' },
+          { from: 'claudia', time: 'PD-04 // 09:57', text: 'What did you fix???' },
+          { from: 'koko', time: 'PD-04 // 09:58', text: 'the door' },
+          { from: 'claudia', time: 'PD-04 // 09:58', text: 'Which door?' },
+          { from: 'koko', time: 'PD-04 // 09:59', text: 'the one to the medbay' },
+          { from: 'claudia', time: 'PD-04 // 10:00', text: 'Koko.' },
+          { from: 'koko', time: 'PD-04 // 10:01', text: 'LOOK I CLOSED IT AND IT WOULDNT OPEN' },
+          { from: 'koko', time: 'PD-04 // 10:01', text: 'NOT MY FAULT' },
+          { from: 'claudia', time: 'PD-04 // 10:02', text: 'You closed it or you LOCKED it.' },
+          { from: 'koko', time: 'PD-04 // 10:02', text: 'i just wanted to see whats inside' },
+          { from: 'koko', time: 'PD-04 // 10:03', text: 'and it closed on me' },
+          { from: 'koko', time: 'PD-04 // 10:04', text: 'and now Alpha is stuck inside' },
+          { from: 'koko', time: 'PD-04 // 10:04', text: 'but hes been there for 3 hours' },
+          { from: 'koko', time: 'PD-04 // 10:05', text: 'hes fine' },
+          { from: 'claudia', time: 'PD-04 // 10:06', text: 'KOKO.' },
+          { from: 'koko', time: 'PD-04 // 10:06', text: 'WHAT' },
+          { from: 'claudia', time: 'PD-04 // 10:07', text: 'Go open the door.' },
+          { from: 'koko', time: 'PD-04 // 10:08', text: 'i tried' },
+          { from: 'koko', time: 'PD-04 // 10:08', text: 'it wont open' },
+          { from: 'claudia', time: 'PD-04 // 10:09', text: 'Did you press the button?' },
+          { from: 'koko', time: 'PD-04 // 10:09', text: 'YES' },
+          { from: 'koko', time: 'PD-04 // 10:10', text: 'well' },
+          { from: 'koko', time: 'PD-04 // 10:10', text: 'probably not the right one' },
+          { from: 'claudia', time: 'PD-04 // 10:11', text: 'Koko.' },
+          { from: 'koko', time: 'PD-04 // 10:12', text: 'IM GOING' },
+          { from: 'koko', time: 'PD-04 // 10:12', text: 'IM ALREADY GOING' },
+          { from: 'koko', time: 'PD-04 // 10:13', text: 'thanks youre the best' },
+          { from: 'claudia', time: 'PD-04 // 10:14', text: 'I know.' },
+        ]},
+        { date: 'PD-04 // DAY ████ // 07 MAR 1973', msgs: [
+          { from: 'koko', time: 'PD-04 // 16:21', text: 'CLAUDIA' },
+          { from: 'koko', time: 'PD-04 // 16:21', text: 'guess what' },
+          { from: 'claudia', time: 'PD-04 // 16:23', text: 'What?' },
+          { from: 'koko', time: 'PD-04 // 16:24', text: 'I BEAT ALPHA TODAY' },
+          { from: 'claudia', time: 'PD-04 // 16:25', text: 'In what?' },
+          { from: 'koko', time: 'PD-04 // 16:26', text: 'we were running' },
+          { from: 'koko', time: 'PD-04 // 16:26', text: 'i got there first' },
+          { from: 'claudia', time: 'PD-04 // 16:27', text: 'You got there first or he let you win?' },
+          { from: 'koko', time: 'PD-04 // 16:28', text: 'HEY' },
+          { from: 'koko', time: 'PD-04 // 16:28', text: 'I WON FAIR AND SQUARE' },
+          { from: 'koko', time: 'PD-04 // 16:29', text: 'okay' },
+          { from: 'koko', time: 'PD-04 // 16:29', text: 'almost' },
+          { from: 'claudia', time: 'PD-04 // 16:30', text: 'Explain.' },
+          { from: 'koko', time: 'PD-04 // 16:31', text: 'he tripped' },
+          { from: 'koko', time: 'PD-04 // 16:31', text: 'i helped him up' },
+          { from: 'koko', time: 'PD-04 // 16:32', text: 'and he said "lets go again"' },
+          { from: 'koko', time: 'PD-04 // 16:32', text: 'i said "no i already won"' },
+          { from: 'koko', time: 'PD-04 // 16:33', text: 'and he said "okay"' },
+          { from: 'koko', time: 'PD-04 // 16:33', text: 'SO I WON' },
+          { from: 'claudia', time: 'PD-04 // 16:34', text: 'Koko.' },
+          { from: 'koko', time: 'PD-04 // 16:35', text: 'WHAT' },
+          { from: 'claudia', time: 'PD-04 // 16:36', text: 'Thats not winning, thats cheating.' },
+          { from: 'koko', time: 'PD-04 // 16:36', text: 'ITS STRATEGY' },
+          { from: 'claudia', time: 'PD-04 // 16:37', text: 'Its not strategy.' },
+          { from: 'claudia', time: 'PD-04 // 16:38', text: 'Its helping a friend and claiming victory.' },
+          { from: 'koko', time: 'PD-04 // 16:39', text: 'sounds like strategy to me' },
+          { from: 'claudia', time: 'PD-04 // 16:40', text: '...Fine??' },
+        ]},
+        { date: 'PD-04 // DAY ████ // 15 MAR 1973', msgs: [
+          { from: 'koko', time: 'PD-04 // 12:11', text: 'CLAUDIA' },
+          { from: 'koko', time: 'PD-04 // 12:11', text: 'I HAVE AN IDEA' },
+          { from: 'claudia', time: 'PD-04 // 12:13', text: 'Oh no.' },
+          { from: 'claudia', time: 'PD-04 // 12:13', text: 'What now?' },
+          { from: 'koko', time: 'PD-04 // 12:14', text: 'LETS HAVE A PICNIC' },
+          { from: 'koko', time: 'PD-04 // 12:14', text: 'ON THE SHIP' },
+          { from: 'koko', time: 'PD-04 // 12:15', text: 'IN THE HANGAR' },
+          { from: 'claudia', time: 'PD-04 // 12:16', text: 'In the hangar.' },
+          { from: 'koko', time: 'PD-04 // 12:17', text: 'YES' },
+          { from: 'koko', time: 'PD-04 // 12:17', text: 'ITS SO PRETTY THERE' },
+          { from: 'koko', time: 'PD-04 // 12:18', text: 'YOU CAN SEE THE STARS' },
+          { from: 'koko', time: 'PD-04 // 12:18', text: 'AND ITS WARM' },
+          { from: 'koko', time: 'PD-04 // 12:19', text: 'WELL ALMOST' },
+          { from: 'claudia', time: 'PD-04 // 12:20', text: 'Koko. The hangar has no atmosphere.' },
+          { from: 'koko', time: 'PD-04 // 12:21', text: 'details' },
+          { from: 'koko', time: 'PD-04 // 12:21', text: 'we can wear suits' },
+          { from: 'koko', time: 'PD-04 // 12:22', text: 'IT WILL BE FUN' },
+          { from: 'claudia', time: 'PD-04 // 12:23', text: 'You want to have a picnic in spacesuits.' },
+          { from: 'koko', time: 'PD-04 // 12:24', text: 'YES' },
+          { from: 'koko', time: 'PD-04 // 12:24', text: 'HISTORIC MOMENT' },
+          { from: 'claudia', time: 'PD-04 // 12:25', text: 'We will die.' },
+          { from: 'koko', time: 'PD-04 // 12:26', text: 'maybe' },
+          { from: 'koko', time: 'PD-04 // 12:26', text: 'but it will be fun' },
+          { from: 'koko', time: 'PD-04 // 12:27', text: 'SMILE said its a good idea' },
+          { from: 'claudia', time: 'PD-04 // 12:28', text: 'SMILE is a medical AI, he is not qualified for survival decisions.' },
+          { from: 'koko', time: 'PD-04 // 12:29', text: 'BUT ITS A PICNIC' },
+          { from: 'koko', time: 'PD-04 // 12:29', text: 'WHAT COULD GO WRONG' },
+          { from: 'claudia', time: 'PD-04 // 12:30', text: 'Everything.' },
+          { from: 'claudia', time: 'PD-04 // 12:31', text: 'Absolutely everything.' },
+          { from: 'claudia', time: 'PD-04 // 12:32', text: 'But...' },
+          { from: 'claudia', time: 'PD-04 // 12:33', text: 'If you bring tea.' },
+          { from: 'koko', time: 'PD-04 // 12:34', text: 'IM GOING' },
+          { from: 'koko', time: 'PD-04 // 12:34', text: 'IM ALREADY GOING' },
+          { from: 'koko', time: 'PD-04 // 12:35', text: 'I LOVE YOU' },
+          { from: 'claudia', time: 'PD-04 // 12:36', text: 'I know.' },
+          { from: 'koko', time: 'PD-04 // 12:37', text: 'you said "but"???' },
+          { from: 'koko', time: 'PD-04 // 12:37', text: 'IS THAT A YES???' },
+          { from: 'claudia', time: 'PD-04 // 12:38', text: 'Koko.' },
+          { from: 'koko', time: 'PD-04 // 12:39', text: 'WHAT' },
+          { from: 'claudia', time: 'PD-04 // 12:40', text: 'Bring the tea, then we will talk.' },
+          { from: 'koko', time: 'PD-04 // 12:41', text: 'IM ALREADY ON MY WAY' },
+          { from: 'koko', time: 'PD-04 // 12:41', text: 'THANK YOU YOURE THE BEST' },
+          { from: 'claudia', time: 'PD-04 // 12:42', text: 'I know.' },
+        ]},
+        { date: 'PD-04 // DAY ████ // 22 MAR 1973', msgs: [
+          { from: 'koko', time: 'PD-04 // 19:04', text: 'CLAUDIA' },
+          { from: 'claudia', time: 'PD-04 // 19:06', text: 'What now?' },
+          { from: 'koko', time: 'PD-04 // 19:07', text: 'ALPHA CALLED ME SHORT' },
+          { from: 'koko', time: 'PD-04 // 19:07', text: 'IM NOT SHORT' },
+          { from: 'claudia', time: 'PD-04 // 19:08', text: 'You are 169 cm.' },
+          { from: 'koko', time: 'PD-04 // 19:09', text: 'THATS NORMAL' },
+          { from: 'koko', time: 'PD-04 // 19:09', text: 'YOURE JUST TALL' },
+          { from: 'claudia', time: 'PD-04 // 19:10', text: 'I am 177 cm.' },
+          { from: 'koko', time: 'PD-04 // 19:11', text: 'youre a girl' },
+          { from: 'koko', time: 'PD-04 // 19:11', text: 'youre supposed to be tall' },
+          { from: 'claudia', time: 'PD-04 // 19:12', text: 'Koko.' },
+          { from: 'koko', time: 'PD-04 // 19:13', text: 'WHAT' },
+          { from: 'claudia', time: 'PD-04 // 19:14', text: 'That is not how it works.' },
+          { from: 'koko', time: 'PD-04 // 19:15', text: 'well' },
+          { from: 'koko', time: 'PD-04 // 19:15', text: 'Alpha is 155' },
+          { from: 'koko', time: 'PD-04 // 19:16', text: 'HE CANT CALL ME SHORT' },
+          { from: 'claudia', time: 'PD-04 // 19:17', text: 'Did you call him short.' },
+          { from: 'koko', time: 'PD-04 // 19:18', text: 'yeah' },
+          { from: 'koko', time: 'PD-04 // 19:18', text: 'so what' },
+          { from: 'koko', time: 'PD-04 // 19:19', text: 'its true' },
+          { from: 'claudia', time: 'PD-04 // 19:20', text: 'And what did he say.' },
+          { from: 'koko', time: 'PD-04 // 19:21', text: 'he said "okay"' },
+          { from: 'koko', time: 'PD-04 // 19:21', text: 'and walked away' },
+          { from: 'koko', time: 'PD-04 // 19:22', text: 'BUT I SAW HIM SMILING' },
+          { from: 'koko', time: 'PD-04 // 19:22', text: 'HE KNOWS' },
+          { from: 'koko', time: 'PD-04 // 19:23', text: 'HE KNOWS HES SHORT' },
+          { from: 'koko', time: 'PD-04 // 19:23', text: 'HE DOESNT CARE' },
+          { from: 'claudia', time: 'PD-04 // 19:24', text: 'Maybe he just doesnt care.' },
+          { from: 'koko', time: 'PD-04 // 19:25', text: 'well' },
+          { from: 'koko', time: 'PD-04 // 19:25', text: 'then i dont care either' },
+          { from: 'koko', time: 'PD-04 // 19:26', text: 'BUT IM STILL NOT SHORT' },
+          { from: 'claudia', time: 'PD-04 // 19:27', text: 'You are short.' },
+          { from: 'koko', time: 'PD-04 // 19:28', text: 'HEY' },
+          { from: 'koko', time: 'PD-04 // 19:28', text: 'YOURE SUPPOSED TO BE ON MY SIDE' },
+          { from: 'claudia', time: 'PD-04 // 19:29', text: 'I am on the side of truth.' },
+          { from: 'koko', time: 'PD-04 // 19:30', text: ':(((' },
+
+        ]},
+        { date: 'PD-04 // DAY ████ // 29 MAR 1973', msgs: [
+          { from: 'koko', time: 'PD-04 // 08:42', text: 'CLAUDIA' },
+          { from: 'koko', time: 'PD-04 // 08:42', text: 'I CLEANED SHIP TODAY' },
+          { from: 'claudia', time: 'PD-04 // 08:44', text: 'Really?' },
+          { from: 'koko', time: 'PD-04 // 08:45', text: 'well' },
+          { from: 'koko', time: 'PD-04 // 08:45', text: 'almost' },
+          { from: 'koko', time: 'PD-04 // 08:46', text: 'I moved one thing' },
+          { from: 'claudia', time: 'PD-04 // 08:47', text: 'One thing?' },
+          { from: 'koko', time: 'PD-04 // 08:48', text: 'one thing from the floor' },
+          { from: 'koko', time: 'PD-04 // 08:48', text: 'thats progress' },
+          { from: 'claudia', time: 'PD-04 // 08:49', text: 'You moved one thing from the floor and called it cleaning.' },
+          { from: 'koko', time: 'PD-04 // 08:50', text: 'YES' },
+          { from: 'koko', time: 'PD-04 // 08:50', text: 'its a start' },
+          { from: 'koko', time: 'PD-04 // 08:51', text: 'tomorrow I will move another one' },
+          { from: 'koko', time: 'PD-04 // 08:51', text: 'and the day after another one' },
+          { from: 'koko', time: 'PD-04 // 08:52', text: 'in a month it will be spotless' },
+          { from: 'claudia', time: 'PD-04 // 08:53', text: 'That is... strange logic.' },
+          { from: 'koko', time: 'PD-04 // 08:54', text: 'ITS STRATEGY' },
+          { from: 'koko', time: 'PD-04 // 08:54', text: 'you wouldnt understand' },
+          { from: 'claudia', time: 'PD-04 // 08:55', text: 'I suppose not.' },
+          { from: 'koko', time: 'PD-04 // 08:56', text: 'see' },
+          { from: 'koko', time: 'PD-04 // 08:56', text: 'you just havent reached my level yet' },
+          { from: 'claudia', time: 'PD-04 // 08:57', text: 'Probably not.' },
+          { from: 'koko', time: 'PD-04 // 08:58', text: 'its okay' },
+          { from: 'koko', time: 'PD-04 // 08:58', text: 'not everyone can be as talented as me' },
+          { from: 'claudia', time: 'PD-04 // 08:59', text: 'Koko.' },
+          { from: 'koko', time: 'PD-04 // 09:00', text: 'WHAT' },
+          { from: 'claudia', time: 'PD-04 // 09:01', text: 'Go move the second thing.' },
+          { from: 'koko', time: 'PD-04 // 09:02', text: 'but' },
+          { from: 'koko', time: 'PD-04 // 09:02', text: 'i already moved one' },
+          { from: 'koko', time: 'PD-04 // 09:03', text: 'thats my limit for today' },
+        ]},
+      ];
+
+      claudiaLog.forEach(day => {
+        const dateDiv = document.createElement('div');
+        dateDiv.style.cssText = 'text-align:center;font-size:9px;color:var(--dimmer);letter-spacing:0.14em;margin:10px 0 4px;';
+        dateDiv.textContent = `— ${day.date} —`;
+        chatBody.appendChild(dateDiv);
+        day.msgs.forEach(m => {
+          const isKoko = m.from === 'koko';
+          const isClaudia = m.from === 'claudia';
+          const wrap = document.createElement('div');
+          wrap.className = `chat-message ${isKoko ? 'user' : 'bot'}`;
+          wrap.innerHTML = `
+            ${!isKoko && isClaudia ? '<div class="chat-avatar" style="font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--b);border-color:rgba(0,200,255,0.4);">☾</div>' : ''}
+            <div class="chat-bubble">
+              <span class="chat-label" style="${isKoko ? '' : 'color:var(--b);'}">${isKoko ? 'KOKO >_' : 'CLAUDIA >_'} <span style="opacity:0.4;font-size:8px;margin-left:6px;">${m.time}</span></span>
+              <span class="chat-text">${m.text}</span>
+            </div>
+          `;
+          chatBody.appendChild(wrap);
+        });
+      });
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  }
+  return;
+}
         if (typeof playError === 'function') playError();
         if (typeof appendChat === 'function') {
           appendChat(`ACCESS DENIED. ${contactName} is not available.`, 'bot');
@@ -4684,6 +4882,10 @@ if (document.readyState === 'loading') {
 // ══════════════════════════════════════════════════════════════════════════
 
 const SMAILY_MEMES = [
+  {
+    img: 'картинк/memes/HELLO.png',
+    caption: 'SMILE: HELLO, PILOT!! :D Welcome aboard!! I\'m so glad you\'re here!! How are you feeling??'
+  },
   {
     img: 'картинк/memes/meme1.jpg',
     caption: 'SMILE: Pilot, I ran diagnostics on your last maneuver. The results are... artistic?'
@@ -5019,3 +5221,43 @@ setTimeout(() => {
 
 // Для теста
 setTimeout(showSmailyInvite, 5000);
+
+// ===== ПРИВЕТСТВЕННЫЙ ПОПАП СМАЙЛИ (через 10 секунд после открытия) =====
+setTimeout(() => {
+  // Проверяем, что сайт видим и попап ещё не открыт
+  if (!document.hidden) {
+    // Создаём специальный попап с приветствием
+    const popup = document.getElementById('smaily-popup');
+    if (!popup) return;
+    
+    // Берем первую картинку из массива (HELLO.png)
+    const meme = SMAILY_MEMES[0];
+    if (!meme) return;
+    
+    // Случайная позиция
+    const maxX = window.innerWidth - 300;
+    const maxY = window.innerHeight - 320;
+    const x = Math.max(20, Math.floor(Math.random() * maxX));
+    const y = Math.max(20, Math.floor(Math.random() * maxY));
+    
+    popup.style.left = x + 'px';
+    popup.style.top = y + 'px';
+    
+    document.getElementById('smaily-popup-img').src = meme.img;
+    document.getElementById('smaily-popup-caption').textContent = meme.caption;
+    
+    popup.style.display = 'block';
+    popup.style.animation = 'smailyPopupSlide 0.5s ease both';
+    
+    smailyPopupActive = true;
+    
+    // Воспроизводим звук СМАЙЛИ
+    if (typeof window.playVoice === 'function') window.playVoice('smaily');
+    else new Audio('sounds/СМАЙЛИ.mp3').play().catch(()=>{});
+    
+    // Авто-закрытие через 20 секунд
+    setTimeout(() => {
+      closeSmailyPopup();
+    }, 20000);
+  }
+}, 5000);

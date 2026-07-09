@@ -4312,7 +4312,7 @@ const SMILE_BACK_MSGS = [
   "nooo wait!!",
   "one more game?? :(",
   "but we were having fun!!",
-  "...okay. bye.",
+  "...okay. Bye.",
   "please stay :(",
   "i'll be here, alone.",
 ];
