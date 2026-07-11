@@ -83,10 +83,12 @@
     };
   }
 
-  // Глитчи: шестерёнка/фавикон (soca) + панели/текст/координаты (pilot).
+  // Глитчи: шестерёнка/фавикон (soca) + панели/текст/координаты (pilot) +
+  // звук глитча playShortGlitch (sounds.js, обе страницы — он и раздражал).
   // Гасим при выключенных глитчах. Отсутствующие на странице — пропускаются.
   ['glitchGear', 'glitchFavicon',
-   'glitchRandomPanel', 'glitchRandomText', 'glitchBottomCoords'].forEach((name) => {
+   'glitchRandomPanel', 'glitchRandomText', 'glitchBottomCoords',
+   'playShortGlitch'].forEach((name) => {
     const orig = window[name];
     if (typeof orig === 'function') {
       window[name] = function () {
@@ -627,6 +629,7 @@
         // pilot.html — повторным вызовом animLoop.
         const cur = currentPageName();
         if (cur && has('showPage')) window.showPage(cur);
+        if (has('animLoop')) window.animLoop();
         soca('Full readouts back online.', 'info');
       } else {
         // LITE → циклы сами встанут; сообщаем ДО (тосты ещё живы)

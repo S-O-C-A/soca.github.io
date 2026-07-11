@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>SECTOR7.EXE</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23040d08'/%3E%3Crect x='4.5' y='3.5' width='23' height='21' fill='none' stroke='%2300ff88' stroke-opacity='.5' stroke-width='1.5'/%3E%3Ctext x='16' y='20' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='17' fill='%2300ff88'%3E7%3C/text%3E%3Crect x='4.5' y='26.5' width='23' height='3' fill='%233a1015'/%3E%3Crect x='4.5' y='26.5' width='9.5' height='3' fill='%23ff2244'/%3E%3C/svg%3E">
 <style>
-  @keyframes recvBlink{0%,49%{opacity:1;text-shadow:0 0 12px #ff2244}50%,100%{opacity:0;text-shadow:none}}
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  @keyframes recvBlink{0%,49%{opacity:1;text-shadow:0 0 12px #ff2244}50%,100%{opacity:0;text-shadow:none}}
 
 :root{
   --g:#00ff88;--g2:#00ffcc;--b:#00ccff;
@@ -521,7 +523,8 @@ const ROOMS=[
     exits:[
       {ex:1, ey:12,toRoom:0,sx:37,sy:12},
       {ex:38,ey:12,toRoom:2,sx:3, sy:12},
-      {ex:20,ey:23,toRoom:3,sx:20,sy:2},
+      // проход вниз → VOID появляется только после выполнения задания архива
+      // (см. успех мини-игры с правильной полкой)
     ],
     objs:[
       {id:'fuse',  x:32,y:7, sym:'⚡',col:C.yellow,label:'FUSE',      desc:'Fuse marked "ENG-B". Needed in engine room.',pickup:true},
@@ -631,7 +634,7 @@ const ROOMS=[
       return t;
     })(),
     exits:[
-      {ex:38,ey:12,toRoom:7,sx:3,sy:12},
+      // проход в лок_8 открывается после прочтения всех 4 логов (загадка лок_7) — см. push ниже
     ],
     objs:[
       // Антенна - центральный объект
@@ -1564,6 +1567,10 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
     startMgShelf(
       ()=>{ // успех
         invAdd('CORRUPTED KEY','🗝'); S.flags.archiveKeyFound=true;
+        // задание архива выполнено → открываем проход вниз в VOID
+        if(!ROOMS[1].exits.some(e=>e.toRoom===3)){
+          ROOMS[1].exits.push({ex:20,ey:23,toRoom:3,sx:20,sy:2});
+        }
         glitch(10); dlgShow('shelf_right');
       },
       ()=>{ dlgShow('shelf_wrong'); }
@@ -1622,8 +1629,20 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
 
   // Финальный терминал
   if(o.isCoreTerminal){
+    if(ROOMS[5].coreDone){ descShow(o.label,'Core accessed. The way forward is open.'); return; }
     if((ROOMS[5].relaysDone||0)<3){ dlgShow('relays_needed'); return; }
-    if(invHas('CORE FRAGMENT')){ invDel('CORE FRAGMENT'); S.done=true; glitch(30); dlgShow('game_end',showEnd); }
+    if(invHas('CORE FRAGMENT')){
+      invDel('CORE FRAGMENT'); glitch(30);
+      ROOMS[5].coreDone=true;
+      S.monster.active=false;              // ядро запитано — контейнмент гаснет, монстр останавливается
+      o.col=C.g; o.desc='Core online.';
+      dlgShow('game_end',()=>{
+        // открываем проход дальше → LOC_07 // TRANSMISSION (комната 6)
+        ROOMS[5].tiles[12][38]=0;
+        ROOMS[5].exits.push({ex:38,ey:12,toRoom:6,sx:3,sy:12});
+        glitch(15);
+      });
+    }
     else dlgShow('no_item');
     return;
   }
@@ -2817,7 +2836,114 @@ function startMgCryo(cryo, onSuccess){
   }
 }
 
-setTimeout(bootStep,200);
+// ── интеграция со звуком (sector7-sounds.js) ──
+// Отдаём состояние наружу и запускаем логи после [ENTER] (жест для звука).
+window.S=S; window.ROOMS=ROOMS;
+window.startBootLogs=function(){ if(window.__s7LogsStarted) return; window.__s7LogsStarted=true; bootStep(); };
+// Фолбэк: если звуковой файл не подключён — стартуем логи сами.
+setTimeout(()=>{ if(!window.__s7LogsStarted && !window.__s7EnterShown) window.startBootLogs(); }, 2000);
+</script>
+<script src="sector7-sounds.js"></script>
+
+<!-- ═══ АДАПТАЦИЯ ПОД ТАЧ-УСТРОЙСТВА: слева WASD, справа E, диалоги — по центру снизу ═══ -->
+<script>
+(function(){
+  var isTouch = ('ontouchstart' in window)
+             || navigator.maxTouchPoints > 0
+             || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+  if(!isTouch) return;
+  document.documentElement.classList.add('s7-touch');
+
+  var css = document.createElement('style');
+  css.textContent = [
+    /* вписываем игру в экран телефона (клики мини-игр считаются через
+       getBoundingClientRect, поэтому масштаб их не ломает) */
+    '.s7-touch #cv{max-width:100%;height:auto;}',
+    '.s7-touch #mg-cv{max-width:100%;height:auto;}',
+
+    /* слова СОКИ / описания / диалоги — по центру снизу (были слева) */
+    '.s7-touch #dialog{left:50%!important;right:auto!important;',
+      'transform:translateX(-50%);bottom:14px!important;',
+      'width:min(78%,340px)!important;max-height:38vh;overflow:auto;',
+      'border-left:1px solid var(--border);border-top:2px solid var(--g);}',
+
+    /* контейнер тач-контролов: НАД диалогом(20) и оверлеями(50),
+       но ПОД сканлайнами(9997+, они всё равно pointer-events:none) */
+    '#s7-pad{position:fixed;inset:0;pointer-events:none;z-index:9990;',
+      "font-family:'Share Tech Mono',monospace;}",
+    '#s7-pad .s7-dpad{position:absolute;left:14px;bottom:14px;display:grid;',
+      'grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,52px);gap:8px;}',
+    '#s7-pad .s7-e{position:absolute;right:16px;bottom:20px;}',
+    '#s7-pad button{pointer-events:auto;-webkit-tap-highlight-color:transparent;',
+      'touch-action:none;user-select:none;-webkit-user-select:none;',
+      'background:rgba(0,40,22,.55);border:1px solid rgba(0,255,136,.55);color:#00ff88;',
+      'font-family:inherit;font-size:18px;border-radius:8px;',
+      'text-shadow:0 0 6px rgba(0,255,136,.6);}',
+    '#s7-pad .s7-e button{width:68px;height:68px;font-size:23px;',
+      'border-color:rgba(0,255,136,.8);}',
+    '#s7-pad button.s7-on{background:rgba(0,255,136,.3);',
+      'box-shadow:0 0 14px rgba(0,255,136,.45);}',
+    '#s7-pad .s7-w{grid-column:2;grid-row:1;}',
+    '#s7-pad .s7-a{grid-column:1;grid-row:2;}',
+    '#s7-pad .s7-s{grid-column:2;grid-row:2;}',
+    '#s7-pad .s7-d{grid-column:3;grid-row:2;}'
+  ].join('');
+  document.head.appendChild(css);
+
+  function keyEv(type, code){
+    document.dispatchEvent(new KeyboardEvent(type,{
+      code:code,
+      key: code==='KeyE' ? 'e' : code.replace('Key','').toLowerCase(),
+      bubbles:true, cancelable:true
+    }));
+  }
+
+  var pad = document.createElement('div');
+  pad.id = 's7-pad';
+  pad.innerHTML =
+      '<div class="s7-dpad">'
+    +   '<button class="s7-w" data-code="KeyW">W</button>'
+    +   '<button class="s7-a" data-code="KeyA">A</button>'
+    +   '<button class="s7-s" data-code="KeyS">S</button>'
+    +   '<button class="s7-d" data-code="KeyD">D</button>'
+    + '</div>'
+    + '<div class="s7-e"><button data-code="KeyE" data-tap="1">E</button></div>';
+
+  function wire(){
+    var btns = pad.querySelectorAll('button');
+    for(var i=0;i<btns.length;i++){
+      (function(b){
+        var code = b.getAttribute('data-code');
+        var tap  = b.getAttribute('data-tap');
+        function down(e){
+          e.preventDefault();
+          b.classList.add('s7-on');
+          keyEv('keydown', code);
+          if(tap) setTimeout(function(){ keyEv('keyup', code); }, 60);
+        }
+        function up(e){
+          if(e) e.preventDefault();
+          b.classList.remove('s7-on');
+          if(!tap) keyEv('keyup', code);
+        }
+        b.addEventListener('touchstart', down, {passive:false});
+        b.addEventListener('touchend', up, {passive:false});
+        b.addEventListener('touchcancel', up, {passive:false});
+        b.addEventListener('mousedown', down);   /* на случай эмуляции/стилуса */
+        b.addEventListener('mouseup', up);
+        b.addEventListener('mouseleave', up);
+      })(btns[i]);
+    }
+  }
+
+  function mount(){
+    if(document.getElementById('s7-pad')) return;
+    document.body.appendChild(pad);
+    wire();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
+  else mount();
+})();
 </script>
 </body>
 </html>
