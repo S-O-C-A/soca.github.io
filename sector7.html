@@ -1167,6 +1167,8 @@ ROOMS[1].correctShelf = shelfIds[Math.floor(Math.random()*shelfIds.length)];
 function enterRoom(idx,sx,sy){
   S.room=idx; S.px=sx; S.py=sy;
   const rm=ROOMS[idx];
+  // самовосстановление: если все 4 лога уже прочитаны, дверь в лок_8 должна быть открыта
+  if(idx===6 && ROOMS[6].objs.filter(x=>x.id&&x.id.startsWith('log')&&x.read).length>=4) openLoc7Door();
   document.getElementById('loc-label').textContent=rm.name;
   document.getElementById('tb-loc').textContent=rm.id;
   glitch(10);
@@ -1200,8 +1202,12 @@ function showFreqInput(){
   document.getElementById('dlg-cont').style.display='none';
   let code='';
   const h=e=>{
-    if(e.key>='0'&&e.key<='9'&&code.length<3){code+=e.key;document.getElementById('fi').textContent=code.padEnd(3,'_');}
-    if(e.code==='Backspace'){code=code.slice(0,-1);document.getElementById('fi').textContent=code.padEnd(3,'_');}
+    // страховка: если диалог уже закрыт/перерисован (#fi исчез) —
+    // снимаем слушатель, иначе он падал с TypeError на цифрах
+    const fi=document.getElementById('fi');
+    if(!fi){ document.removeEventListener('keydown',h); return; }
+    if(e.key>='0'&&e.key<='9'&&code.length<3){code+=e.key;fi.textContent=code.padEnd(3,'_');}
+    if(e.code==='Backspace'){code=code.slice(0,-1);fi.textContent=code.padEnd(3,'_');}
     if(e.code==='Enter'||e.code==='KeyE'){
       document.removeEventListener('keydown',h);
 if(code==='731'){
@@ -1484,6 +1490,19 @@ function nearObj(){
   return null;
 }
 
+// Открытие двери лок_7 → лок_8 (идемпотентно: повторный вызов безопасен)
+function openLoc7Door(){
+  const rm=ROOMS[6];
+  S.flags.allLogsRead=true;
+  const sf=rm.objs.find(x=>x.id==='signal_final');
+  if(sf){ sf.sym='▪'; sf.col=C.g; sf.label='FINAL SIGNAL'; delete sf.needFlag; }
+  rm.tiles[12][38]=0;
+  if(!rm.exits.some(e=>e.toRoom===7)){
+    rm.exits.push({ex:38,ey:12,toRoom:7,sx:3,sy:12});
+    glitch(10);
+  }
+}
+
 function interact(){
   const o=nearObj(); if(!o) return;
   const rm=ROOMS[S.room];
@@ -1701,15 +1720,10 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
   if(o.id&&o.id.startsWith('log')&&S.flags.antennaOn){
     if(!o.read){
       o.read=true;
-      ROOMS[6].logsRead=(ROOMS[6].logsRead||0)+1;
-      if(ROOMS[6].logsRead>=4){
-        S.flags.allLogsRead=true;
-        const sf=ROOMS[6].objs.find(x=>x.id==='signal_final');
-        if(sf){ sf.sym='▪'; sf.col=C.g; sf.label='FINAL SIGNAL'; delete sf.needFlag; }
-        ROOMS[6].tiles[12][38]=0;
-        ROOMS[6].exits.push({ex:38,ey:12,toRoom:7,sx:3,sy:12});
-        glitch(10);
-      }
+      // считаем по факту прочитанных логов (надёжнее счётчика)
+      const rm6=ROOMS[6];
+      rm6.logsRead=rm6.objs.filter(x=>x.id&&x.id.startsWith('log')&&x.read).length;
+      if(rm6.logsRead>=4) openLoc7Door();
     }
     descShow(o.label, o.realDesc || o.desc); return;
   }
