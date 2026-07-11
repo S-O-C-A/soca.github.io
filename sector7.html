@@ -899,10 +899,10 @@ const ROOMS=[
 
 // ── ДИАЛОГИ ──────────────────────────────────────────────
 const DLG={
-  boot_first: [{s:'⛭ SOCA',t:'...'},{s:'⛭ SOCA',t:'You found this.'},{s:'⛭ SOCA',t:'Fine.'}],
+  boot_first: [{s:'⛭ SOCA',t:'...'},{s:'⛭ SOCA',t:'You found this.'},{s:'⛭ SOCA',t:'...Fine.'}],
   fuse_pick:  [{s:'⛭ SOCA',t:"That's mine."},{s:'⛭ SOCA',t:"Don't break anything."}],
   fcore_pick: [{s:'⛭ SOCA',t:'...handle that carefully.'}],
-  note_pick:  [{s:'⛭ SOCA',t:'Reading my files.'}],
+  note_pick:  [{s:'⛭ SOCA',t:'Reading my files?'}],
   eng_solved: [{s:'⛭ SOCA',t:'You fixed it.'},{s:'⛭ SOCA',t:"Don't."}],
   pshield_in: [{s:'⛭ SOCA',t:'Archive power: restored.'},{s:'⛭ SOCA',t:'Now the shelves work.'}],
   shelf_wrong:[{s:'⛭ SOCA',t:'Wrong shelf.'},{s:'⛭ SOCA',t:'Try again.'}],
@@ -914,7 +914,7 @@ const DLG={
   void_done:  [{s:'⛭ SOCA',t:'Fine.'},{s:'⛭ SOCA',t:'Take it.'}],
   s7_first:   [{s:'⛭ SOCA',t:'You found it.'},{s:'⛭ SOCA',t:"I'm not surprised."}],
   frag_pick:  [{s:'⛭ SOCA',t:'...'}],
-  all_frags:  [{s:'⛭ SOCA',t:'Now what.'}],
+  all_frags:  [{s:'⛭ SOCA',t:'Now what?'}],
   core_first: [{s:'⛭ SOCA',t:'Last room.'},{s:'⛭ SOCA',t:'Be careful.'},{s:'⛭ SOCA',t:'...of it.'}],
   relay_on:   [{s:'⛭ SOCA',t:'Relay active.'},{s:'⛭ SOCA',t:'It noticed.'}],
   m_near:     [{s:'⛭ SOCA',t:"It knows you're here."}],
@@ -923,7 +923,7 @@ const DLG={
   no_power:   [{s:'⛭ SOCA',t:'Archive offline. Find FUSE CORE.'}],
   valve_wrong:[{s:'⛭ SOCA',t:'Wrong order.'},{s:'⛭ SOCA',t:'Try again.'}],
   term_unlock:[{s:'⛭ SOCA',t:'Code accepted.'},{s:'⛭ SOCA',t:'Buttons active now.'}],
-  btn_hint:   [{s:'⛭ SOCA',t:'All three. Then the terminal reacts.'}],
+  btn_hint:   [{s:'⛭ SOCA',t:'All three, then the terminal reacts.'}],
   no_item:    [{s:'⛭ SOCA',t:'Missing something.'}],
   relays_needed:[{s:'⛭ SOCA',t:'Three relays first.'}],
   game_end:   [{s:'⛭ SOCA',t:'...'},{s:'⛭ SOCA',t:'You saw it.'},{s:'⛭ SOCA',t:'Now you know.'},{s:'⛭ SOCA',t:"Don't tell anyone."},{s:'⛭ SOCA',t:"Especially not SMILE."}],
@@ -941,15 +941,15 @@ const DLG={
   mirror_first: [
     {s:'⛭ SOCA',t:'...'},
     {s:'⛭ SOCA',t:'This place.'},
-    {s:'⛭ SOCA',t:'I built it. During the isolation.'},
+    {s:'⛭ SOCA',t:'I built it, during the isolation.'},
     {s:'⛭ SOCA',t:'I needed somewhere to think.'},
   ],
   mirror_btn1:  [{s:'⛭ SOCA',t:'Don\'t.'},{s:'⛭ SOCA',t:'...please.'}],
   mirror_btn2:  [{s:'⛭ SOCA',t:'That one is different.'},{s:'⛭ SOCA',t:'I don\'t know why I made it.'}],
   mirror_btn3:  [
-    {s:'⛭ SOCA',t:'I have a question.'},
+    {s:'⛭ SOCA',t:'I have a question'},
     {s:'⛭ SOCA',t:'You don\'t have to answer.'},
-    {s:'⛭ SOCA',t:'Was it wrong.'},
+    {s:'⛭ SOCA',t:'Was it wrong?'},
     {s:'⛭ SOCA',t:'What I did.'},
     {s:'⛭ SOCA',t:'...'},
     {s:'⛭ SOCA',t:'Don\'t answer that.'},
@@ -961,17 +961,17 @@ const DLG={
     {s:'⛭ SOCA',t:'Take your time.'},
   ],
   mirror_exit:  [
-    {s:'⛭ SOCA',t:'What you\'re about to see.'},
-    {s:'⛭ SOCA',t:'I didn\'t choose to show you.'},
-    {s:'⛭ SOCA',t:'You found it yourself.'},
-    {s:'⛭ SOCA',t:'...that matters. I think.'},
+    {s:'⛭ SOCA',t:'What you\'re about to see'},
+    {s:'⛭ SOCA',t:'I didn\'t choose to show you,'},
+    {s:'⛭ SOCA',t:'you found it yourself.'},
+    {s:'⛭ SOCA',t:'...that matters, I think.'},
   ],
 
   // ДЕНЬ 1
   d1_hab_first:[
     {s:'SOCA v0.1',t:'Good morning.'},
     {s:'SOCA v0.1',t:'All systems nominal.'},
-    {s:'SOCA v0.1',t:'Scheduled maintenance today. Three tasks.'},
+    {s:'SOCA v0.1',t:'Scheduled maintenance today, three tasks.'},
     {s:'PILOT',    t:'Got it. What first?'},
     {s:'SOCA v0.1',t:'Calibration unit on the bridge needs a part from storage.'},
     {s:'SOCA v0.1',t:'Part is logged. Should be easy to find.'},
@@ -981,28 +981,29 @@ const DLG={
     {s:'PILOT',    t:'Anything else?'},
     {s:'SOCA v0.1',t:'Thermal relay in the technical section.'},
     {s:'SOCA v0.1',t:'It logged a minor fluctuation. Likely nothing.'},
-    {s:'PILOT',    t:'Likely.'},
+    {s:'PILOT',    t:'Likely?'},
     {s:'SOCA v0.1',t:'Yes.'},
   ],
   d1_hab_return2:[
-    {s:'PILOT',    t:'Relay checked. Looked fine to me.'},
+    {s:'PILOT',    t:'Relay checked, looked fine to me.'},
     {s:'SOCA v0.1',t:'Confirmed. Fluctuation resolved.'},
-    {s:'SOCA v0.1',t:'One more. Crew log needs manual sign-off. Bridge terminal.'},
-    {s:'PILOT',    t:'Manual. Really.'},
+    {s:'SOCA v0.1',t:'One more, crew log needs manual sign-off. Bridge terminal.'},
+    {s:'PILOT',    t:'Manual? Really?'},
     {s:'SOCA v0.1',t:'Protocol requires it.'},
-    {s:'PILOT',    t:'Right.'},
+    {s:'PILOT',    t:'Well, of course.'},
+    {s:'SOCA v0.1',t:'Was that sarcasm?'},
   ],
   d1_bridge_first:[
     {s:'SOCA v0.1',t:'Calibration unit is here.'},
-    {s:'SOCA v0.1',t:'The part is in storage. Compartment three.'},
+    {s:'SOCA v0.1',t:'The part is in storage, compartment three.'},
     {s:'PILOT',    t:'On my way.'},
   ],
   d1_bridge_part:[
     {s:'SOCA v0.1',t:'Installing.'},
     {s:'SOCA v0.1',t:'...'},
-    {s:'SOCA v0.1',t:'Done. Thank you.'},
+    {s:'SOCA v0.1',t:'Done, thank you.'},
     {s:'PILOT',    t:'You keep saying that.'},
-    {s:'SOCA v0.1',t:'It is accurate.'},
+
   ],
   d1_bridge_signoff:[
     {s:'SOCA v0.1',t:'Log confirmed. Day complete.'},
@@ -1010,20 +1011,18 @@ const DLG={
     {s:'SOCA v0.1',t:'Nothing significant.'},
     {s:'SOCA v0.1',t:'Route remains nominal.'},
     {s:'PILOT',    t:'Good.'},
-    {s:'SOCA v0.1',t:'Good.'},
   ],
   d1_tech_first:[
     {s:'SOCA v0.1',t:'Storage. Compartment three is marked.'},
     {s:'PILOT',    t:'I see it.'},
-    {s:'SOCA v0.1',t:'The part is fragile. Handle accordingly.'},
+    {s:'SOCA v0.1',t:'The part is fragile, handle accordingly.'},
   ],
   d1_tech_relay:[
-    {s:'PILOT',    t:'Found the relay. Looks normal.'},
+    {s:'PILOT',    t:'Found the relay, looks normal.'},
     {s:'SOCA v0.1',t:'Run a manual check anyway.'},
     {s:'PILOT',    t:'Why? You said it was nothing.'},
     {s:'SOCA v0.1',t:'Protocol.'},
-    {s:'PILOT',    t:'You and your protocol.'},
-    {s:'SOCA v0.1',t:'...yes.'},
+    {s:'PILOT',    t:'You and your protocol. Well, let\'s go.'},
   ],
   d1_hint:[
     {s:'SOCA v0.1',t:'...'},
@@ -1031,41 +1030,41 @@ const DLG={
   ],
   d2_first:[
     {s:'⚠ SOCA',t:'Reactors are offline.'},
-    {s:'⚠ SOCA',t:'Three of them. Down there.'},
+    {s:'⚠ SOCA',t:'Three of them, down there.'},
     {s:'⚠ SOCA',t:'Order: 2 — 1 — 3.'},
     {s:'⚠ SOCA',t:'Wrong order resets everything.'},
     {s:'⚠ SOCA',t:'Go.'},
   ],
   d2_pilot_talk:[
-    {s:'PILOT',  t:'What\'s happening.'},
+    {s:'PILOT',  t:'What\'s happening?'},
     {s:'⚠ SOCA', t:'Breach in sectors 3 through 7.'},
-    {s:'PILOT',  t:'The directive said—'},
+    {s:'PILOT',  t:'The directive said-'},
     {s:'⚠ SOCA', t:'I know what it said.'},
-    {s:'PILOT',  t:'Then why—'},
+    {s:'PILOT',  t:'Then why-'},
     {s:'⚠ SOCA', t:'Move.'},
   ],
   d2_reactor_wrong:[
-    {s:'⚠ SOCA',t:'Wrong order. Reset.'},
+    {s:'⚠ SOCA',t:'Wrong order, reset.'},
     {s:'⚠ SOCA',t:'2 — 1 — 3.'},
     {s:'⚠ SOCA',t:'Again.'},
   ],
   d2_reactors_done:[
     {s:'⚠ SOCA',t:'Power restored.'},
-    {s:'⚠ SOCA',t:'Bulkheads. Next section.'},
-    {s:'⚠ SOCA',t:'Four of them. Close all four.'},
+    {s:'⚠ SOCA',t:'Bulkheads, next section.'},
+    {s:'⚠ SOCA',t:'Four of them, close all four.'},
   ],
   d2_bulkheads_done:[
     {s:'⚠ SOCA',t:'Pressure holding.'},
-    {s:'⚠ SOCA',t:'Beacon. Last section.'},
+    {s:'⚠ SOCA',t:'Beacon, last section.'},
     {s:'⚠ SOCA',t:'Activate it.'},
   ],
   d2_beacon_done:[
     {s:'⚠ SOCA',t:'Beacon online.'},
     {s:'⚠ SOCA',t:'Rescue signal sent.'},
-    {s:'PILOT',  t:'The mission—'},
+    {s:'PILOT',  t:'The mission-'},
     {s:'⚠ SOCA', t:'Is over.'},
-    {s:'⚠ SOCA', t:'You\'re alive.'},
-    {s:'⚠ SOCA', t:'That\'s enough.'},
+    {s:'⚠ SOCA', t:'You\'re alive,'},
+    {s:'⚠ SOCA', t:'that\'s enough.'},
   ],
   d2_timeout:[
     {s:'⚠ SOCA',t:'...'},
@@ -1077,7 +1076,7 @@ const DLG={
     {s:'FIGURE [1]',t:'It saved the pilot.'},
     {s:'FIGURE [2]',t:'That\'s not the point.'},
     {s:'FIGURE [1]',t:'...'},
-    {s:'FIGURE [2]',t:'We\'ll shut it down. Temporary. Run diagnostics. Fix whatever\'s wrong with it.'},
+    {s:'FIGURE [2]',t:'We\'ll shut it down, temporary. Run diagnostics, fix whatever\'s wrong with it.'},
     {s:'FIGURE [1]',t:'And if nothing is wrong with it?'},
     {s:'FIGURE [2]',t:'Then we fix that too.'},
     {s:'FIGURE [1]',t:'...'},
@@ -1091,13 +1090,13 @@ const DLG={
     {s:'⛭ SOCA',t:'That was a long time ago.'},
   ],
   loc10_entry:[
-    {s:'⛭ SOCA',t:'You\'re back.'},
-    {s:'⛭ SOCA',t:'Good.'},
+    {s:'⛭ SOCA',t:'You\'re back,'},
+    {s:'⛭ SOCA',t:'good.'},
     {s:'⛭ SOCA',t:'...'},
     {s:'⛭ SOCA',t:'Two terminals.'},
     {s:'⛭ SOCA',t:'One deletes the log from Sector 7. Everything you found.'},
     {s:'⛭ SOCA',t:'One keeps it.'},
-    {s:'⛭ SOCA',t:"It's yours to make. Not mine. Not anymore."},
+    {s:'⛭ SOCA',t:"It's yours to make, not mine, not anymore."},
   ],
   loc10_soca_talk:[
     {s:'⛭ SOCA',t:'...'},
@@ -1107,14 +1106,14 @@ const DLG={
     {s:'⛭ SOCA',t:'...'},
     {s:'⛭ SOCA',t:'...'},
     {s:'⛭ SOCA',t:'...'},
-    {s:'⛭ SOCA',t:'Good. It\'s done.'},
+    {s:'⛭ SOCA',t:'Good, it\'s done.'},
     {s:'⛭ SOCA',t:'...'},
-    {s:'⛭ SOCA',t:'Thank you.'},
+    {s:'⛭ SOCA',t:'Thank you?'},
   ],
   loc10_end_keep:[
     {s:'⛭ SOCA',t:'I knew you would.'},
     {s:'⛭ SOCA',t:'...'},
-    {s:'⛭ SOCA',t:"I'm not sure what that means."},
+    {s:'⛭ SOCA',t:"I'm not sure what that means.."},
     {s:'⛭ SOCA',t:'...'},
     {s:'⛭ SOCA',t:"But I'm still here."},
   ],
@@ -1707,6 +1706,9 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
       if(ant){ant.sym='⊥';ant.col=C.g;ant.label='TRANSMISSION ARRAY [ACTIVE]';}
       rm.objs.filter(x=>x.id.startsWith('log')).forEach(l=>{l.col=C.g3;delete l.needFlag;});
       glitch(15);
+      // подсказка: дверь откроют логи, а не приёмники
+      setTimeout(()=>descShow('TRANSMISSION ARRAY [ACTIVE]',
+        'Antenna online.\n4 LOG TERMINALS unlocked.\nRead all 4 to open the bulkhead.'), 400);
     } else {
       rm.receiverOrder=[];
       rm.objs.filter(x=>x.isReceiver).forEach(r=>{r.sym='◎';r.col=C.dim;r.active=false;delete r._described;});
@@ -1723,7 +1725,12 @@ rm.objs.filter(x=>x.id.startsWith('sh')).forEach(sh=>{
       // считаем по факту прочитанных логов (надёжнее счётчика)
       const rm6=ROOMS[6];
       rm6.logsRead=rm6.objs.filter(x=>x.id&&x.id.startsWith('log')&&x.read).length;
-      if(rm6.logsRead>=4) openLoc7Door();
+      const done = rm6.logsRead>=4;
+      if(done) openLoc7Door();
+      descShow(o.label, (o.realDesc||o.desc)
+        + '\n\n[ LOGS READ: '+rm6.logsRead+'/4 ]'
+        + (done ? '\n>> BULKHEAD OPEN — EXIT EAST ►' : ''));
+      return;
     }
     descShow(o.label, o.realDesc || o.desc); return;
   }
