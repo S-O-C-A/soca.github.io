@@ -184,6 +184,10 @@
   let dialogScheduleId = null;
   let smailyMischiefId = null;
 
+  // Приветствие показывается ОДИН раз за загрузку страницы.
+  // init() может быть вызван повторно - этот флаг переживает переинициализацию.
+  let smailyGreeted = false;
+
   function clearSmailyTimers() {
     smailyTimeoutIds.forEach(clearTimeout);
     smailyTimeoutIds = [];
@@ -330,6 +334,8 @@ function showSmailyToast(message, type, vitals, force = false) {
 
   // === 5. addSmailyLog ===========================================
   function addSmailyLog(message, type) {
+    // Во время диалога SOCA <-> SMILE журнал не трогаем: это разговор, а не событие
+    if (window.smDialogueActive) return;
     type = type || 'info';
     const now = new Date();
     const pad = n => String(n).padStart(2, '0');
@@ -486,7 +492,7 @@ const _smMsgs = [
   { msg: 'Weapon inventory updated. 4 items ready. Want me to list them? Ill list them anyway.', type: 'ars', vitals: '4 ITEMS · ALL READY' },
   { msg: 'Countermeasures armed! I could deploy automatically, but Im asking first. Polite!', type: 'ars', vitals: 'FLARES: READY · CHAFF: READY' },
 
-  { msg: 'Theres nothing interesting in the tactics so far... eh', type: 'tact', vitals: 'Sooooo boring!!!'},
+  { msg: 'Theres nothing interesting in the tactics so far... eh', type: 'tact', vitals: 'Sooooo boring!!!', log: false },
 ];
 
 function _scheduleSmaily() {
@@ -495,7 +501,10 @@ function _scheduleSmaily() {
     if (!window.smDialogueActive && (typeof window.smailyAllowScheduled !== 'function' || window.smailyAllowScheduled())) {
       const item = _smMsgs[Math.floor(Math.random() * _smMsgs.length)];
       showSmailyToast(item.msg, item.type, item.vitals);
-      addSmailyLog(item.msg, item.type === 'ok' ? 'info' : item.type);
+      // В журнал идёт только то, у чего явно не стоит log: false
+      if (item.log !== false) {
+        addSmailyLog(item.msg, item.type === 'ok' ? 'info' : item.type);
+      }
     }
     _scheduleSmaily();
   }, delay);
@@ -543,7 +552,7 @@ function _scheduleSmailyMischief() {
     ];
       const item = mischiefMessages[Math.floor(Math.random() * mischiefMessages.length)];
       showSmailyToast(item.msg, item.type, item.vitals);
-      addSmailyLog(item.msg, item.type === 'ok' ? 'info' : item.type);
+      // Баловство в системный журнал НЕ пишем - это шутки, а не события корабля
     }
     _scheduleSmailyMischief();
   }, delay);

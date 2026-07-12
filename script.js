@@ -1329,14 +1329,13 @@ function getCurrentTime() {
   return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 }
 
-// Обработчик ввода Y/N в диагностике (с глитч-эффектом)
-document.addEventListener('keydown', function(e) {
+// Ответ Y/N в диагностике — общая логика для клавиатуры И для тапа
+function diagAnswer(answer) {
   const diagPage = document.getElementById('page-diag');
   if (!diagPage || !diagPage.classList.contains('active')) return;
   if (diagnosticRunning) return;
-  
-  if (e.key === 'y' || e.key === 'Y') {
-    e.preventDefault();
+
+  if (answer === 'y') {
     // Глитч при запуске
     const waitingPrompt = document.getElementById('waitingPrompt');
     if (waitingPrompt) {
@@ -1344,14 +1343,28 @@ document.addEventListener('keydown', function(e) {
       setTimeout(() => { waitingPrompt.style.animation = ''; }, 200);
     }
     startDiagnostic();
-  } else if (e.key === 'n' || e.key === 'N') {
-    e.preventDefault();
+  } else if (answer === 'n') {
     addDiagLogEntry(`[${getCurrentTime()}]`, '✖', glitchLine('Diagnostic cancelled by user.', 0.2), 'info');
     const diagBigStatus = document.getElementById('diagBigStatus');
     if (diagBigStatus) {
       diagBigStatus.innerHTML = glitchLine('&gt; TEST PROTOCOL CANCELLED_', 0.3);
       diagBigStatus.classList.add('c1');
     }
+  }
+}
+
+// Обработчик ввода Y/N в диагностике (с глитч-эффектом)
+document.addEventListener('keydown', function(e) {
+  const diagPage = document.getElementById('page-diag');
+  if (!diagPage || !diagPage.classList.contains('active')) return;
+  if (diagnosticRunning) return;
+
+  if (e.key === 'y' || e.key === 'Y') {
+    e.preventDefault();
+    diagAnswer('y');
+  } else if (e.key === 'n' || e.key === 'N') {
+    e.preventDefault();
+    diagAnswer('n');
   }
 });
 
@@ -1361,9 +1374,14 @@ function initDiagnostic() {
   if (waitingPrompt) {
     waitingPrompt.innerHTML = `
       <span style="color:var(--dim);">[${getCurrentTime()}]</span>
-      <span style="color:var(--cyan);" class="glow-b c3">&gt; Run FULL_DIAG? [Y/N]: </span>
+      <span style="color:var(--cyan);" class="glow-b c3">&gt; Run FULL_DIAG? [</span><span class="diag-key" data-diag="y" role="button" tabindex="0">Y</span><span style="color:var(--cyan);" class="glow-b c3">/</span><span class="diag-key" data-diag="n" role="button" tabindex="0">N</span><span style="color:var(--cyan);" class="glow-b c3">]: </span>
       <span class="cursor" style="display:inline-block;width:8px;height:12px;background:var(--green);animation:blink 1s infinite;"></span>
     `;
+
+    // Тап по Y/N - для тех, у кого нет клавиатуры
+    waitingPrompt.querySelectorAll('.diag-key').forEach(k => {
+      k.addEventListener('click', () => diagAnswer(k.dataset.diag));
+    });
   }
 }
 

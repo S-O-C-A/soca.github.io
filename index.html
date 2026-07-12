@@ -731,6 +731,32 @@ body::after{
   letter-spacing: 1px;
 }
 
+/* ===== АВТОЗАПОЛНЕНИЕ: браузер красит поле в белое — не даём ===== */
+#bootPassword:-webkit-autofill,
+#bootPassword:-webkit-autofill:hover,
+#bootPassword:-webkit-autofill:focus,
+#bootPassword:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--g) !important;
+  caret-color: var(--g);
+  /* фон заливаем ВНУТРЕННЕЙ ТЕНЬЮ: background браузер перебивает, тень — нет */
+  -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5) inset !important;
+          box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5) inset !important;
+  border: 1px solid rgba(0, 255, 136, 0.5) !important;
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: 16px !important;
+  letter-spacing: 2px !important;
+  /* убивает жёлто-белую вспышку в момент подстановки */
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+/* Firefox / современный стандарт */
+#bootPassword:autofill {
+  -webkit-text-fill-color: var(--g) !important;
+  color: var(--g) !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  filter: none !important;
+}
+
 #promptMessage {
   margin-top: 10px;
   font-size: 10px;
@@ -1087,7 +1113,7 @@ body::after{
 
 <!-- ПРОМПТ ПАРОЛЯ -->
 <div class="boot-prompt" id="bootPrompt" style="display:none">
-  <input type="password" id="bootPassword" placeholder="> ENTER CODE" autocomplete="off">
+  <input type="password" id="bootPassword" placeholder="> ENTER CODE" autocomplete="new-password">
   <div id="promptMessage"></div>
   <div style="margin-top:8px;font-size:10px;color:var(--dimmer);letter-spacing:0.12em;text-align:center">// What is the name of the ship?</div>
 </div>
@@ -1474,6 +1500,102 @@ document.addEventListener('click', startAnimation, { once: true });
 </script>
 
 <script src="mobile-adapt.js"></script>
+
+<!-- ========== ГЛИТЧУЮЩИЙ ФАВИКОН (шестерёнка, прозрачный фон) ========== -->
+<script>
+(function () {
+  function setFavicon(symbol, rotate = 0) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+
+    ctx.clearRect(0, 0, 64, 64); // ПРОЗРАЧНЫЙ фон
+
+    const cx = 32, cy = 32;
+    ctx.save();
+
+    if (rotate !== 0) {
+      ctx.translate(cx, cy);
+      ctx.rotate(rotate * Math.PI / 180);
+      ctx.translate(-cx, -cy);
+    }
+
+    ctx.font = '48px "VT323", "Share Tech Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const grad = ctx.createLinearGradient(16, 16, 48, 48);
+    grad.addColorStop(0, '#00ff88');
+    grad.addColorStop(0.6, '#00ffcc');
+    grad.addColorStop(1, '#0088ff');
+    ctx.fillStyle = grad;
+
+    ctx.fillText(symbol, cx, cy);
+    ctx.restore();
+
+    let link = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'shortcut icon';
+      document.head.appendChild(link);
+    }
+    link.href = canvas.toDataURL('image/png');
+  }
+
+  function glitchFavicon() {
+    const e = Math.random();
+    if (e < 0.7) {
+      setFavicon('\u26ED');
+    } else if (e < 0.85) {
+      setFavicon('\u2699');
+    } else if (e < 0.95) {
+      const pool = ['\u26ED', '\u2699', '\u26ED', '\u26ED'];
+      setFavicon(pool[Math.floor(Math.random() * pool.length)], Math.random() * 10 - 5);
+    } else {
+      setFavicon('\u2588');
+      setTimeout(() => setFavicon('\u26ED'), 80);
+      setTimeout(() => setFavicon('\u2699'), 160);
+      setTimeout(() => setFavicon('\u26ED'), 240);
+    }
+  }
+
+  setFavicon('\u26ED');
+
+  // шестерёнка рисуется ТЕКСТОМ, поэтому ждём загрузку шрифта и перерисовываем
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => setFavicon('\u26ED'));
+  }
+
+  // медленные глитчи
+  setInterval(() => {
+    if (document.hidden) return;
+    if (Math.random() < 0.35) glitchFavicon();
+  }, 5000);
+
+  // рывок
+  setInterval(() => {
+    if (document.hidden) return;
+    if (Math.random() < 0.2) {
+      setFavicon('\u2699', 5);
+      setTimeout(() => setFavicon('\u26ED', -3), 60);
+      setTimeout(() => setFavicon('\u2699', 3), 120);
+      setTimeout(() => setFavicon('\u26ED', 0), 180);
+    }
+  }, 7000);
+
+  // редкий критический глитч
+  setInterval(() => {
+    if (document.hidden) return;
+    if (Math.random() < 0.08) {
+      setFavicon('?');
+      setTimeout(() => setFavicon('\u26ED'), 150);
+      setTimeout(() => setFavicon('?'), 250);
+      setTimeout(() => setFavicon('\u26ED'), 350);
+    }
+  }, 12000);
+})();
+</script>
 
 </body>
 </html>

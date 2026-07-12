@@ -121,7 +121,7 @@ function playDiag() {
 function addClickSounds() {
   // Ловим клики на всех элементах, у которых есть onclick или role="button"
   document.body.addEventListener('click', (e) => {
-    const target = e.target.closest('[onclick], .nc-btn, .ap-corr-btn, .ctrl-btn, .proto-item, .eject-lock-btn, #eject-hold-btn, #abort-btn, [onclick*="runDeepScan"], [onclick*="calcAltRoute"], [onclick*="emergencyAction"], [onclick*="toggleProto"], #apForceResetBtn, [onclick*="resetDiagnostic"]');
+    const target = e.target.closest('.chat-contact, [onclick], .nc-btn, .ap-corr-btn, .ctrl-btn, .proto-item, .eject-lock-btn, #eject-hold-btn, #abort-btn, [onclick*="runDeepScan"], [onclick*="calcAltRoute"], [onclick*="emergencyAction"], [onclick*="toggleProto"], #apForceResetBtn, [onclick*="resetDiagnostic"]');
     
     if (target) {
       playClick();
@@ -444,22 +444,37 @@ function setupRandomGlitches() {
 function setupChatGlitch() {
   const chatBody = document.getElementById('chat-body');
   if (!chatBody) return;
-  
+
+  let lastGlitchAt = 0;
+
   const observer = registerSoundObserver(new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      if (mutation.addedNodes.length) {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1 && node.classList && node.classList.contains('chat-message')) {
-            // 30% шанс, что сообщение SOCA сопровождается глитчем
-            if (node.classList.contains('bot') && Math.random() < 0.3) {
-              playShortGlitch();
-            }
-          }
-        });
-      }
+      if (!mutation.addedNodes.length) return;
+
+      // Массовая вставка = перерисовка чата при смене контакта, а не новое сообщение.
+      // Именно она и размножала глитч.
+      if (mutation.addedNodes.length > 2) return;
+
+      // Глитчит только СОКА. У пилотов - обычный лог, без звука.
+      const active = document.querySelector('.chat-contact.active');
+      if (active && active.dataset.contact !== 'soca') return;
+
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType !== 1 || !node.classList) return;
+        if (!node.classList.contains('chat-message') || !node.classList.contains('bot')) return;
+
+        // Не чаще одного глитча в 1.2 сек - иначе они накладываются друг на друга
+        const now = Date.now();
+        if (now - lastGlitchAt < 1200) return;
+
+        if (Math.random() < 0.3) {
+          lastGlitchAt = now;
+          playShortGlitch();
+        }
+      });
     });
   }));
-  
+
   observer.observe(chatBody, { childList: true });
 }
 

@@ -149,7 +149,7 @@
   const _showSmaily = window.showSmailyToast;
   if (typeof _showSmaily === 'function') {
     window.showSmailyToast = function (message, type) {
-      // Транслируем сообщение SMAILY в SYS LOG — как у SOCA — даже когда
+      // Транслируем сообщение SMAILY в SYS LOG — как у SOCA - даже когда
       // тост скрыт. Часть путей (планировщик, реакции) логируют сами:
       // чтобы не задваивать, сверяемся с последней записью лога (она
       // добавляется в том же тике, до срабатывания observer'а).
@@ -220,12 +220,12 @@
     'No.',
   ];
   // ── SMAILY: обида при полном выключении + «подглядывания» ──
-  const SMAILY_SULK = 'fine. i\'ll be quiet. :(';
+  const SMAILY_SULK = 'fine, i\'ll be quiet :(';
   const SMAILY_PEEKS = [
-    '…still here. just checking vitals! :)',
-    'you didn\'t mean it. right? :D',
-    'psst. heart rate looks great. carry on! :)',
-    'not talking. just… hovering. :>',
+    '…still here, just checking vitals!',
+    'you didn\'t mean it, right? :D',
+    'psst. heart rate looks great, carry on!',
+    'not talking, just… hovering.',
   ];
 
   // ══════════════════════════════════════════════════════════════

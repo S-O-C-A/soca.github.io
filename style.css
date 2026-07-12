@@ -3602,3 +3602,38 @@ body {
 #logStream::-webkit-scrollbar-thumb:hover {
   background: rgba(0,255,136,0.55);
 }
+
+/* ===== Y/N В ДИАГНОСТИКЕ: тап вместо клавиатуры ===== */
+.diag-key {
+  color: var(--g2);
+  cursor: pointer;
+  padding: 2px 6px;
+  margin: 0 1px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+.diag-key:hover,
+.diag-key:focus-visible {
+  color: #000;
+  background: var(--g2);
+  border-color: var(--g2);
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+  outline: none;
+}
+.diag-key:active {
+  transform: scale(0.92);
+}
+
+/* На тач-устройствах зона нажатия должна быть крупнее */
+@media (pointer: coarse) {
+  .diag-key {
+    padding: 8px 14px;
+    margin: 0 3px;
+    border-color: rgba(0, 255, 204, 0.35);
+    background: rgba(0, 255, 204, 0.08);
+  }
+}
