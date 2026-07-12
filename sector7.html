@@ -21,7 +21,9 @@
 body{
   background:var(--bg);color:var(--g);
   font-family:'Share Tech Mono',monospace;
-  overflow:hidden;width:100vw;height:100vh;
+  overflow:hidden;width:100vw;
+  height:100vh;
+  height:100dvh; /* мобильные: реальная высота без панели браузера */
   display:flex;align-items:center;justify-content:center;
   cursor:crosshair;
 }
@@ -54,7 +56,7 @@ body::after{
 #bstart{font-size:11px;color:var(--g2);letter-spacing:.15em;opacity:0;animation:blink 1s step-end infinite;}
 
 /* === GAME WRAP === */
-#game-wrap{display:none;flex-direction:column;width:100vw;height:100vh;}
+#game-wrap{display:none;flex-direction:column;width:100vw;height:100vh;height:100dvh;}
 
 /* === TOPBAR === */
 #topbar{
@@ -80,8 +82,20 @@ canvas{
   display:block;image-rendering:pixelated;
   border:1px solid var(--border);
   box-shadow:0 0 0 1px rgba(0,255,136,.05),0 0 40px rgba(0,255,136,.06);
-  width:min(90vw, calc(80vh * 1.6));height:auto;
 }
+
+/* Главный холст: высота считается от РЕАЛЬНО свободного места
+   (100dvh минус topbar 26px, bottombar 20px и рамки), а не от 80vh */
+#cv{
+  width:min(94vw, calc((100vh - 54px) * 1.6));
+  width:min(94vw, calc((100dvh - 54px) * 1.6));
+  max-height:calc(100vh - 54px);
+  max-height:calc(100dvh - 54px);
+  height:auto;
+}
+
+/* Холст мини-игр раньше случайно наследовал размеры главного */
+#mg-cv{ width:min(88vw, 400px); height:auto; }
 
 /* === HUD OVERLAYS === */
 #loc-label{
@@ -108,6 +122,41 @@ canvas{
 #dlg-name{font-size:9px;color:var(--g);letter-spacing:.18em;margin-bottom:5px;}
 #dlg-text{font-size:11px;color:var(--g2);letter-spacing:.05em;line-height:1.65;min-height:18px;}
 #dlg-cont{font-size:8px;color:var(--dim);letter-spacing:.1em;margin-top:5px;text-align:right;animation:blink .8s step-end infinite;display:none;}
+
+/* === КЛАВИАТУРА ДЛЯ КОДА ЧАСТОТЫ === */
+#fi-pad{
+  display:none;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;
+}
+.fi-key{
+  background:rgba(0,255,136,.06);border:1px solid var(--border);
+  color:var(--g);font-family:'Share Tech Mono',monospace;
+  font-size:16px;padding:11px 0;cursor:pointer;letter-spacing:.1em;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.fi-key:hover{background:rgba(0,255,136,.16);border-color:var(--g);}
+.fi-key:active{transform:scale(.94);}
+
+/* === АДАПТАЦИЯ: узкие экраны и тач === */
+@media (max-width:860px), (pointer:coarse){
+  #fi-pad{display:grid;}
+
+  /* Диалог во всю ширину, прижат к низу, со скроллом если длинный */
+  #dialog{
+    left:8px;right:8px;width:auto;
+    bottom:8px;
+    max-height:42vh;max-height:42dvh;
+    overflow-y:auto;
+    padding:10px 12px 12px;
+  }
+  #dlg-name{font-size:11px;}
+  #dlg-text{font-size:13px;line-height:1.55;}
+  #dlg-cont{font-size:10px;}
+
+  #topbar{font-size:8px;padding:0 8px;gap:8px;}
+  #loc-label,#inv-box{font-size:10px;}
+  #inv-box{min-width:100px;}
+  #rg0,#rg1,#rg2{max-width:92vw;min-width:0;}
+}
 
 /* === BOTTOMBAR === */
 #bottombar{
@@ -1197,35 +1246,51 @@ function showFreqInput(){
   S.dlgActive=true;
   const box=document.getElementById('dialog'); box.style.display='block';
   document.getElementById('dlg-name').textContent='⛭ TERMINAL';
-  document.getElementById('dlg-text').innerHTML='ENTER FREQUENCY CODE: <span id="fi" style="color:#00ff41;letter-spacing:.2em">___</span>';
+  document.getElementById('dlg-text').innerHTML=
+    'ENTER FREQUENCY CODE: <span id="fi" style="color:#00ff41;letter-spacing:.2em">___</span>'+
+    '<div id="fi-pad">'+
+      ['1','2','3','4','5','6','7','8','9','⌫','0','OK']
+        .map(k=>'<button type="button" class="fi-key" data-k="'+k+'">'+k+'</button>').join('')+
+    '</div>';
   document.getElementById('dlg-cont').style.display='none';
+
   let code='';
-  const h=e=>{
-    // страховка: если диалог уже закрыт/перерисован (#fi исчез) —
-    // снимаем слушатель, иначе он падал с TypeError на цифрах
-    const fi=document.getElementById('fi');
-    if(!fi){ document.removeEventListener('keydown',h); return; }
-    if(e.key>='0'&&e.key<='9'&&code.length<3){code+=e.key;fi.textContent=code.padEnd(3,'_');}
-    if(e.code==='Backspace'){code=code.slice(0,-1);fi.textContent=code.padEnd(3,'_');}
-    if(e.code==='Enter'||e.code==='KeyE'){
-      document.removeEventListener('keydown',h);
-if(code==='731'){
-        box.style.display='none'; S.dlgActive=false;
-        S.flags.keyFound=true;
-        S.flags.termUnlocked=true;
-        // помечаем терминал как использованный
-        const term=ROOMS[0].objs.find(o=>o.isTerminal);
-        if(term){ term.isTerminal=false; term.noAct=true; term.col=C.g; term.desc='Unlocked.'; }
-        // активируем кнопки
-        ROOMS[0].objs.filter(o=>o.isBtn).forEach(b=>{ b.col=C.g3; b.desc='Press to activate.'; });
-        glitch(10); dlgShow('term_unlock');
-      } else {
-        document.getElementById('dlg-text').textContent='ACCESS DENIED.'; code='';
-        setTimeout(()=>{box.style.display='none';S.dlgActive=false;},1500);
-      }
+  const fiEl = ()=>document.getElementById('fi');
+  const draw = ()=>{ const fi=fiEl(); if(fi) fi.textContent=code.padEnd(3,'_'); };
+
+  function submit(){
+    document.removeEventListener('keydown',h);
+    if(code==='731'){
+      box.style.display='none'; S.dlgActive=false;
+      S.flags.keyFound=true;
+      S.flags.termUnlocked=true;
+      const term=ROOMS[0].objs.find(o=>o.isTerminal);
+      if(term){ term.isTerminal=false; term.noAct=true; term.col=C.g; term.desc='Unlocked.'; }
+      ROOMS[0].objs.filter(o=>o.isBtn).forEach(b=>{ b.col=C.g3; b.desc='Press to activate.'; });
+      glitch(10); dlgShow('term_unlock');
+    } else {
+      document.getElementById('dlg-text').textContent='ACCESS DENIED.'; code='';
+      setTimeout(()=>{box.style.display='none';S.dlgActive=false;},1500);
     }
+  }
+
+  const h=e=>{
+    // страховка: если диалог уже закрыт/перерисован (#fi исчез) — снимаем слушатель
+    if(!fiEl()){ document.removeEventListener('keydown',h); return; }
+    if(e.key>='0'&&e.key<='9'&&code.length<3){ code+=e.key; draw(); }
+    if(e.code==='Backspace'){ code=code.slice(0,-1); draw(); }
+    if(e.code==='Enter'||e.code==='KeyE'){ submit(); }
   };
   document.addEventListener('keydown',h);
+
+  // Экранная клавиатура — появляется только на тач/узких экранах (CSS)
+  document.getElementById('fi-pad').addEventListener('click',e=>{
+    const b=e.target.closest('.fi-key'); if(!b) return;
+    const k=b.dataset.k;
+    if(k==='⌫'){ code=code.slice(0,-1); draw(); }
+    else if(k==='OK'){ submit(); }
+    else if(code.length<3){ code+=k; draw(); }
+  });
 }
 
 // ══════════════════════════════════════════════════════════
