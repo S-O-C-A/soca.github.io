@@ -3637,3 +3637,19 @@ body {
     background: rgba(0, 255, 204, 0.08);
   }
 }
+
+/* ===== STORAGE ЗАБЛОКИРОВАН ДО СЛЕДУЮЩЕГО ОБНОВЛЕНИЯ ===== */
+.locked-flash {
+  animation: lockedShake 0.32s steps(2) 2 !important;
+  color: var(--red) !important;
+  border-color: var(--red) !important;
+  border-left-color: var(--red) !important;
+  background: rgba(255, 34, 68, 0.14) !important;
+  box-shadow: 0 0 16px rgba(255, 34, 68, 0.45) !important;
+  text-shadow: 0 0 8px rgba(255, 34, 68, 0.7) !important;
+}
+@keyframes lockedShake {
+  0%, 100% { transform: none; }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}

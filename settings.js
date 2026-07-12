@@ -570,6 +570,14 @@
   }
 
   function launchStandalone(what) {
+    // STORAGE отключён до следующего обновления: сайт НЕ замораживаем,
+    // панель НЕ закрываем — просто краснеем и ругаемся.
+    if (what === 'storage') {
+      const btn = panel.querySelector('[data-launch="storage"]');
+      if (typeof window.storageLocked === 'function') window.storageLocked(btn);
+      return;
+    }
+
     const openFn = what === 'games' ? 'openGames' : 'openStorage';
     if (!has(openFn)) return;
     freezeSite();

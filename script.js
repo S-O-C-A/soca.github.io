@@ -7,7 +7,7 @@ function updateClock(){
   if (clockEl) {
     const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 const shifted = new Date(n.getTime());
-shifted.setFullYear(n.getFullYear() - 53);
+shifted.setFullYear(n.getFullYear() - 52);
 clockEl.textContent = `${String(shifted.getDate()).padStart(2,'0')} ${months[shifted.getMonth()]} ${shifted.getFullYear()} // ${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
   }
 }
@@ -364,7 +364,7 @@ function sendChat() {
     const now = new Date();
     const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     const shifted = new Date(now.getTime());
-    shifted.setFullYear(now.getFullYear() - 53);
+    shifted.setFullYear(now.getFullYear() - 52);
     const timeStr = `PD-04 // ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     const chatBody = document.getElementById('chat-body');
     const wrap = document.createElement('div');
@@ -582,7 +582,7 @@ window.sendChat = function() {
     const chatBody = document.getElementById('chat-body');
     const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     const shifted = new Date(now.getTime());
-    shifted.setFullYear(now.getFullYear() - 53);
+    shifted.setFullYear(now.getFullYear() - 52);
     const dateStr = `PD-04 // DAY ████ // ${String(shifted.getDate()).padStart(2,'0')} ${months[shifted.getMonth()]} ${shifted.getFullYear()}`;
 
     // Добавляем разделитель даты если это первое сообщение за этот день
@@ -4727,7 +4727,18 @@ if (pilotId === 'pilot02' || pilotId === 'pilot03') {
           { from: 'koko', time: 'PD-04 // 09:02', text: 'i already moved one' },
           { from: 'koko', time: 'PD-04 // 09:03', text: 'thats my limit for today' },
         ]},
-      ];
+
+        { date: 'PD-04 // DAY ████ // 5 APR 1973', msgs: [
+          { from: 'koko', time: 'PD-04 // 4:42', text: 'Claudia'},
+          { from: 'koko', time: 'PD-04 // 4:42', text: 'Claudia'},
+          { from: 'koko', time: 'PD-04 // 4:43', text: 'say something in this...'},
+          { from: 'koko', time: 'PD-04 // 4:44', text:'uh'},
+          { from: 'koko', time: 'PD-04 // 4:44', text:' in Russian, you know!!'},
+          { from: 'claudia', time: 'PD-04 // 08:57', text: 'Приберись уже на корабле.'},
+          { from: 'koko', time: 'PD-04 // 8:58', text:'Amazing!!!'},
+        ]},
+      ]
+  
 
       claudiaLog.forEach(day => {
         const dateDiv = document.createElement('div');
