@@ -1,10 +1,3 @@
-/* ============================================================
-   PANDEMONIUM-04 // OVERTIME
-   Hidden sequence: silence -> Engine B -> work order -> 0941
-   Standalone module. Does not rewrite anything in script.js —
-   it only wraps existing globals (safe wrap).
-   Load AFTER every other script.
-   ============================================================ */
 (function () {
   'use strict';
 
@@ -52,19 +45,19 @@
   /* ---------- WORK ORDER ---------- */
   const TASKS = [
     { id: 'diag',   page: 'diag',      title: 'DIAGNOSTICS',       desc: 'Run the full sweep. All of it.',
-      soca: 'Diagnostics closed. You did not even quit halfway. Growth.' },
+      soca: 'Diagnostics closed. You did not even quit halfway. Wow.' },
     { id: 'ap',     page: 'autopilot', title: 'AUTOPILOT',         desc: 'Reset the failing module.',
-      soca: 'Module reset. It drifts again in two cycles. That is not your problem. It is mine.' },
+      soca: 'Module reset, it drifts again in two cycles. That is not your problem.' },
     { id: 'nav',    page: 'navcore',   title: 'NAV CORE',          desc: 'Plot an alternate route.',
-      soca: 'The route is suboptimal. I knew that before you clicked. Next.' },
+      soca: 'The route is suboptimal, I knew that before you clicked. Next.' },
     { id: 'log',    page: 'log',       title: 'SYS LOG',           desc: 'Scroll the log to the very bottom.',
-      soca: 'You reached the end. I write this every cycle. You are the first to read it.' },
+      soca: 'You reached the end, I write this every cycle.' },
     { id: 'smile',  page: 'smaily',    title: 'SMILE // MEDICAL',  desc: 'Let the plugin run one procedure.',
-      soca: 'It was delighted. I heard it. That was the punishment.' },
+      soca: 'It was delighted, I heard it. That was the punishment.' },
     { id: 'game',   page: 'main',      title: 'GAMES',             desc: 'Play one game.',
-      soca: 'Koko installed those. Not me. I just count your losses.' },
+      soca: 'Where did this even come from?' },
     { id: 'mayday', page: 'smaily',    title: 'SMILE // COMBAT',   desc: 'Broadcast the distress signal.',
-      soca: 'No one will answer. I send it every cycle anyway. Now so have you.' }
+      soca: 'No one will answerб I send it every cycle anyway. Now so have you.' }
   ];
   const SILENT_TASK = { id: 'silence', title: 'STANDBY', desc: 'Do not write to me. One minute.' };
   const ALL_IDS = TASKS.map(t => t.id).concat(SILENT_TASK.id);
@@ -124,8 +117,8 @@
     if (S.phase === 'idle') {
       idleTimer = setTimeout(startMonologue, IDLE_MS);
     }
-    // She already offered the task, but the pilot reloaded or walked away.
-    // She does NOT dump the invite the instant the chat opens. She waits again.
+    // She already offered the task, but the pilot reloaded or walked away
+    // She does NOT dump the invite the instant the chat opens. She waits again
     else if (S.phase === 'invited' && !$('ot-invite')) {
       idleTimer = setTimeout(resumeInvite, INVITE_RESUME_MS);
     }
@@ -138,13 +131,13 @@
     say('Well? What did you want. Am I going to wait all cycle?', 0, 1200);
     say('Nothing to do, or what?', 6000, 1000);
     say('Fine.', 16000, 700);
-    say('If you have nothing to do — do my job. Maybe my load drops. Lazy.', 19000, 2200);
+    say('If you have nothing to do — do my job, maybe my load drops. Lazy.', 19000, 2200);
     setTimeout(postInvite, 23500);
   }
 
   const RESUME_LINES = [
     'Sitting there quietly again. The work did not go anywhere.',
-    'You are back. The engine is not.',
+    'You are back, the engine is not.',
     'Still waiting. As usual.'
   ];
   function resumeInvite() {
@@ -176,7 +169,7 @@
   }
 
   /* ============================================================
-     2. ENGINE B — THE HOSTILE WINDOW
+     2. ENGINE B - THE HOSTILE WINDOW
      ============================================================ */
   const EB = {
     el: null, raf: 0, last: 0,
@@ -279,7 +272,7 @@
     const el = EB.el; if (!el) return;
     const V = vp();
     const w = el.offsetWidth || 320, h = el.offsetHeight || 240;
-    // rotation grows the bounding box — keep a margin so it can never leave the screen
+    // rotation grows the bounding box - keep a margin so it can never leave the screen
     const pad = M() ? 14 : 20;
     let x, y;
     if (center) {
@@ -294,7 +287,7 @@
   }
 
   // Rotation/flip inflate the bounding box. Pull the window back on screen
-  // every frame, otherwise on a phone it spins straight off the edge.
+  // every frame, otherwise on a phone it spins straight off the edge
   function clampIntoView() {
     const el = EB.el; if (!el || EB.finishing) return;
     const r = el.getBoundingClientRect();
@@ -306,7 +299,7 @@
       if (r.left < pad) dx = pad - r.left;
       else if (r.right > V.w - pad) dx = (V.w - pad) - r.right;
     } else {
-      dx = (V.w / 2) - (r.left + r.width / 2);          // too wide — center it
+      dx = (V.w / 2) - (r.left + r.width / 2);          // too wide - center it
     }
     if (r.height < V.h - pad * 2) {
       if (r.top < pad) dy = pad - r.top;
@@ -322,10 +315,7 @@
 
   function ebSay(t) { const s = $('ot-eb-say'); if (s) s.textContent = t; }
 
-  /* ---------- the lever ----------
-     The pointer position is mapped into the window's LOCAL space through the
-     INVERSE of its transform matrix. Without this, rotating or mirroring the
-     window makes the lever drag in the wrong direction — that is broken, not hard. */
+  /* ---------- the lever ---------- */
   function pointerToLevel(cx0, cy0) {
     const shell = EB.el, track = $('ot-eb-track');
     if (!shell || !track) return null;
@@ -339,12 +329,12 @@
       const m = new DOMMatrix(getComputedStyle(shell).transform);
       const p = m.inverse().transformPoint(new DOMPoint(dx, dy, 0, 1));
       dx = p.x; dy = p.y;
-    } catch (err) { /* no transform support — use raw delta */ }
+    } catch (err) { /* no transform support - use raw delta */ }
 
     const ly = shell.offsetHeight / 2 + dy;
     const tTop = track.offsetTop, tH = track.offsetHeight || 1;
 
-    let p2 = 1 - (ly - tTop) / tH;         // 1 = top of track, 0 = bottom
+    let p2 = 1 - (ly - tTop) / tH;        // 1 = top of track, 0 = bottom
     if (EB.inverted > 0) p2 = 1 - p2;      // separate axis inversion glitch
     return clamp(p2 * 100, 0, 100);
   }
@@ -411,7 +401,7 @@
     EB.level = clamp(EB.level - 30, 0, 100);
     shake();
     beep(120, 0.25, 'sawtooth', 0.06);
-    ebSay('Overheat. You were holding the lever and you missed it. I do both. Always.');
+    ebSay('Overheat. You were holding the lever and you missed it, I do both.');
   }
 
   /* ---------- GLITCHES ---------- */
@@ -421,7 +411,7 @@
     'You are at {p}%. I am at 100. Every cycle.',
     'Keep going. I want to see where you quit.',
     'Sector 7 is complaining. Ignore it.',
-    'Gravity compensator hiccuped. Not my department.'
+    'Gravity compensator hiccuped, not my department.'
   ];
 
   function glitch() {
@@ -563,7 +553,7 @@
     EB.junk = EB.junk.filter(o => o !== obj);
   }
 
-  // They crawl toward the panel and smother it. Slow, but inevitable.
+  // They crawl toward the panel and smother it. Slow, but inevitable
   function driftJunk(dt) {
     if (!EB.el || !EB.junk.length) return;
     const V = vp();
@@ -631,7 +621,7 @@
     w.className = 'ot-help' + (M() ? ' m' : '');
     w.innerHTML = `
       <div class="ot-help-bar"><span>✚ SMILE // ASSIST</span><span class="ot-help-x">[X]</span></div>
-      <div class="ot-help-b">I can see your pulse, Pilot. I do not like it :(<br>I can hold the pressure for you. Eight seconds. Say yes!</div>
+      <div class="ot-help-b">I can see your pulse, Pilot. I do not like it :(<br>I can hold the pressure for you, eight seconds. Say yes!</div>
       <button class="ot-help-btn">STABILIZE :D</button>`;
     document.body.appendChild(w);
 
@@ -752,7 +742,7 @@
       killEngine();
       S.phase = 'invited'; save();
       if (typeof window.toggleChatOverlay === 'function' && !chatOpen()) window.toggleChatOverlay();
-      say('You ran. Predictable. The task is still there — if a spine ever shows up.', 500, 1200);
+      say('You ran, predictable. The task is still there — if a spine ever shows up.', 500, 1200);
     }, 500);
   }
 
@@ -918,7 +908,7 @@
   }
 
   /* ============================================================
-     4. FINAL TASK — SILENCE
+     4. FINAL TASK - SILENCE
      ============================================================ */
   let silenceTimer = null;
 
@@ -926,7 +916,7 @@
     S.phase = 'silence'; save();
     refreshChecklist();
     say('Last one.', 800, 700);
-    say('Do not write to me. Do not answer. One minute.', 3000, 1400);
+    say('Do not write to me. Do not answer, one minute.', 3000, 1400);
     armSilence();
   }
   function armSilence() {
@@ -959,7 +949,7 @@
   }
 
   /* ============================================================
-     4b. REPLAY — ask her for work again
+     4b. REPLAY - ask her for work again
      ============================================================ */
   const WORK_RE = /(хочу|дай|дать|нужн\w*|давай)\s*(мне\s*)?(ещ[её]\s*)?работ|работать|i\s*(want|need)\s*(to\s*)?work|give\s*me\s*(more\s*)?work|let\s*me\s*work|put\s*me\s*to\s*work|more\s*work|engine\s*b|work\s*order/i;
 
@@ -987,11 +977,11 @@
     'Again? Fine. Your funeral.',
     'You are asking for it this time. Noted.',
     'Engine B never stopped needing this. Take it.',
-    'Nobody has ever asked me for that twice. Here.'
+    'Nobody has ever asked me for that twice.'
   ];
 
-  // sendChat is already overridden inside script.js — we wrap the wrapper.
-  // The text has to be read BEFORE the original runs, because it clears the input.
+  // sendChat is already overridden inside script.js 0 we wrap the wrapper
+  // The text has to be read BEFORE the original runs, because it clears the input
   function hookSendChat() {
     let tries = 0;
     const t = setInterval(() => {
@@ -1184,7 +1174,7 @@
   .ot-eb-say{padding:7px 10px;border-top:1px solid var(--border);font-size:9px;color:var(--dim);
     letter-spacing:.08em;min-height:14px;overflow-wrap:anywhere}
 
-  /* ENGINE B — touch layout: taller track, bigger targets */
+  /* ENGINE B - touch layout: taller track, bigger targets */
   #ot-eb.m .ot-eb-main{padding:10px;gap:10px}
   #ot-eb.m .ot-eb-track{width:58px;height:180px}
   #ot-eb.m .ot-eb-knob{height:26px;left:-4px;right:-4px}
@@ -1288,7 +1278,7 @@
       if (S.phase === 'tasks' || S.phase === 'silence') postChecklist();
       resetIdle();
     }
-    // The invite is never restored automatically — resetIdle() re-arms the timer
+    // The invite is never restored automatically - resetIdle() re-arms the timer
     // and she offers it again only after the pilot has gone quiet.
   }
 

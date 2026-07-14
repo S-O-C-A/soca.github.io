@@ -685,6 +685,172 @@ function startDialog(dialog) {
     smailyTimeoutIds.push(dialogScheduleId);
   }
 
+/* ══════════════════════════════════════════════════════════════
+   ЮБИЛЕЙНАЯ ОТКРЫТКА - каждый 20-й визит
+   ══════════════════════════════════════════════════════════════ */
+
+const SM_VISIT_KEY   = 'pd04_visits';
+const SM_VISIT_MARK  = 'pd04_visit_counted';
+const SM_MILESTONE   = 20;
+
+// Визит = сессия, а не перезагрузка. F5 счётчик не накручивает
+function smCountVisit() {
+  try {
+    const stored = parseInt(localStorage.getItem(SM_VISIT_KEY) || '0', 10);
+    if (sessionStorage.getItem(SM_VISIT_MARK)) return stored;
+    sessionStorage.setItem(SM_VISIT_MARK, '1');
+    const n = stored + 1;
+    localStorage.setItem(SM_VISIT_KEY, String(n));
+    return n;
+  } catch (e) { return 0; }
+}
+
+const SM_CARD_LINES = {
+  20:  'Twenty visits. I counted every single one. Of course I counted. :D',
+  40:  'Forty! You keep coming back. I have a chart. The chart is very happy.',
+  60:  'Sixty visits. SOCA says this is not an achievement. SOCA is wrong.',
+  100: 'ONE HUNDRED. I made this card myself. Do not look at the corners.'
+};
+
+let smailyCardActive = false;
+let smailyCardTimeout = null;
+
+function showSmailyCard(visits) {
+  if (smailyCardActive) return;
+
+  const popup = document.getElementById('smaily-card-popup');
+  if (!popup) return;
+
+  if (typeof window.playVoice === 'function') window.playVoice('smaily');
+
+  document.getElementById('smaily-card-num').textContent = visits;
+  document.getElementById('smaily-card-caption').textContent =
+    SM_CARD_LINES[visits] || `${visits} visits! I keep count. It is a medical duty. :D`;
+
+  const img = document.getElementById('smaily-card-img');
+  img.src = 'images/smile-card.png';
+  img.onerror = () => {
+    // картинки нет - он рисует лицо сам
+    const wrap = document.getElementById('smaily-card-img-wrap');
+    wrap.innerHTML = '<div style="font-family:\'SMILE\',\'VT323\',monospace;font-size:64px;color:#ffaa00;text-shadow:0 0 20px #ff8800;padding:28px">:D</div>';
+  };
+
+  // позиционирование как у его мем-попапа
+  const maxX = window.innerWidth  - 300;
+  const maxY = window.innerHeight - 380;
+  popup.style.left = Math.max(20, Math.floor(Math.random() * maxX)) + 'px';
+  popup.style.top  = Math.max(20, Math.floor(Math.random() * maxY)) + 'px';
+
+  popup.style.display = 'block';
+  popup.style.animation = 'smailyPopupSlide 0.35s ease both';
+  smailyCardActive = true;
+
+  // ЕГО же драг - мышь и тач, уже написан в script.js
+  if (typeof initSmailyPopupDrag === 'function') initSmailyPopupDrag('smaily-card-popup');
+
+  setTimeout(smConfetti, 250);
+  addSmailyLog(`Attendance milestone: ${visits} visits.`, 'info');
+
+  // он не убирает открытку сам, это его праздник.
+  smailyCardTimeout = setTimeout(closeSmailyCard, 45000);
+}
+
+function closeSmailyCard() {
+  const popup = document.getElementById('smaily-card-popup');
+  if (!popup) return;
+  popup.style.opacity = '0';
+  popup.style.transform = 'scale(0.92)';
+  setTimeout(() => {
+    popup.style.display = 'none';
+    popup.style.opacity = '';
+    popup.style.transform = '';
+    smailyCardActive = false;
+  }, 250);
+  if (smailyCardTimeout) { clearTimeout(smailyCardTimeout); smailyCardTimeout = null; }
+}
+
+function thankSmailyCard() {
+  smConfetti();                       // второй залп
+  setTimeout(closeSmailyCard, 900);
+  setTimeout(() => {
+    showSmailyToast('I will put this in your file. The good part of your file.', 'ok');
+  }, 1700);
+}
+
+/* ---------- конфетти: вылетают ИЗ открытки, где бы её ни перетащили ---------- */
+function smConfetti() {
+  const popup = document.getElementById('smaily-card-popup');
+  if (!popup || popup.style.display === 'none') return;
+
+  let cv = document.getElementById('smaily-confetti');
+  if (!cv) {
+    cv = document.createElement('canvas');
+    cv.id = 'smaily-confetti';
+    cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9996';
+    document.body.appendChild(cv);
+  }
+  cv.width  = window.innerWidth;
+  cv.height = window.innerHeight;
+  const ctx = cv.getContext('2d');
+
+  const r = popup.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+
+  const COLORS = ['#ffaa00', '#ffcc00', '#ff6600', '#00ff88', '#ff2288', '#00ccff', '#ffffff'];
+  const bits = [];
+  for (let i = 0; i < 170; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const sp = 5 + Math.random() * 14;
+    bits.push({
+      x: cx, y: cy,
+      vx: Math.cos(a) * sp,
+      vy: Math.sin(a) * sp - 4,
+      w: 4 + Math.random() * 7,
+      h: 6 + Math.random() * 10,
+      rot: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.4,
+      col: COLORS[Math.floor(Math.random() * COLORS.length)],
+      life: 1
+    });
+  }
+
+  const draw = () => {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    let alive = 0;
+    bits.forEach(b => {
+      if (b.life <= 0) return;
+      alive++;
+      b.vy += 0.34;
+      b.vx *= 0.99;
+      b.x += b.vx; b.y += b.vy;
+      b.rot += b.vr;
+      b.life -= 0.006;
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(b.rot);
+      ctx.globalAlpha = Math.max(0, b.life);
+      ctx.fillStyle = b.col;
+      ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h);
+      ctx.restore();
+    });
+    if (alive) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, cv.width, cv.height);
+  };
+  draw();
+
+  /* onclick в HTML ищет функции в window, а smaily.js завёрнут в IIFE.
+   Без этого кнопки открытки не находят ничего. */
+window.showSmailyCard  = showSmailyCard;
+window.closeSmailyCard = closeSmailyCard;
+window.thankSmailyCard = thankSmailyCard;
+window.smConfetti      = smConfetti;
+}
+
+
+
+
+
   // === ЗАПУСК ===
   // Ждём DOMContentLoaded если документ ещё не готов
 function init() {
@@ -693,6 +859,13 @@ function init() {
   patchAppendChat();
   patchSendChat();
   smailyWatchLogs();
+
+  // Юбилей - ПЕРВЫМ ДЕЛОМ. Приветствие подождёт.
+  const visits = smCountVisit();
+  if (visits > 0 && visits % SM_MILESTONE === 0) {
+    const cardId = setTimeout(() => showSmailyCard(visits), 2500);
+    smailyTimeoutIds.push(cardId);
+  }
 
   const startupId = setTimeout(() => {
     showSmailyToast('SMILE online. All pilot vitals nominal. Monitoring continuously.', 'ok', 'HR: 113bpm · O2: 94% · SUIT: OK');

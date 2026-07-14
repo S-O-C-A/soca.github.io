@@ -487,7 +487,7 @@ document.getElementById('photoModal')?.addEventListener('click', function(e) {
   }
 });
 
-// ========== СЕКРЕТНАЯ ПАСХАЛКА (S+O+C+A) ==========
+// =========СЕКРЕТНАЯ ПАСХАЛКА (S+O+C+A)=========
 let secretStep = 0;
 let secretActive = false;
 let secretTimeout = null;

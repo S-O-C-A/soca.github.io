@@ -609,6 +609,7 @@ window.sendChat = function() {
     return;
   }
 
+  
   // Добавляем сообщение пользователя
   appendChat(text, 'user');
   input.value = '';

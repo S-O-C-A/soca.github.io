@@ -734,7 +734,6 @@ body {
   z-index: 10;
   pointer-events: none;
 }
-
 /* шум */
 #secret-window::after {
   content: '';

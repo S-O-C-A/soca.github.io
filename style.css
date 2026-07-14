@@ -3638,7 +3638,7 @@ body {
   }
 }
 
-/* ===== STORAGE ЗАБЛОКИРОВАН ДО СЛЕДУЮЩЕГО ОБНОВЛЕНИЯ ===== */
+/* ====STORAGE ЗАБЛОКИРОВАН ДО СЛЕДУЮЩЕГО ОБНОВЛЕНИЯ==== */
 .locked-flash {
   animation: lockedShake 0.32s steps(2) 2 !important;
   color: var(--red) !important;

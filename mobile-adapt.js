@@ -205,5 +205,4 @@
     <div class="rotate-sub">// landscape mode required</div>
   `;
   document.body.appendChild(overlay);
-
 })();

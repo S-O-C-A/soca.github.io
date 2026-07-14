@@ -3066,7 +3066,7 @@ if (cell.lit) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// --- SIDE PANELS: CONTROLS + PILOT RECORDS -----------------------
+// --- SIDE PANELS: CONTROLS + PILOT RECORDS--------------------
 // ══════════════════════════════════════════════════════════════════════════
 
 // pilot records storage (persists during session)

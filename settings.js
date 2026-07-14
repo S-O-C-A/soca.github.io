@@ -1,21 +1,7 @@
-// ═══════════════════════════════════════════════════════════════
-//  SOCA — settings.js  ·  ПАНЕЛЬ НАСТРОЕК
-//  Подключить в soca.html одной строкой, ПОСЛЕ script.js / sounds.js /
-//  smaily.js / toast_stack.js (чтобы можно было обернуть их функции):
-//     <script src="settings.js"></script>
-//
-//  Самодостаточный файл: инжектит свой <style>, строит окно в JS,
-//  вешается на шестерёнку .gear-logo. Настройки НЕ сохраняются между
-//  заходами — но всё состояние лежит на window.*, так что добавить
-//  сохранение позже = пара строк (читать/писать localStorage в
-//  applyState / at init). Существующие файлы почти не трогаются:
-//  три точечные правки идут отдельными find-replace (см. сообщение).
-// ═══════════════════════════════════════════════════════════════
-
 (function () {
   'use strict';
 
-  // ── Дефолты совпадают с текущим поведением сайта ──────────────
+  // ---- Дефолты совпадают с текущим поведением сайта ---------
   //    голоса были захардкожены на 0.45; фон: music 0.15 / ambient 0.2
   //    (это ровно позиция ползунка BACKGROUND = 50%).
   if (window.socaVolume     === undefined) window.socaVolume     = 0.45; // 0..1
@@ -30,7 +16,7 @@
 
   const has = (fn) => typeof window[fn] === 'function';
 
-  // ── Контекст страницы: панель показывает только доступное. ──
+  // Контекст страницы: панель показывает только доступное
   //    soca.html: голоса, тосты, SMAILY, игры/хранилище + графика/CRT/глитчи.
   //    pilot.html: только звук/фон, CRT, глитчи, тяжёлая графика (animLoop).
   const CAP = {
@@ -44,7 +30,7 @@
   };
 
   // ══════════════════════════════════════════════════════════════
-  //  1. ГОЛОСА — единственная точка правды для СОКА.mp3 / СМАЙЛИ.mp3
+  //  1. ГОЛОСА - единственная точка правды для СОКА.mp3 / СМАЙЛИ.mp3
   //     (toast_stack.js и script.js зовут её вместо new Audio())
   // ══════════════════════════════════════════════════════════════
   window.playVoice = function (who) {
@@ -84,8 +70,8 @@
   }
 
   // Глитчи: шестерёнка/фавикон (soca) + панели/текст/координаты (pilot) +
-  // звук глитча playShortGlitch (sounds.js, обе страницы — он и раздражал).
-  // Гасим при выключенных глитчах. Отсутствующие на странице — пропускаются.
+  // звук глитча playShortGlitch (sounds.js, обе страницы - он и раздражал)
+  // Гасим при выключенных глитчах. Отсутствующие на странице - пропускаются
   ['glitchGear', 'glitchFavicon',
    'glitchRandomPanel', 'glitchRandomText', 'glitchBottomCoords',
    'playShortGlitch'].forEach((name) => {
@@ -98,7 +84,7 @@
     }
   });
 
-  // Попапы SMAILY (мемы + инвайты в игры) — гасим по частоте.
+  // Попапы СМАЙЛИ (мемы + инвайты в игры) - гасим по частоте
   ['showSmailyPopup', 'showSmailyInvite'].forEach((name) => {
     const orig = window[name];
     if (typeof orig === 'function') {
@@ -110,10 +96,10 @@
     }
   });
 
-  // ── ГРАФИКА (FULL/LITE): pageIsActive — единый гейт всех анимационных
+  // гРАФИКА (FULL/LITE): pageIsActive - единый гейт всех анимационных
   //    циклов. При LITE возвращаем false → каждый цикл сам встаёт на
   //    следующем кадре, канвасы замирают. Возврат в FULL перезапускает
-  //    текущую страницу через showPage() (см. applySwitch). ──
+  //    текущую страницу через showPage() (см. applySwitch)
   const _pageIsActive = window.pageIsActive;
   if (typeof _pageIsActive === 'function') {
     window.pageIsActive = function () {
@@ -122,8 +108,8 @@
     };
   }
 
-  // ── ГРАФИКА на pilot.html: animLoop (ЭКГ/тело/канвасы). При LITE
-  //    цикл выходит; возврат — window.animLoop() (см. applySwitch). ──
+  // ГРАФИКА на pilot.html: animLoop (ЭКГ/тело/канвасы). При LITE
+  //    цикл выходит; возврат - window.animLoop() (см. applySwitch)
   const _animLoop = window.animLoop;
   if (typeof _animLoop === 'function') {
     window.animLoop = function () {
@@ -132,10 +118,10 @@
     };
   }
 
-  // ── ТОСТЫ (кроме системно важных). toast_stack прогоняет ВСЕ тосты
+  // ТОСТЫ (кроме системно важных). toast_stack прогоняет ВСЕ тосты
   //    (в т.ч. .smaily-toast из smaily.js) через эти две функции, так
   //    что перехват здесь ловит оба канала. Оставляем только алерты
-  //    SOCA (warn/err) — это «голос системы»; SMAILY = болтовня. ──
+  //    SOCA (warn/err) - это «голос системы»; SMAILY = болтовня
   const _showSoca = window.showSocaToast;
   if (typeof _showSoca === 'function') {
     window.showSocaToast = function (message, type) {
@@ -149,10 +135,10 @@
   const _showSmaily = window.showSmailyToast;
   if (typeof _showSmaily === 'function') {
     window.showSmailyToast = function (message, type) {
-      // Транслируем сообщение SMAILY в SYS LOG — как у SOCA - даже когда
+      // Транслируем сообщение SMAILY в SYS LOG - как у SOCA - даже когда
       // тост скрыт. Часть путей (планировщик, реакции) логируют сами:
       // чтобы не задваивать, сверяемся с последней записью лога (она
-      // добавляется в том же тике, до срабатывания observer'а).
+      // добавляется в том же тике, до срабатывания observer'а)
       if (has('addSmailyLog')) {
         try {
           const sys = document.getElementById('sysLogContainer');
@@ -161,15 +147,14 @@
           if (!already) window.addSmailyLog(message, type === 'ok' ? 'info' : type);
         } catch (e) {}
       }
-      if (window.toastsEnabled === false) return; // тост глушим, но в логе уже есть
-      return _showSmaily.apply(this, arguments);
+      if (window.toastsEnabled === false) return; // тост глушим
     };
   }
 
-  // ── ЗАМОРОЗКА ПОЗАДИ: при запуске игр/хранилища ИЗ НАСТРОЕК гасим
-  //    сайт (appState.visible=false → все циклы встают). Возврат — при
+  // ЗАМОРОЗКА ПОЗАДИ: при запуске игр/хранилища ИЗ НАСТРОЕК гасим
+  //    сайт (appState.visible=false → все циклы встают). Возврат - при
   //    закрытии оверлея любым способом. Обычное открытие из меню не
-  //    трогаем. ──
+  //    трогаем
   let frozenBySettings = false;
   ['closeGames', 'closeStorage'].forEach((name) => {
     const orig = window[name];
@@ -196,11 +181,11 @@
   }
 
   // ══════════════════════════════════════════════════════════════
-  //  3. РЕПЛИКИ В ХАРАКТЕРЕ
+  //  3. РЕПЛИКИ
   // ══════════════════════════════════════════════════════════════
   const soca = (msg, type) => {
     if (has('showSocaToast')) { window.showSocaToast(msg, type || 'info'); return; }
-    // pilot.html: у SOCA нет тостов — говорит через строку комментария.
+    // pilot.html: у SOCA нет тостов - говорит через строку комментария.
     const el = document.getElementById('soca-comment-text');
     if (!el) return;
     const sp = document.getElementById('soca-comment-speaker');
@@ -233,8 +218,8 @@
   // ══════════════════════════════════════════════════════════════
   const css = document.createElement('style');
   css.textContent = `
-  /* ── Тумблеры экрана: гасим CRT (сканлайны body::before + виньетка
-     body::after) и зерно .noise. Класс вешается на <body>. ── */
+  /*Тумблеры экрана: гасим CRT (сканлайны body::before + виньетка
+     body::after) и зерно .noise. Класс вешается на <body> */
   body.settings-no-crt::before,
   body.settings-no-crt::after{ display:none !important; }
   body.settings-no-glitch .noise{ display:none !important; }
@@ -245,7 +230,7 @@
   body.settings-no-glitch .glitch-instant,
   body.settings-no-glitch .gear-logo::after{ animation:none !important; }
 
-  /* ── Шестерёнка становится кликабельной + намёк ── */
+  /* Шестерёнка становится кликабельной*/
   .gear-logo{ pointer-events:auto !important; cursor:pointer; }
   .gear-logo:hover{
     filter: drop-shadow(0 0 6px rgba(0,255,136,0.7)) drop-shadow(0 0 10px rgba(0,204,255,0.4));
@@ -261,7 +246,7 @@
   }
   #ss-tip.show{ opacity:1; transform:translateX(0); }
 
-  /* ── Окно ── */
+  /* --- Окно--- */
   #soca-settings{
     position:fixed; top:52px; left:12px; z-index:100000;
     width:320px; max-width:calc(100vw - 24px);
@@ -317,7 +302,7 @@
   #soca-settings .ss-lab{ font-size:11px; letter-spacing:0.08em; color:var(--g); }
   #soca-settings .ss-lab small{ display:block; font-size:8px; letter-spacing:0.1em; color:var(--dimmer); margin-top:1px; }
 
-  /* ── Слайдеры ── */
+  /* --- Слайдеры--- */
   #soca-settings .ss-slide{ display:flex; align-items:center; gap:8px; flex:0 0 150px; }
   #soca-settings input[type=range]{
     -webkit-appearance:none; appearance:none; width:118px; height:3px;
@@ -336,7 +321,7 @@
   #soca-settings input[type=range]:focus-visible{ outline:1px solid var(--b); outline-offset:4px; }
   #soca-settings .ss-val{ font-size:9px; color:var(--dim); width:26px; text-align:right; }
 
-  /* ── Тумблеры ── */
+  /* --- Тумблеры--- */
   #soca-settings .ss-sw{
     font-family:inherit; font-size:9px; letter-spacing:0.14em;
     width:52px; padding:4px 0; text-align:center; cursor:pointer;
@@ -349,7 +334,7 @@
   }
   #soca-settings .ss-sw:focus-visible{ outline:1px solid var(--b); outline-offset:2px; }
 
-  /* ── Сегменты (частота SMAILY) ── */
+  /* --- Сегменты (частота SMAILY) --- */
   #soca-settings .ss-seg{ display:flex; border:1px solid var(--border2); }
   #soca-settings .ss-seg button{
     font-family:inherit; font-size:9px; letter-spacing:0.1em;
@@ -367,7 +352,7 @@
   /* SMAILY-секция чуть янтарная по акценту */
   #soca-settings .ss-sec.amber{ color:#cc8800; border-bottom-color:rgba(255,170,0,0.3); }
 
-  /* ── Кнопки запуска (игры/хранилище standalone) ── */
+  /* --- Кнопки запуска (игры/хранилище standalone) --- */
   #soca-settings .ss-launch{ display:flex; gap:8px; padding:6px 0 2px; }
   #soca-settings .ss-launch button{
     flex:1; font-family:inherit; font-size:10px; letter-spacing:0.12em;
@@ -382,7 +367,7 @@
   #soca-settings .ss-launch button:focus-visible{ outline:1px solid var(--b); outline-offset:2px; }
   #soca-settings .ss-hint{ font-size:8px; letter-spacing:0.1em; color:var(--dimmer); padding:2px 0 0; }
 
-  /* «пасхальная» строка — красный отклик при саботаже */
+  /* «пасхальная» строка - красный отклик при саботаже */
   #soca-settings .ss-row.sabotage.kick{ animation:ssKick .3s steps(2) 2; }
   @keyframes ssKick{
     0%{transform:none} 25%{transform:translateX(-3px); filter:hue-rotate(-40deg)}
@@ -420,7 +405,7 @@
     <div class="ss-foot">PANDEMONIUM-04 // LOCAL SESSION · NOT SAVED</div>
   `;
 
-  // Собираем только те секции, что имеют смысл на этой странице.
+  // Собираем только те секции, что имеют смысл на этой странице
   function buildBody() {
     const out = [];
 
@@ -468,7 +453,7 @@
         <div class="ss-hint">opens standalone — site paused behind</div>`);
     }
 
-    // SOCA (пасхалка) — есть везде, где SOCA вообще «говорит»
+    // SOCA (пасхалка) - есть везде, где SOCA вообще говорит
     out.push('<div class="ss-sec">SOCA</div>' +
       switchRow('REDUCE SOCA SARCASM', 'sarcasm', false, 'experimental', true));
 
@@ -501,7 +486,7 @@
   function boot() {
     document.body.appendChild(panel);
 
-    // убираем старую кнопку звука 🕪 — теперь всё в панели
+    // убираем старую кнопку звука 🕪 - теперь всё в панели
     const oldBtn = document.getElementById('sound-control');
     if (oldBtn) oldBtn.remove();
 
@@ -553,17 +538,17 @@
       });
     });
 
-    // ── Тумблеры ──
+    // --- Тумблеры ---
     panel.querySelectorAll('.ss-sw').forEach((sw) => {
       sw.addEventListener('click', () => onSwitch(sw));
     });
 
-    // ── Сегменты частоты ──
+    // --- Сегменты частоты ---
     panel.querySelectorAll('.ss-seg button').forEach((b) => {
       b.addEventListener('click', () => setFreq(b.dataset.freq));
     });
 
-    // ── Кнопки запуска standalone (замораживают сайт позади) ──
+    // --- Кнопки запуска standalone (замораживают сайт позади) ---
     panel.querySelectorAll('[data-launch]').forEach((b) => {
       b.addEventListener('click', () => launchStandalone(b.dataset.launch));
     });
@@ -571,7 +556,7 @@
 
   function launchStandalone(what) {
     // STORAGE отключён до следующего обновления: сайт НЕ замораживаем,
-    // панель НЕ закрываем — просто краснеем и ругаемся.
+    // панель НЕ закрываем - просто краснеем и ругаемся.
     if (what === 'storage') {
       const btn = panel.querySelector('[data-launch="storage"]');
       if (typeof window.storageLocked === 'function') window.storageLocked(btn);
@@ -606,7 +591,7 @@
     if (p > 0) wasZero[key] = false;
   }
 
-  // ── Переключатели: CRT / GLITCH / SARCASM ──
+  // --- Переключатели: CRT / GLITCH / SARCASM ---
   let sarcasmAttempts = 0;
   function onSwitch(sw) {
     const key = sw.dataset.switch;
@@ -633,8 +618,8 @@
     if (key === 'heavy') {
       window.heavyRenders = on;
       if (on) {
-        // FULL → перезапуск отрисовки: soca.html — через showPage,
-        // pilot.html — повторным вызовом animLoop.
+        // FULL → перезапуск отрисовки: soca.html - через showPage,
+        // pilot.html - повторным вызовом animLoop
         const cur = currentPageName();
         if (cur && has('showPage')) window.showPage(cur);
         if (has('animLoop')) window.animLoop();
@@ -657,7 +642,7 @@
   }
 
   function sabotageSarcasm(sw) {
-    // визуально «включаем» на миг…
+    // визуально включаем на миг…
     setSwitch(sw, true);
     sw.classList.add('deny');
     const row = sw.closest('.ss-row');
@@ -704,14 +689,14 @@
     const delay = 45000 + Math.random() * 45000; // 45–90 с
     peekTimer = setTimeout(() => {
       if (window.smailyFrequency !== 'off') return;
-      // прямой вызов минует «глушилку» частоты — в этом и прикол
+      // прямой вызов минует «глушилку» частоты - в этом и прикол
       smaily(SMAILY_PEEKS[Math.floor(Math.random() * SMAILY_PEEKS.length)], 'info');
       schedulePeek();
     }, delay);
   }
   function stopPeeks() { if (peekTimer) { clearTimeout(peekTimer); peekTimer = null; } }
 
-  // ── старт ──
+  // --- старт ---
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
   } else {

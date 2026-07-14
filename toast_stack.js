@@ -251,7 +251,7 @@ const SOCA_SURVEY_ALL = [
     commentary: {
       "Evade immediately": "SOCA: Reactive. Not wrong.",
       "Analyze first":     "SOCA: Correct protocol. I've already analyzed it anyway.",
-      "Ask SOCA":          "SOCA: Finally. The right answer.",
+      "Ask SOCA":         "SOCA: Finally. The right answer.",
       "Ignore it":         "SOCA: No.",
     }
   },

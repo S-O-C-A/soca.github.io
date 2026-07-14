@@ -2674,6 +2674,35 @@
   </div>
 </div>
 
+<!-- ══ SMILE MILESTONE CARD ══ -->
+<div id="smaily-card-popup" style="display:none;position:fixed;z-index:9995;font-family:'Share Tech Mono',monospace;pointer-events:all;transition:all 0.3s">
+  <div style="background:rgba(20,10,0,0.97);border:2px solid #ffaa00;box-shadow:0 0 24px rgba(255,140,0,0.4),0 0 60px rgba(255,100,0,0.15);min-width:220px;max-width:280px;position:relative">
+    <div style="background:rgba(255,140,0,0.12);border-bottom:1px solid rgba(255,140,0,0.3);padding:7px 12px;display:flex;align-items:center;gap:8px">
+      <span style="color:#ffaa00;font-size:16px">✚</span>
+      <span style="font-family:'SMILE','VT323',monospace;font-size:18px;color:#ffcc00;letter-spacing:0.1em">SMILE</span>
+      <span style="font-size:8px;color:#664400;margin-left:2px;letter-spacing:0.1em">MILESTONE</span>
+      <button onclick="closeSmailyCard()" style="margin-left:auto;background:none;border:1px solid rgba(255,140,0,0.3);color:#ff8800;font-size:10px;cursor:pointer;padding:2px 8px;font-family:'Share Tech Mono',monospace;letter-spacing:0.1em" onmouseover="this.style.background='rgba(255,140,0,0.15)'" onmouseout="this.style.background='none'">[X]</button>
+    </div>
+    <!-- Number -->
+    <div style="padding:12px 12px 0;text-align:center">
+      <div id="smaily-card-num" style="font-family:'SMILE','VT323',monospace;font-size:54px;line-height:1;color:#ffcc00;text-shadow:0 0 18px rgba(255,170,0,0.8)">20</div>
+      <div style="font-size:8px;color:#664400;letter-spacing:0.18em;margin-top:3px">VISITS TO PANDEMONIUM-04</div>
+    </div>
+    <!-- Image -->
+    <div id="smaily-card-img-wrap" style="width:100%;background:#0a0500;min-height:140px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-top:10px">
+      <img id="smaily-card-img" src="" alt="" style="width:100%;max-height:200px;object-fit:cover;display:block"/>
+    </div>
+    <!-- Caption -->
+    <div style="padding:10px 12px;border-top:1px solid rgba(255,140,0,0.2)">
+      <div id="smaily-card-caption" style="color:#ffcc00;font-size:11px;line-height:1.6;letter-spacing:0.06em;font-family:'SMILE','Share Tech Mono',monospace"></div>
+      <button onclick="thankSmailyCard()" style="margin-top:9px;width:100%;background:none;border:1px solid rgba(255,140,0,0.3);color:#ff8800;font-size:10px;cursor:pointer;padding:7px 8px;font-family:'Share Tech Mono',monospace;letter-spacing:0.1em" onmouseover="this.style.background='rgba(255,140,0,0.15)'" onmouseout="this.style.background='none'">THANK YOU, SMILE</button>
+      <div style="margin-top:8px;font-size:8px;color:#443300;letter-spacing:0.1em">✚ SMILE v2.1 — ATTENDANCE MILESTONE PROTOCOL</div>
+    </div>
+    <div style="position:absolute;inset:0;pointer-events:none;border:1px solid rgba(255,160,0,0.2);animation:smailyPopupPulse 2s ease-in-out infinite"></div>
+  </div>
+</div>
+
+
 <style>
 @keyframes smailyPopupPulse {
   0%,100% { box-shadow: inset 0 0 0px rgba(255,140,0,0); }

@@ -478,7 +478,7 @@ function setupChatGlitch() {
   observer.observe(chatBody, { childList: true });
 }
 
-// ========== ФОНОВЫЕ ЗВУКИ И МУЗЫКА ==========
+// =========ФОНОВЫЕ ЗВУКИ И МУЗЫКА=========
 
 let backgroundMusic = null;
 let ambientSounds = null;
