@@ -135,11 +135,19 @@
   const _showSmaily = window.showSmailyToast;
   if (typeof _showSmaily === 'function') {
     window.showSmailyToast = function (message, type) {
-      // Транслируем сообщение SMAILY в SYS LOG - как у SOCA - даже когда
-      // тост скрыт. Часть путей (планировщик, реакции) логируют сами:
-      // чтобы не задваивать, сверяемся с последней записью лога (она
-      // добавляется в том же тике, до срабатывания observer'а)
-      if (has('addSmailyLog')) {
+      const toastsOff = window.toastsEnabled === false;
+
+      // ЧЁРНЫЙ СПИСОК — что НЕ зеркалим в SYS LOG:
+      //  1. Диалог SMAILY <-> SOCA. Это разговор, а не событие.
+      //     (у SOCA обёртки нет, поэтому её реплики и так не текут в лог;
+      //      без этой проверки текла бы половина диалога — реплики SMAILY.)
+      //  2. Обычную болтовню, ПОКА тосты включены. Она живёт в тосте.
+      //     Как только тосты выключены — мета-реплики SMAILY ("мой голос,
+      //     мои тосты...") логируем, иначе они исчезнут совсем.
+      const isDialogue = window.smDialogueActive;
+      const mirrorToLog = !isDialogue && toastsOff;
+
+      if (mirrorToLog && has('addSmailyLog')) {
         try {
           const sys = document.getElementById('sysLogContainer');
           const last = sys && sys.lastElementChild;
@@ -147,7 +155,9 @@
           if (!already) window.addSmailyLog(message, type === 'ok' ? 'info' : type);
         } catch (e) {}
       }
-      if (window.toastsEnabled === false) return; // тост глушим
+
+      if (toastsOff) return;                         // тост глушим
+      return _showSmaily.apply(this, arguments);     // показываем тост
     };
   }
 

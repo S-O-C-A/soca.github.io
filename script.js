@@ -4964,7 +4964,10 @@ function showSmailyPopup() {
   if (!popup) return;
 
   // Pick random meme
-  const meme = SMAILY_MEMES[Math.floor(Math.random() * SMAILY_MEMES.length)];
+  // HELLO (индекс 0) - это стартовое приветствие. Из случайной рулетки
+  // мем-попапов его исключаем, иначе "привет, пилот!" вылезает повторно
+  const pool = SMAILY_MEMES.slice(1);
+  const meme = pool[Math.floor(Math.random() * pool.length)];
 
   // Random position on screen (avoid edges)
   const maxX = window.innerWidth  - 300;
@@ -5254,8 +5257,14 @@ setTimeout(showSmailyInvite, 5000);
 
 // ===== ПРИВЕТСТВЕННЫЙ ПОПАП СМАЙЛИ (через 10 секунд после открытия) =====
 setTimeout(() => {
+  // Приветствие показывается ОДИН раз за сессию (переживает F5 в рамках вкладки,
+  // сбрасывается при новой вкладке). Без этого оно повторялось при повторном
+  // прогоне скрипта
+  if (sessionStorage.getItem('pd04_smaily_greeted')) return;
+
   // Проверяем, что сайт видим и попап ещё не открыт
   if (!document.hidden) {
+    sessionStorage.setItem('pd04_smaily_greeted', '1');
     // Создаём специальный попап с приветствием
     const popup = document.getElementById('smaily-popup');
     if (!popup) return;
