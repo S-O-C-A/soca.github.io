@@ -698,7 +698,7 @@ body::after{
 /* ПРОМПТ ПАРОЛЯ */
 .boot-prompt {
   position: absolute;
-  top: 52%;
+  top: 58%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 102;
@@ -706,7 +706,16 @@ body::after{
   width: 260px;
 }
 
-#bootPassword {
+.boot-field { margin-bottom: 14px; }
+.boot-q {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--dimmer);
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+#bootPassword,
+#bootPilot {
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(0, 255, 136, 0.25);
   color: var(--dim);
@@ -720,22 +729,26 @@ body::after{
   transition: all 0.2s;
 }
 
-#bootPassword:focus {
+#bootPassword:focus, #bootPilot:focus {
   border-color: rgba(0, 255, 136, 0.5);
   color: var(--g);
 }
 
-#bootPassword::placeholder {
+#bootPassword::placeholder, #bootPilot::placeholder {
   color: rgba(0, 170, 85, 0.4);
   font-size: 11px;
   letter-spacing: 1px;
 }
 
-/* ===== АВТОЗАПОЛНЕНИЕ: браузер красит поле в белое — не даём ===== */
+/* ===== АВТОЗАПОЛНЕНИЕ: браузер красит поле в белое - не даём ===== */
 #bootPassword:-webkit-autofill,
 #bootPassword:-webkit-autofill:hover,
 #bootPassword:-webkit-autofill:focus,
-#bootPassword:-webkit-autofill:active {
+#bootPassword:-webkit-autofill:active,
+#bootPilot:-webkit-autofill,
+#bootPilot:-webkit-autofill:hover,
+#bootPilot:-webkit-autofill:focus,
+#bootPilot:-webkit-autofill:active {
   -webkit-text-fill-color: var(--g) !important;
   caret-color: var(--g);
   /* фон заливаем ВНУТРЕННЕЙ ТЕНЬЮ: background браузер перебивает, тень — нет */
@@ -750,7 +763,8 @@ body::after{
 }
 
 /* Firefox / современный стандарт */
-#bootPassword:autofill {
+#bootPassword:autofill,
+#bootPilot:autofill {
   -webkit-text-fill-color: var(--g) !important;
   color: var(--g) !important;
   background-color: rgba(0, 0, 0, 0.5) !important;
@@ -1111,11 +1125,22 @@ body::after{
   <!-- ШЕСТЕРЁНКА -->
   <div class="boot-gear" id="bootGear">⛭</div>
 
-<!-- ПРОМПТ ПАРОЛЯ -->
+<!-- ПРОМПТ ВХОДА: сначала корабль, потом пилот -->
 <div class="boot-prompt" id="bootPrompt" style="display:none">
-  <input type="password" id="bootPassword" placeholder="> ENTER CODE" autocomplete="new-password">
+
+  <!-- ШАГ 1: корабль -->
+  <div class="boot-field" id="bootFieldShip">
+    <input type="text" id="bootPassword" placeholder="> ENTER DESIGNATION" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="boot-q">// Which vessel are you addressing?</div>
+  </div>
+
+  <!-- ШАГ 2: пилот (появляется после верного корабля) -->
+  <div class="boot-field" id="bootFieldPilot" style="display:none">
+    <input type="text" id="bootPilot" placeholder="> IDENTIFY" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="boot-q">// Whose account is this?</div>
+  </div>
+
   <div id="promptMessage"></div>
-  <div style="margin-top:8px;font-size:10px;color:var(--dimmer);letter-spacing:0.12em;text-align:center">// What is the name of the ship?</div>
 </div>
   
   <!-- ЛОГОТИП SOCA (появляется после подъёма шестерёнки) -->
@@ -1249,33 +1274,70 @@ function startLoadingPanels() {
   }, intervalTime);
 }
 
+//=== ШАГ 1: КОРАБЛЬ ===
+const pilotField = document.getElementById('bootFieldPilot');
+const pilotInput = document.getElementById('bootPilot');
+
+// имена Коко: полное Кокоро + любые сокращения
+const PILOT_NAMES = ['кокоро', 'kokoro', 'коко', 'koko'];
+const norm = s => s.toLowerCase().replace(/[-_\s]/g, '');
+
 passInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    const val = passInput.value.trim();
-    if (val.toLowerCase().replace(/[-_\s]/g, '').includes('pandemonium') || val.toLowerCase().replace(/[-_\s]/g, '').includes('пандемониум')) {
-      msgDiv.style.color = 'var(--g)';
-      msgDiv.innerHTML = '✓ ACCESS GRANTED';
-      setTimeout(() => {
-        promptDiv.style.display = 'none';
-        startLoadingPanels();
-      }, 500);
-   } else {
-      let denyMsg = '✕ ACCESS DENIED';
-      const v = val.toLowerCase().trim();
-      if (v.includes('альфа') || v.includes('alpha')) {
-        denyMsg = '✕ YOU ARE NOT ALPHA.';
-      } else if (v.includes('клавдия') || v.includes('klavdia') || v.includes('claudia')) {
-        denyMsg = '✕ YOU ARE NOT CLAUDIA.';
-      }
-      msgDiv.innerHTML = denyMsg;
-      passInput.style.animation = 'glitch1 0.2s';
-      passInput.value = '';
-      setTimeout(() => {
-        passInput.style.animation = '';
-        msgDiv.innerHTML = '';
-      }, 1000);
-      passInput.focus();
-    }
+  if (e.key !== 'Enter') return;
+  const val = passInput.value.trim();
+  const n = norm(val);
+
+  if (n.includes('pandemonium') || n.includes('пандемониум')) {
+    msgDiv.style.color = 'var(--g)';
+    msgDiv.innerHTML = '✓ VESSEL CONFIRMED: PANDEMONIUM-04';
+    passInput.disabled = true;
+    // открываем шаг 2
+    setTimeout(() => {
+      msgDiv.innerHTML = '';
+      pilotField.style.display = '';
+      pilotInput.focus();
+    }, 700);
+  } else {
+    let denyMsg = '✕ UNKNOWN VESSEL';
+    const v = val.toLowerCase().trim();
+    if (v.includes('альфа') || v.includes('alpha'))        denyMsg = '✕ ALPHA IS NOT ON THIS NETWORK.';
+    else if (v.includes('клавдия') || v.includes('klavdia') || v.includes('claudia')) denyMsg = '✕ CLAUDIA IS NOT A VESSEL.';
+    msgDiv.style.color = '';
+    msgDiv.innerHTML = denyMsg;
+    passInput.style.animation = 'glitch1 0.2s';
+    passInput.value = '';
+    setTimeout(() => { passInput.style.animation = ''; msgDiv.innerHTML = ''; }, 1000);
+    passInput.focus();
+  }
+});
+
+// === ШАГ 2: ПИЛОТ ===
+pilotInput.addEventListener('keypress', (e) => {
+  if (e.key !== 'Enter') return;
+  const val = pilotInput.value.trim();
+  const n = norm(val);
+
+  if (PILOT_NAMES.some(name => n === name)) {
+    msgDiv.style.color = 'var(--g)';
+    msgDiv.innerHTML = '✓ ACCESS GRANTED — WELCOME BACK, KOKO';
+    pilotInput.disabled = true;
+    setTimeout(() => {
+      promptDiv.style.display = 'none';
+      startLoadingPanels();
+    }, 900);
+  } else {
+    let denyMsg = '✕ ACCESS DENIED';
+    const v = val.toLowerCase().trim();
+    // остальные двое пилотов - не владельцы этого аккаунта
+    if (v.includes('альфа') || v.includes('alpha'))         denyMsg = '✕ THIS IS NOT ALPHA\'S ACCOUNT.';
+    else if (v.includes('клавдия') || v.includes('klavdia') || v.includes('claudia')) denyMsg = '✕ THIS IS NOT CLAUDIA\'S ACCOUNT.';
+    else if (v.includes('сока') || v.includes('soca'))      denyMsg = '✕ I AM THE SYSTEM. NOT THE PILOT.';
+    msgDiv.style.color = '';
+    msgDiv.innerHTML = denyMsg;
+    pilotInput.style.animation = 'glitch1 0.2s';
+    pilotInput.value = '';
+    setTimeout(() => { pilotInput.style.animation = ''; msgDiv.innerHTML = ''; }, 1000);
+    pilotInput.focus();
   }
 });
 
